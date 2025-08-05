@@ -1,9 +1,14 @@
 @extends('layouts.admin')
 
 @section('content')
+
 <div class="p-4">
     <div class="mt-14">
         <!-- Page Header -->
+        @foreach($complaints as $complaint)
+            <tr class="border-b dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 {{ $complaint->has_multiple_complaints ? 'bg-orange-50 dark:bg-orange-900/20' : '' }}" id="complaint-row-{{ $complaint->id }}">
+        @endforeach
+        </tr>
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
             <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-0">
                 Client Complaints Management
@@ -22,6 +27,10 @@
                 <div class="bg-green-100 dark:bg-green-900 px-4 py-2 rounded-lg">
                     <div class="text-sm text-green-600 dark:text-green-300">Resolved</div>
                     <div class="font-bold text-green-800 dark:text-green-200">{{ $stats['resolved'] }}</div>
+                </div>
+                <div class="bg-orange-100 dark:bg-orange-900 px-4 py-2 rounded-lg">
+                    <div class="text-sm text-orange-600 dark:text-orange-300">Multiple NIC Users</div>
+                    <div class="font-bold text-orange-800 dark:text-orange-200">{{ $stats['multiple_nic_users'] }}</div>
                 </div>
             </div>
         </div>
@@ -72,6 +81,16 @@
                     </select>
                 </div>
 
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Multiple Complaints</label>
+                    <select name="multiple_complaints" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200">
+                        <option value="">All Complaints</option>
+                        <option value="yes" {{ request('multiple_complaints') == 'yes' ? 'selected' : '' }}>
+                            Show Only Multiple NIC Users
+                        </option>
+                    </select>
+                </div>
+
                 <div class="flex gap-2">
                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                         Filter
@@ -85,6 +104,19 @@
 
         <!-- Complaints Table -->
         <div class="overflow-x-auto bg-white dark:bg-gray-800 shadow-md rounded-lg border border-gray-200 dark:border-gray-700">
+            <!-- Legend for Multiple Complaints -->
+            @if(request('multiple_complaints') == 'yes' || $complaints->where('has_multiple_complaints', true)->count() > 0)
+                <div class="bg-orange-50 dark:bg-orange-900/20 border-b border-orange-200 dark:border-orange-800 px-4 py-2">
+                    <div class="flex items-center text-sm text-orange-800 dark:text-orange-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="font-medium">Orange highlighted rows indicate users with multiple complaints from the same NIC.</span>
+                        <span class="ml-2">Click the document icon to view all complaints for that NIC.</span>
+                    </div>
+                </div>
+            @endif
+
             @if($complaints->count() > 0)
                 <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-300">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-300">
@@ -115,12 +147,37 @@
 
                                 <!-- Client Information -->
                                 <td class="px-4 py-4">
-                                    <div class="font-medium text-gray-900 dark:text-white">{{ $complaint->client_name }}</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $complaint->client_email }}</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">NIC: {{ $complaint->nic }}</div>
-                                    @if($complaint->contact_phone)
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $complaint->contact_phone }}</div>
-                                    @endif
+                                    <div class="flex items-center">
+                                        <div class="flex-1">
+                                            <div class="font-medium text-gray-900 dark:text-white">{{ $complaint->client_name }}</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $complaint->client_email }}</div>
+                                            <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                                                <span>NIC: {{ $complaint->nic }}</span>
+                                                @if($complaint->has_multiple_complaints)
+                                                    <span class="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" title="This NIC has {{ $complaint->complaint_count_for_nic }} complaints">
+                                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                                        </svg>
+                                                        {{ $complaint->complaint_count_for_nic }} complaints
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            @if($complaint->contact_phone)
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $complaint->contact_phone }}</div>
+                                            @endif
+                                        </div>
+                                        @if($complaint->has_multiple_complaints)
+                                            <div class="ml-2">
+                                                <button onclick="showAllComplaintsForNIC('{{ $complaint->nic }}')"
+                                                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                                                        title="View all complaints for this NIC">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </td>
 
                                 <!-- Category -->
@@ -336,6 +393,8 @@
     </div>
 </div>
 
+
+
 <script>
 // CSRF token
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
@@ -533,6 +592,14 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
+// Show all complaints for a specific NIC
+function showAllComplaintsForNIC(nic) {
+    const currentUrl = new URL(window.location);
+    currentUrl.searchParams.set('search', nic);
+    currentUrl.searchParams.delete('multiple_complaints'); // Remove the filter to show all complaints for this NIC
+    window.location.href = currentUrl.toString();
+}
+
 // Close modals when clicking outside
 document.addEventListener('click', function(e) {
     if (e.target.id === 'evidenceModal') {
@@ -543,4 +610,5 @@ document.addEventListener('click', function(e) {
     }
 });
 </script>
+
 @endsection

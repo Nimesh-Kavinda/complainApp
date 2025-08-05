@@ -155,6 +155,18 @@ class AdminController extends Controller
             $query->where('category_id', $request->category);
         }
 
+        // Filter for multiple complaints from same NIC
+        if ($request->filled('multiple_complaints') && $request->multiple_complaints == 'yes') {
+            // Get NICs that have more than one complaint
+            $nicWithMultiple = ClientComplaint::select('nic')
+                ->whereNotNull('nic')
+                ->groupBy('nic')
+                ->havingRaw('COUNT(*) > 1')
+                ->pluck('nic');
+
+            $query->whereIn('nic', $nicWithMultiple);
+        }
+
         // Search functionality
         if ($request->filled('search')) {
             $searchTerm = $request->search;
@@ -168,6 +180,20 @@ class AdminController extends Controller
 
         $complaints = $query->orderBy('created_at', 'desc')->paginate(15);
 
+        // Get complaints count by NIC for highlighting multiple complaints
+        $nicComplaintCounts = ClientComplaint::select('nic')
+            ->selectRaw('COUNT(*) as complaint_count')
+            ->whereNotNull('nic')
+            ->groupBy('nic')
+            ->pluck('complaint_count', 'nic');
+
+        // Attach complaint count to each complaint
+        $complaints->getCollection()->transform(function ($complaint) use ($nicComplaintCounts) {
+            $complaint->complaint_count_for_nic = $nicComplaintCounts->get($complaint->nic, 1);
+            $complaint->has_multiple_complaints = $complaint->complaint_count_for_nic > 1;
+            return $complaint;
+        });
+
         // Get filter options
         $categories = Category::all();
         $statuses = ['pending', 'in_progress', 'resolved', 'closed', 'rejected'];
@@ -179,9 +205,14 @@ class AdminController extends Controller
             'pending' => ClientComplaint::where('status', 'pending')->count(),
             'in_progress' => ClientComplaint::where('status', 'in_progress')->count(),
             'resolved' => ClientComplaint::where('status', 'resolved')->count(),
+            'multiple_nic_users' => ClientComplaint::select('nic')
+                ->whereNotNull('nic')
+                ->groupBy('nic')
+                ->havingRaw('COUNT(*) > 1')
+                ->count()
         ];
 
-        return view('admin.clientComplains', compact('complaints', 'categories', 'statuses', 'priorities', 'stats'));
+        return view('admin.clientComplains', compact('complaints', 'categories', 'statuses', 'priorities', 'stats', 'nicComplaintCounts'));
     }
 
     public function updateComplaintStatus(Request $request, $id)
