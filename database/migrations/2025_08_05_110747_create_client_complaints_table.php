@@ -45,7 +45,7 @@ return new class extends Migration
             $table->integer('severity_score')->nullable(); // 1-10 scale
             $table->text('client_feedback')->nullable(); // Client feedback on resolution
             $table->integer('satisfaction_rating')->nullable(); // 1-5 stars
-            $table->boolean('is_anonymous')->default(false);
+            $table->boolean('is_anonymous')->default(false); // Whether the complaint is anonymous
             $table->string('contact_phone')->nullable();
             $table->string('department')->nullable(); // Department related to complaint
             $table->text('follow_up_notes')->nullable();

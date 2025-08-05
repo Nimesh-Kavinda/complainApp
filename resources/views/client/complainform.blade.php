@@ -126,17 +126,6 @@
                     placeholder="Briefly describe the attached evidence"></textarea>
             </div>
 
-            <!-- Anonymous Submission -->
-            <div class="flex items-center">
-                <input type="checkbox" id="is_anonymous" name="is_anonymous" value="1"
-                    class="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded
-                           focus:ring-purple-500 dark:focus:ring-purple-600 dark:ring-offset-gray-800
-                           focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                <label for="is_anonymous" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                    Submit this complaint anonymously
-                </label>
-            </div>
-
             <!-- Submit Button -->
             <div class="text-center">
                 <button type="submit" class="inline-block w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg shadow-lg transition duration-300">

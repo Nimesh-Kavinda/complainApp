@@ -36,7 +36,6 @@ class ClientComplaintController extends Controller
             'evidence' => 'nullable|array|max:10',
             'evidence.*' => 'file|max:10240|mimes:jpg,jpeg,png,gif,bmp,pdf,doc,docx,txt,mp4,avi,mov,mp3,wav,ogg',
             'contact_phone' => 'nullable|string|max:20',
-            'is_anonymous' => 'boolean',
             'priority' => 'nullable|in:low,medium,high,urgent'
         ]);
 
@@ -70,7 +69,6 @@ class ClientComplaintController extends Controller
                 'evidence_files' => !empty($evidenceFiles) ? $evidenceFiles : null,
                 'evidence_description' => $request->evidence_description,
                 'contact_phone' => $request->contact_phone,
-                'is_anonymous' => $request->has('is_anonymous'),
                 'status' => 'pending'
             ]);
 
