@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
 use Illuminate\Support\Facades\Auth;
@@ -22,5 +23,19 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 
+//Admin Routes
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::get('/admin/category', [AdminController::class, 'category'])->name('admin.category');
+Route::post('/admin/category/store', [AdminController::class, 'category_store'])->name('admin.category.store');
+Route::delete('/admin/category/{id}', [AdminController::class, 'category_destroy'])->name('admin.category.destroy');
+Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+Route::put('/admin/users/{id}/role', [AdminController::class, 'updateUserRole'])->name('admin.users.updateRole');
+
+
+
+
+
+//  Client Routes
 Route::get('/client', [ClientController::class, 'index'])->name('client.index');
 Route::get('/client/complain', [ClientController::class, 'complainForm'])->name('client.complain');
+
