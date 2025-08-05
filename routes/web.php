@@ -27,6 +27,8 @@ require __DIR__.'/auth.php';
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::get('/admin/category', [AdminController::class, 'category'])->name('admin.category');
 Route::post('/admin/category/store', [AdminController::class, 'category_store'])->name('admin.category.store');
+Route::delete('/admin/category/{id}', [AdminController::class, 'category_destroy'])->name('admin.category.destroy');
+Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
 
 
 

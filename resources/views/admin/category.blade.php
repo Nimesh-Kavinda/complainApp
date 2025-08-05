@@ -39,9 +39,23 @@
 
     <ul class="divide-y divide-gray-200 dark:divide-gray-700">
       <!-- Dummy Categories -->
-      @foreach ($categories as $category)
-          <li class="py-3 px-2 text-gray-800 dark:text-gray-200">{{ $loop->index + 1 }}. {{ $category->category_name }}</li>
-      @endforeach
+    @foreach ($categories as $category)
+    <li class="flex items-center justify-between py-3 px-2 text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700">
+        <div>
+            {{ $loop->index + 1 }}. {{ $category->category_name }}
+            <span class="text-gray-500 dark:text-gray-400">({{ $category->created_at->format('Y-m-d') }})</span>
+        </div>
+
+        <form action="{{ route('admin.category.destroy', $category->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this category?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-600 text-sm font-medium">
+                Delete
+            </button>
+        </form>
+    </li>
+@endforeach
+
     </ul>
   </div>
 </section>

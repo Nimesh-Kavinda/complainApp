@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -35,5 +36,17 @@ class AdminController extends Controller
         return redirect()->route('admin.category')->with('success', 'Category created successfully.');
     }
 
+    public function category_destroy($id)
+    {
+        // Find the category by ID and delete it
+        $category = Category::findOrFail($id);
+        $category->delete();
 
+        return redirect()->route('admin.category')->with('success', 'Category deleted successfully.');
+    }
+
+    public function users(){
+        $users = User::all();
+        return view('admin.users', compact('users'));
+    }
 }
