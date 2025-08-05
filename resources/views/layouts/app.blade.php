@@ -52,9 +52,18 @@
                 </div>
 
                 <!-- Login Button -->
-                <a href="#" class="hidden md:inline-block px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg shadow hover:from-purple-700 hover:to-blue-700 transition">
+                @if(Auth::check())
+                <form method="POST" action="{{ route('logout') }}" class="inline-block">
+                    @csrf
+                    <button type="submit" class="hidden md:inline-block px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg shadow hover:from-purple-700 hover:to-blue-700 transition">
+                        Logout
+                    </button>
+                </form>
+                @else
+                <a href="{{ route('login') }}" class="hidden md:inline-block px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg shadow hover:from-purple-700 hover:to-blue-700 transition">
                     Login
                 </a>
+                @endif
 
                 <!-- Dark Mode Toggle -->
                 <button id="darkModeToggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200">

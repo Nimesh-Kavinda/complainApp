@@ -2,7 +2,7 @@
 
 @section('content')
 
-  <section class="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+<section class="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16">
                 <div class="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30 text-red-700 dark:text-red-300 text-sm font-medium mb-6 animate-pulse-slow">
