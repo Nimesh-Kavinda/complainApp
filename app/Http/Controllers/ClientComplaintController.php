@@ -25,11 +25,10 @@ class ClientComplaintController extends Controller
      */
     public function store(Request $request)
     {
-        // Validation
-        $request->validate([
+        // Validation - NIC is only required for clients
+        $rules = [
             'name' => 'required|string|max:255',
             'userType' => 'required|string',
-            'nic' => 'required|string|max:20|unique:client_complaints,nic',
             'category' => 'required|exists:categories,id',
             'complaint_title' => 'nullable|string|max:255',
             'details' => 'required|string|min:10',
@@ -37,7 +36,17 @@ class ClientComplaintController extends Controller
             'evidence.*' => 'file|max:10240|mimes:jpg,jpeg,png,gif,bmp,pdf,doc,docx,txt,mp4,avi,mov,mp3,wav,ogg',
             'contact_phone' => 'nullable|string|max:20',
             'priority' => 'nullable|in:low,medium,high,urgent'
-        ]);
+        ];
+
+        // Add NIC validation only for clients
+        if (strtolower($request->userType) === 'client') {
+            $rules['nic'] = 'required|string|max:20';
+        } else {
+            $rules['nic'] = 'nullable|string|max:20';
+            $rules['staffId'] = 'nullable|string|max:50';
+        }
+
+        $request->validate($rules);
 
         try {
             // Handle file uploads
@@ -62,6 +71,7 @@ class ClientComplaintController extends Controller
                 'client_name' => $request->name,
                 'client_email' => Auth::user()->email,
                 'nic' => $request->nic,
+                'staff_id' => $request->staffId,
                 'category_id' => $request->category,
                 'complaint_title' => $request->complaint_title,
                 'complaint_details' => $request->details,

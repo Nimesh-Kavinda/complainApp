@@ -9,6 +9,31 @@
             <p class="text-gray-600 dark:text-gray-300 mt-2">We take your concerns seriously. Please fill out the form below.</p>
         </div>
 
+        <!-- Display Validation Errors -->
+        @if ($errors->any())
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                <strong>Please fix the following errors:</strong>
+                <ul class="mt-2 list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <!-- Display Success/Error Messages -->
+        @if (session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <form action="{{ route('client.complaint.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
@@ -39,7 +64,7 @@
                         bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white
                         focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="Enter your NIC number">
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Your NIC number will be used as a unique identifier for your complaints.</p>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Your NIC number will be used for identification of your complaints.</p>
             </div>
 
             <!-- Staff ID (Only for Staff) -->

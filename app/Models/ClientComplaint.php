@@ -14,6 +14,7 @@ class ClientComplaint extends Model
         'client_name',
         'client_email',
         'nic',
+        'staff_id',
         'category_id',
         'complaint_title',
         'complaint_details',
