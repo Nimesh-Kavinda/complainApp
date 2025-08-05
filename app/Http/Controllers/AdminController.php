@@ -11,7 +11,9 @@ class AdminController extends Controller
 {
     public function index()
     {
-        return view('admin.index');
+        $categories = Category::all(); // Fetch all categories to display in the view
+        $users = User::all(); // Fetch all users to display in the view
+        return view('admin.index', compact('users'));
     }
 
 

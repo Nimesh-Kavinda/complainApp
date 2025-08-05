@@ -41,20 +41,13 @@
         </tr>
       </thead>
       <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-        <tr>
-          <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">John Doe</td>
-          <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">john@example.com</td>
-          <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">Client</td>
-        </tr>
-        <tr>
-          <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">Jane Smith</td>
-          <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">jane@staff.com</td>
-          <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">Staff</td>
-        </tr>
-        <tr>
-          <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">Michael Lee</td>
-          <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">michael@admin.com</td>
-          <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">Admin</td>
+        @foreach ($users as $user)
+          <tr>
+            <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">{{ $user->name }}</td>
+            <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">{{ $user->email }}</td>
+            <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">{{ ucfirst(str_replace('_', ' ', $user->role)) }}</td>
+          </tr>
+        @endforeach
         </tr>
       </tbody>
     </table>

@@ -117,7 +117,7 @@
                                                 <select onchange="updateUserRole({{ $user->id }}, this.value, '{{ $user->name }}')"
                                                         class="role-select-{{ $user->id }} text-xs border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 rounded px-2 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[120px] cursor-pointer hover:border-blue-400 transition-colors"
                                                         title="Change user role">
-                                                    <option value="" class="text-gray-500">Change Role</option>
+                                                    <option value="" class="text-gray-500">{{ ucfirst(str_replace('_', ' ', $user->role)) }}</option>
                                                     @foreach(['client', 'staff_member', 'department_head', 'senior_board', 'md'] as $role)
                                                         @if($role !== $user->role)
                                                             <option value="{{ $role }}">
