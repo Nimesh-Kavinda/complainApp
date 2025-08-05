@@ -13,4 +13,8 @@ class ClientController extends Controller
     {
         return view('client.index');
     }
+
+    public function complainForm() {
+        return view('client.complainform');
+    }
 }

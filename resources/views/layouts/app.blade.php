@@ -45,11 +45,16 @@
             <!-- Navigation + Login + Dark Mode -->
             <div class="flex items-center space-x-4">
                 <!-- Navigation Links -->
-                <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
+                @guest
+                     <div class="hidden md:flex items-center space-x-6 text-sm font-medium">
                     <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition">Home</a>
                     <a href="#complaint-categories" class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition">Categories</a>
                     <a href="#contact-info" class="text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition">Support</a>
                 </div>
+                @else
+                    <p class="hidden dark:text-white md:flex items-center space-x-6 text-sm font-medium">Logged in as <span class="text-purple-600 dark:text-purple-400 ms-4 border border-purple-300 dark:border-purple-400 px-2 py-1 rounded">{{ Auth::user()->name }}</span></p>
+                @endguest
+
 
                 <!-- Login Button -->
                 @if(Auth::check())

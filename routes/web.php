@@ -23,3 +23,4 @@ require __DIR__.'/auth.php';
 
 
 Route::get('/client', [ClientController::class, 'index'])->name('client.index');
+Route::get('/client/complain', [ClientController::class, 'complainForm'])->name('client.complain');
