@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
 use Illuminate\Support\Facades\Auth;
@@ -22,5 +23,16 @@ Route::middleware('auth')->group(function () {
 require __DIR__.'/auth.php';
 
 
+//Admin Routes
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::get('/admin/category', [AdminController::class, 'category'])->name('admin.category');
+
+
+
+
+
+
+//  Client Routes
 Route::get('/client', [ClientController::class, 'index'])->name('client.index');
 Route::get('/client/complain', [ClientController::class, 'complainForm'])->name('client.complain');
+

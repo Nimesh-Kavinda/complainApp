@@ -35,7 +35,7 @@ class AuthenticatedSessionController extends Controller
         case 'client':
             return redirect()->route('client.index');
         case 'md':
-            return redirect()->route('md.index');
+            return redirect()->route('admin.index');
         case 'department_head':
             return redirect()->route('department_head.index');
         case 'senior_board':
