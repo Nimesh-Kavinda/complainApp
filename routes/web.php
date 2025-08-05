@@ -31,6 +31,9 @@ Route::post('/admin/category/store', [AdminController::class, 'category_store'])
 Route::delete('/admin/category/{id}', [AdminController::class, 'category_destroy'])->name('admin.category.destroy');
 Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
 Route::put('/admin/users/{id}/role', [AdminController::class, 'updateUserRole'])->name('admin.users.updateRole');
+Route::get('/admin/complaints', [AdminController::class, 'complains'])->name('admin.complaints');
+Route::put('/admin/complaints/{id}/status', [AdminController::class, 'updateComplaintStatus'])->name('admin.complaints.updateStatus');
+Route::delete('/admin/complaints/{id}', [AdminController::class, 'deleteComplaint'])->name('admin.complaints.delete');
 
 
 

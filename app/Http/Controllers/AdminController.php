@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\ClientComplaint;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -13,7 +15,8 @@ class AdminController extends Controller
     {
         $categories = Category::all(); // Fetch all categories to display in the view
         $users = User::all(); // Fetch all users to display in the view
-        return view('admin.index', compact('users'));
+        $complaints = ClientComplaint::all(); // Fetch all complaints to display in the view
+        return view('admin.index', compact('users', 'complaints'));
     }
 
 
@@ -132,6 +135,119 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    public function complains(Request $request)
+    {
+        $query = ClientComplaint::with(['category', 'assignedTo']);
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by priority
+        if ($request->filled('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        // Filter by category
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // Search functionality
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('reference_number', 'like', "%{$searchTerm}%")
+                  ->orWhere('client_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('nic', 'like', "%{$searchTerm}%")
+                  ->orWhere('complaint_details', 'like', "%{$searchTerm}%");
+            });
+        }
+
+        $complaints = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        // Get filter options
+        $categories = Category::all();
+        $statuses = ['pending', 'in_progress', 'resolved', 'closed', 'rejected'];
+        $priorities = ['low', 'medium', 'high', 'urgent'];
+
+        // Get statistics
+        $stats = [
+            'total' => ClientComplaint::count(),
+            'pending' => ClientComplaint::where('status', 'pending')->count(),
+            'in_progress' => ClientComplaint::where('status', 'in_progress')->count(),
+            'resolved' => ClientComplaint::where('status', 'resolved')->count(),
+        ];
+
+        return view('admin.clientComplains', compact('complaints', 'categories', 'statuses', 'priorities', 'stats'));
+    }
+
+    public function updateComplaintStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,in_progress,resolved,closed,rejected',
+            'solution' => 'nullable|string',
+            'admin_notes' => 'nullable|string'
+        ]);
+
+        try {
+            $complaint = ClientComplaint::findOrFail($id);
+
+            $complaint->update([
+                'status' => $request->status,
+                'solution' => $request->solution,
+                'admin_notes' => $request->admin_notes,
+                'assigned_to' => Auth::id(),
+                'resolved_at' => $request->status === 'resolved' ? now() : null,
+                'closed_at' => $request->status === 'closed' ? now() : null,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Complaint updated successfully!',
+                'complaint' => $complaint->fresh()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update complaint.'
+            ], 500);
+        }
+    }
+
+    public function deleteComplaint($id)
+    {
+        try {
+            $complaint = ClientComplaint::findOrFail($id);
+
+            // Delete associated evidence files
+            if ($complaint->evidence_files) {
+                foreach ($complaint->evidence_files as $file) {
+                    $filePath = storage_path('app/public/' . $file['path']);
+                    if (file_exists($filePath)) {
+                        unlink($filePath);
+                    }
+                }
+            }
+
+            $complaint->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Complaint deleted successfully!'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete complaint.'
+            ], 500);
+        }
+    }
+
 }
 
 
