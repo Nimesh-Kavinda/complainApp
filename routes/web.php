@@ -26,7 +26,7 @@ require __DIR__.'/auth.php';
 //Admin Routes
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::get('/admin/category', [AdminController::class, 'category'])->name('admin.category');
-
+Route::post('/admin/category/store', [AdminController::class, 'category_store'])->name('admin.category.store');
 
 
 

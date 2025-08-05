@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -24,9 +25,9 @@ class AdminController extends Controller
             'category' => 'required|string|max:255',
         ]);
 
-        // $category = new Category();
-        // $category->name = $request->input('category');
-        // $category->save();
+        $category = new Category();
+        $category->category_name = $request->input('category');
+        $category->save();
 
         return redirect()->route('admin.category')->with('success', 'Category created successfully.');
     }

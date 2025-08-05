@@ -2,12 +2,20 @@
 
 @section('content')
 
+     @if (session('success'))
+         <div class="bg-green-100 text-green-800 p-4 rounded-lg mb-6">
+             {{ session('success') }}
+             <button class="float-right" onclick="this.parentElement.style.display='none'">X</button>
+         </div>
+     @endif
+
 <section class="p-6 bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col items-center justify-start space-y-8">
   <!-- Add Category Form -->
   <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Add New Category</h2>
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">Add New Complaint Category</h2>
 
-    <form action="#" method="POST" class="space-y-4">
+    <form action="{{ route('admin.category.store') }}" method="POST" class="space-y-4">
+        @csrf
       <!-- Category Name -->
       <div>
         <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category Name</label>
