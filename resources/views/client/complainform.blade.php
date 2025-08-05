@@ -128,7 +128,7 @@
 
             <!-- Submit Button -->
             <div class="text-center">
-                <button type="submit" class="inline-block w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg shadow-lg transition duration-300">
+                <button type="submit" id="com_submit" class="inline-block w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold rounded-lg shadow-lg transition duration-300">
                     Submit Complaint
                 </button>
             </div>
@@ -144,7 +144,7 @@
 
         // Add form validation
         const form = document.querySelector('form');
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('#com_submit', function(e) {
             const userType = document.getElementById('userType').value.toLowerCase().trim();
             const nicField = document.getElementById('nic');
 
