@@ -39,10 +39,9 @@
 
     <ul class="divide-y divide-gray-200 dark:divide-gray-700">
       <!-- Dummy Categories -->
-      <li class="py-3 px-2 text-gray-800 dark:text-gray-200">1. System Issues</li>
-      <li class="py-3 px-2 text-gray-800 dark:text-gray-200">2. Staff Behavior</li>
-      <li class="py-3 px-2 text-gray-800 dark:text-gray-200">3. Delay in Response</li>
-      <li class="py-3 px-2 text-gray-800 dark:text-gray-200">4. Payment Issues</li>
+      @foreach ($categories as $category)
+          <li class="py-3 px-2 text-gray-800 dark:text-gray-200">{{ $loop->index + 1 }}. {{ $category->category_name }}</li>
+      @endforeach
     </ul>
   </div>
 </section>
