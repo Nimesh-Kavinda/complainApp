@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientComplaintController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -38,4 +39,12 @@ Route::put('/admin/users/{id}/role', [AdminController::class, 'updateUserRole'])
 //  Client Routes
 Route::get('/client', [ClientController::class, 'index'])->name('client.index');
 Route::get('/client/complain', [ClientController::class, 'complainForm'])->name('client.complain');
+Route::get('/client/my-complaints', [ClientController::class, 'myComplaints'])->name('client.my-complaints');
+
+// Client Complaint Routes
+Route::post('/client/complaint/store', [ClientComplaintController::class, 'store'])->name('client.complaint.store');
+Route::get('/client/complaint/success/{id}', [ClientComplaintController::class, 'showSuccess'])->name('client.complaint.success');
+Route::get('/client/complaint/{id}', [ClientComplaintController::class, 'show'])->name('client.complaint.show');
+Route::get('/client/complaint/{id}/evidence/{fileIndex}', [ClientComplaintController::class, 'downloadEvidence'])->name('client.complaint.evidence');
+Route::post('/client/complaint/{id}/feedback', [ClientComplaintController::class, 'submitFeedback'])->name('client.complaint.feedback');
 

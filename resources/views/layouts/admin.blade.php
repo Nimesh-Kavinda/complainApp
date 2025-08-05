@@ -124,6 +124,12 @@
                 <div class="flex items-center space-x-4">
                     <!-- Search -->
                     <div class="hidden md:block relative">
+                    <div class="relative ">
+                        <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="hidden md:inline-block px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg shadow hover:from-purple-700 hover:to-blue-700 transition">Log Out</button>
+                        </form>
+                     </div>
                     </div>
 
                     <!-- Notifications -->

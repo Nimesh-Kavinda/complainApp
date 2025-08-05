@@ -9,11 +9,15 @@
             <p class="text-gray-600 dark:text-gray-300 mt-2">We take your concerns seriously. Please fill out the form below.</p>
         </div>
 
-        <form action="#" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <form action="{{ route('client.complaint.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            @csrf
+
             <!-- Name -->
             <div>
                 <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
-                <input type="text" id="name" name="name" required class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500" value="{{ Auth::user()->name ?? '' }}" readonly>
+                <input type="text" id="name" name="name" required
+                       class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                       value="{{ Auth::user()->name ?? '' }}" readonly>
             </div>
 
             <!-- Type of User -->
@@ -29,11 +33,13 @@
 
             <!-- NIC (Only for Clients) -->
             <div id="nicField" class="mt-4 hidden">
-                <label for="nic" class="block text-sm font-medium text-gray-700 dark:text-gray-300">NIC Number</label>
-                <input type="text" id="nic" name="nic"
+                <label for="nic" class="block text-sm font-medium text-gray-700 dark:text-gray-300">NIC Number *</label>
+                <input type="text" id="nic" name="nic" required
                     class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                         bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white
-                        focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Enter your NIC number">
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Your NIC number will be used as a unique identifier for your complaints.</p>
             </div>
 
             <!-- Staff ID (Only for Staff) -->
@@ -42,21 +48,51 @@
                 <input type="text" id="staffId" name="staffId"
                     class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
                         bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white
-                        focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Enter your Staff ID">
+            </div>
+
+            <!-- Contact Phone -->
+            <div>
+                <label for="contact_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contact Phone (Optional)</label>
+                <input type="tel" id="contact_phone" name="contact_phone"
+                    class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                        bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white
+                        focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Enter your phone number">
             </div>
 
             <!-- Complaint Category -->
             <div>
-                <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Complaint Category</label>
+                <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Complaint Category *</label>
                 <select id="category" name="category" required class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    <option value="">-- Select Category --</option>
-                    <option value="service">Service Quality</option>
-                    <option value="billing">Billing</option>
-                    <option value="communication">Communication</option>
-                    <option value="timeline">Timeline</option>
-                    <option value="technical">Technical</option>
-                    <option value="other">Other</option>
+                    <option value="">Select a category</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->category_name }}</option>
+                    @endforeach
                 </select>
+            </div>
+
+            <!-- Complaint Title -->
+            <div>
+                <label for="complaint_title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Complaint Title (Optional)</label>
+                <input type="text" id="complaint_title" name="complaint_title"
+                    class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                        bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white
+                        focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Brief title for your complaint">
+            </div>
+
+            <!-- Priority Level -->
+            <div>
+                <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority Level</label>
+                <select id="priority" name="priority" class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option value="low">Low</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="high">High</option>
+                    <option value="urgent">Urgent</option>
+                </select>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Select the urgency level of your complaint.</p>
             </div>
 
             <!-- Complaint Details -->
@@ -67,8 +103,27 @@
 
             <!-- Evidence Upload -->
             <div>
-                <label for="evidence" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Attach Evidence (photos, videos, audio)</label>
-                <input type="file" id="evidence" name="evidence[]" multiple accept="image/*,video/*,audio/*" class="mt-2 w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-100 dark:file:bg-purple-900 file:text-purple-700 dark:file:text-purple-300 hover:file:bg-purple-200 dark:hover:file:bg-purple-800 transition">
+                <label for="evidence" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Attach Evidence (Optional)</label>
+                <input type="file" id="evidence" name="evidence[]" multiple
+                       accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
+                       class="mt-2 w-full text-sm text-gray-500 dark:text-gray-400
+                              file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0
+                              file:text-sm file:font-semibold file:bg-purple-100 dark:file:bg-purple-900
+                              file:text-purple-700 dark:file:text-purple-300
+                              hover:file:bg-purple-200 dark:hover:file:bg-purple-800 transition">
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    Supported formats: Images (JPG, PNG, GIF), Videos (MP4, AVI, MOV), Audio (MP3, WAV), Documents (PDF, DOC, DOCX, TXT). Max 10 files, 10MB each.
+                </p>
+            </div>
+
+            <!-- Evidence Description -->
+            <div>
+                <label for="evidence_description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Evidence Description (Optional)</label>
+                <textarea id="evidence_description" name="evidence_description" rows="2"
+                    class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600
+                           bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white
+                           focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Briefly describe the attached evidence"></textarea>
             </div>
 
             <!-- Submit Button -->
@@ -84,27 +139,79 @@
 
 
 <script>
-    document.addEventListener('DOMContentLoaded', toggleFields); // Initial call on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleFields(); // Initial call on page load
+
+        // Add form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const userType = document.getElementById('userType').value.toLowerCase().trim();
+            const nicField = document.getElementById('nic');
+
+            // For clients, NIC is required
+            if (userType === 'client' && !nicField.value.trim()) {
+                e.preventDefault();
+                alert('NIC number is required for client complaints.');
+                nicField.focus();
+                return false;
+            }
+
+            // Validate NIC format (basic validation)
+            if (userType === 'client' && nicField.value.trim()) {
+                const nicPattern = /^[0-9]{9}[vVxX]$|^[0-9]{12}$/;
+                if (!nicPattern.test(nicField.value.trim())) {
+                    e.preventDefault();
+                    alert('Please enter a valid NIC number (9 digits followed by V/X or 12 digits).');
+                    nicField.focus();
+                    return false;
+                }
+            }
+        });
+
+        // File upload validation
+        const evidenceInput = document.getElementById('evidence');
+        evidenceInput.addEventListener('change', function() {
+            const files = this.files;
+            const maxFiles = 10;
+            const maxSize = 10 * 1024 * 1024; // 10MB
+
+            if (files.length > maxFiles) {
+                alert(`You can only upload a maximum of ${maxFiles} files.`);
+                this.value = '';
+                return;
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].size > maxSize) {
+                    alert(`File "${files[i].name}" is too large. Maximum size is 10MB.`);
+                    this.value = '';
+                    return;
+                }
+            }
+        });
+    });
 
     function toggleFields() {
         const userType = document.getElementById('userType').value.toLowerCase().trim();
         const nicField = document.getElementById('nicField');
         const staffIdField = document.getElementById('staffIdField');
+        const nicInput = document.getElementById('nic');
 
         if (userType === 'client') {
             nicField.classList.remove('hidden');
             staffIdField.classList.add('hidden');
-        } else if (userType === 'staff') {
+            nicInput.required = true;
+        } else if (userType === 'staff' || userType === 'staff_member') {
             staffIdField.classList.remove('hidden');
             nicField.classList.add('hidden');
+            nicInput.required = false;
         } else {
             // Hide both if userType is unrecognized
             nicField.classList.add('hidden');
             staffIdField.classList.add('hidden');
+            nicInput.required = false;
         }
     }
 </script>
-
-
 
 @endsection
