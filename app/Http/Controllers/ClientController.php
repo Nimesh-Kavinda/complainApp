@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\User;
+
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -15,6 +18,10 @@ class ClientController extends Controller
     }
 
     public function complainForm() {
-        return view('client.complainform');
+
+        // Fetch all categories to display in the view
+        $categories = Category::all();
+
+        return view('client.complainform', compact('categories'));
     }
 }

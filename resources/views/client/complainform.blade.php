@@ -50,12 +50,8 @@
                 <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Complaint Category</label>
                 <select id="category" name="category" required class="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
                     <option value="">-- Select Category --</option>
-                    <option value="service">Service Quality</option>
-                    <option value="billing">Billing</option>
-                    <option value="communication">Communication</option>
-                    <option value="timeline">Timeline</option>
-                    <option value="technical">Technical</option>
-                    <option value="other">Other</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
                 </select>
             </div>
 
