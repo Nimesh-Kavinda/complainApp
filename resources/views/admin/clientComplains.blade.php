@@ -9,7 +9,7 @@
             <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-6">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                        Complaints Management
+                        Client Complaints Management
                     </h1>
                     <p class="text-gray-600 dark:text-gray-300">
                         Manage and respond to client complaints efficiently
@@ -96,7 +96,7 @@
         </div>
 
         <!-- Advanced Filters Panel -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8 mx-2">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Filters & Search</h3>
@@ -194,7 +194,7 @@
         <!-- Modern Complaints Display -->
         @if($complaints->count() > 0)
             <!-- View Toggle -->
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center justify-between mb-6 mx-2">
                 <div class="flex items-center space-x-4">
                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">View:</span>
                     <div class="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
@@ -216,7 +216,7 @@
 
             <!-- Legend for Multiple Complaints -->
             @if(request('multiple_complaints') == 'yes' || $complaints->where('has_multiple_complaints', true)->count() > 0)
-                <div class="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4 mb-6">
+                <div class="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4 mb-6 mx-2">
                     <div class="flex items-center text-sm text-orange-800 dark:text-orange-200">
                         <div class="flex-shrink-0 w-10 h-10 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center mr-3">
                             <svg class="w-5 h-5 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,7 +232,7 @@
             @endif
 
             <!-- Cards View (Default) -->
-            <div id="cardsView" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div id="cardsView" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mx-3">
                 @foreach($complaints as $complaint)
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 {{ $complaint->has_multiple_complaints ? 'ring-2 ring-orange-200 dark:ring-orange-800' : '' }}"
                          id="complaint-card-{{ $complaint->id }}">
@@ -389,7 +389,7 @@
                 @endforeach
             </div>
             <!-- Table View (Hidden by default) -->
-            <div id="tableView" class="hidden bg-white dark:bg-gray-800 shadow-sm rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div id="tableView" class="hidden bg-white dark:bg-gray-800 shadow-sm rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mx-3">
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-300">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
@@ -554,6 +554,7 @@
             </div>
             <div id="evidenceContent" class="p-4">
                 <!-- Evidence files will be loaded here -->
+
             </div>
         </div>
     </div>
