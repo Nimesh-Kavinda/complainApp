@@ -219,7 +219,7 @@ class AdminController extends Controller
     {
         $request->validate([
             'status' => 'required|in:pending,in_progress,resolved,closed,rejected',
-            'solution' => 'nullable|string|max:5000',
+            'message' => 'nullable|string|max:5000',
             'admin_notes' => 'nullable|string|max:5000'
         ]);
 
@@ -232,7 +232,7 @@ class AdminController extends Controller
                 'old_status' => $complaint->status,
                 'new_status' => $request->status,
                 'admin_id' => Auth::id(),
-                'has_solution' => !empty($request->solution),
+                'has_message' => !empty($request->message),
                 'has_admin_notes' => !empty($request->admin_notes)
             ]);
 
@@ -243,21 +243,27 @@ class AdminController extends Controller
                 'closed_at' => $request->status === 'closed' ? now() : null,
             ];
 
-            // Only update solution if provided
-            if ($request->filled('solution')) {
-                $updateData['solution'] = $request->solution;
-            }
-
             // Only update admin notes if provided
             if ($request->filled('admin_notes')) {
                 $updateData['admin_notes'] = $request->admin_notes;
+            }
+
+            // Add message to conversation if provided
+            if ($request->filled('message')) {
+                $complaint->addConversationMessage(
+                    $request->message,
+                    'admin',
+                    Auth::id(),
+                    Auth::user()->name
+                );
             }
 
             $complaint->update($updateData);
 
             Log::info('Complaint status updated successfully', [
                 'complaint_id' => $id,
-                'new_status' => $complaint->fresh()->status
+                'new_status' => $complaint->fresh()->status,
+                'conversation_count' => $complaint->fresh()->getConversationCount()
             ]);
 
             return response()->json([
@@ -302,6 +308,30 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update complaint: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getComplaintConversation($id)
+    {
+        try {
+            $complaint = ClientComplaint::findOrFail($id);
+
+            return response()->json([
+                'success' => true,
+                'conversation' => $complaint->getConversation(),
+                'complaint_info' => [
+                    'id' => $complaint->id,
+                    'reference_number' => $complaint->reference_number,
+                    'client_name' => $complaint->client_name,
+                    'status' => $complaint->status,
+                    'created_at' => $complaint->created_at->format('M d, Y h:i A')
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load conversation.'
             ], 500);
         }
     }
