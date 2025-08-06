@@ -22,6 +22,7 @@ class ClientComplaint extends Model
         'status',
         'admin_notes',
         'solution',
+        'conversation',
         'evidence_files',
         'evidence_description',
         'assigned_to',
@@ -40,6 +41,7 @@ class ClientComplaint extends Model
 
     protected $casts = [
         'evidence_files' => 'array',
+        'conversation' => 'array',
         'assigned_at' => 'datetime',
         'resolved_at' => 'datetime',
         'closed_at' => 'datetime',
@@ -70,6 +72,14 @@ class ClientComplaint extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the user that owns this complaint.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'client_email', 'email');
     }
 
     public function assignedTo()
@@ -188,5 +198,54 @@ class ClientComplaint extends Model
             'closed_at' => now(),
             'admin_notes' => $notes
         ]);
+    }
+
+    /**
+     * Add a new message to the conversation thread
+     */
+    public function addConversationMessage($message, $senderType, $senderId, $senderName)
+    {
+        $conversation = $this->conversation ?? [];
+
+        $newMessage = [
+            'id' => count($conversation) + 1,
+            'message' => $message,
+            'sender_type' => $senderType, // 'admin' or 'client'
+            'sender_id' => $senderId,
+            'sender_name' => $senderName,
+            'timestamp' => now()->toISOString(),
+            'created_at' => now()->format('Y-m-d H:i:s')
+        ];
+
+        $conversation[] = $newMessage;
+
+        $this->update(['conversation' => $conversation]);
+
+        return $newMessage;
+    }
+
+    /**
+     * Get the conversation thread in chronological order
+     */
+    public function getConversation()
+    {
+        return $this->conversation ?? [];
+    }
+
+    /**
+     * Get the last message from the conversation
+     */
+    public function getLastMessage()
+    {
+        $conversation = $this->getConversation();
+        return !empty($conversation) ? end($conversation) : null;
+    }
+
+    /**
+     * Count total messages in conversation
+     */
+    public function getConversationCount()
+    {
+        return count($this->getConversation());
     }
 }

@@ -33,6 +33,7 @@ Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users
 Route::put('/admin/users/{id}/role', [AdminController::class, 'updateUserRole'])->name('admin.users.updateRole');
 Route::get('/admin/complaints', [AdminController::class, 'complains'])->name('admin.complaints');
 Route::put('/admin/complaints/{id}/status', [AdminController::class, 'updateComplaintStatus'])->name('admin.complaints.updateStatus');
+Route::get('/admin/complaints/{id}/conversation', [AdminController::class, 'getComplaintConversation'])->name('admin.complaints.conversation');
 Route::delete('/admin/complaints/{id}', [AdminController::class, 'deleteComplaint'])->name('admin.complaints.delete');
 
 
@@ -43,6 +44,11 @@ Route::delete('/admin/complaints/{id}', [AdminController::class, 'deleteComplain
 Route::get('/client', [ClientController::class, 'index'])->name('client.index');
 Route::get('/client/complain', [ClientController::class, 'complainForm'])->name('client.complain');
 Route::get('/client/my-complaints', [ClientController::class, 'myComplaints'])->name('client.my-complaints');
+Route::get('/client/past-complaints', [ClientController::class, 'pastComplaints'])->name('client.past-complaints');
+Route::get('/client/complaint/{id}/conversation', [ClientController::class, 'getComplaintConversation'])->name('client.complaint.conversation');
+Route::post('/client/complaint/{id}/message', [ClientController::class, 'addMessageToComplaint'])->name('client.complaint.message');
+Route::post('/client/complaint/{id}/close', [ClientController::class, 'closeComplaint'])->name('client.complaint.close');
+Route::get('/client/complaint/{id}/evidence/{fileIndex}', [ClientController::class, 'downloadEvidence'])->name('client.complaint.evidence');
 
 // Client Complaint Routes
 Route::post('/client/complaint/store', [ClientComplaintController::class, 'store'])->name('client.complaint.store');

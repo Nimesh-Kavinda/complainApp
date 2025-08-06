@@ -541,9 +541,9 @@
 </div>
 
 <!-- Evidence Preview Modal -->
-<div id="evidenceModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-50">
+<div id="evidenceModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
     <div class="flex items-center justify-center min-h-screen px-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-600">
             <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Evidence Files</h3>
                 <button id="evidenceModalCloseBtn" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
@@ -560,64 +560,142 @@
 </div>
 
 <!-- Reply Modal -->
-<div id="replyModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-50">
+<div id="replyModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
     <div class="flex items-center justify-center min-h-screen px-4">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] border border-gray-200 dark:border-gray-600">
             <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Reply to Complaint</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Conversation</h3>
                 <button id="replyModalCloseBtn" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
-            <div class="p-4">
+
+            <!-- Complaint Info Header -->
+            <div class="p-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                <!-- Complaint Basic Info -->
+                <div class="mb-4">
+                    <div id="complaintInfo" class="font-medium text-gray-900 dark:text-white mb-2"></div>
+                    <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                        <span>Status: <span id="currentStatus" class="font-medium"></span></span>
+                        <span>Priority: <span id="currentPriority" class="font-medium"></span></span>
+                        <span>Total Messages: <span id="messageCount" class="font-medium">0</span></span>
+                    </div>
+                </div>
+
+                <!-- Complaint Details Section -->
+                <div id="complaintDetails" class="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                    <!-- Complaint Title -->
+                    <div id="complaintTitleSection" class="mb-3 hidden">
+                        <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Complaint Title:</h4>
+                        <p id="complaintTitle" class="text-sm text-gray-900 dark:text-white font-medium"></p>
+                    </div>
+
+                    <!-- Complaint Description -->
+                    <div class="mb-3">
+                        <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Description:</h4>
+                        <div id="complaintDescription" class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 p-3 rounded border max-h-24 overflow-y-auto"></div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div>
+                            <span class="font-medium text-gray-600 dark:text-gray-400">Category:</span>
+                            <span id="complaintCategory" class="text-gray-900 dark:text-white ml-1"></span>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-600 dark:text-gray-400">Submitted:</span>
+                            <span id="complaintDate" class="text-gray-900 dark:text-white ml-1"></span>
+                        </div>
+                        <div>
+                            <span class="font-medium text-gray-600 dark:text-gray-400">Evidence:</span>
+                            <span id="complaintEvidence" class="text-gray-900 dark:text-white ml-1"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversation Thread -->
+            <div class="flex-1 overflow-hidden bg-white dark:bg-gray-800">
+                <div id="conversationThread" class="h-96 overflow-y-auto p-6 bg-gray-50 dark:bg-gray-900 border-t border-b border-gray-200 dark:border-gray-700">
+                    <div id="conversationMessages">
+                        <!-- Messages will be loaded here -->
+                        <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+                            <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                            <p class="font-medium">Loading conversation...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Message Form -->
+            <div class="p-6 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
                 <form id="replyForm">
                     <input type="hidden" id="complaintId" name="complaint_id">
 
-                    <div class="mb-4">
-                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-4">
-                            <div class="text-sm text-gray-600 dark:text-gray-400">Replying to:</div>
-                            <div id="complaintInfo" class="font-medium text-gray-900 dark:text-white"></div>
+                    <!-- Form Header -->
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Send Reply</h4>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Update the complaint status and send a message to the client</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="status" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Update Status</label>
+                            <select id="status" name="status" class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors shadow-sm" required>
+                                <option value="" class="text-gray-500 dark:text-gray-400">Select status...</option>
+                                <option value="pending" class="text-gray-900 dark:text-gray-100">Pending</option>
+                                <option value="in_progress" class="text-gray-900 dark:text-gray-100">In Progress</option>
+                                <option value="resolved" class="text-gray-900 dark:text-gray-100">Resolved</option>
+                                <option value="closed" class="text-gray-900 dark:text-gray-100">Closed</option>
+                                <option value="rejected" class="text-gray-900 dark:text-gray-100">Rejected</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="admin_notes" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Admin Notes (Internal)</label>
+                            <input type="text" id="admin_notes" name="admin_notes"
+                                   class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors shadow-sm"
+                                   placeholder="Internal notes (not visible to client)...">
                         </div>
                     </div>
 
-                    <div class="mb-4">
-                        <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Update Status</label>
-                        <select id="status" name="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                            <option value="pending">Pending</option>
-                            <option value="in_progress">In Progress</option>
-                            <option value="resolved">Resolved</option>
-                            <option value="closed">Closed</option>
-                            <option value="rejected">Rejected</option>
-                        </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="solution" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Solution/Response</label>
-                        <textarea id="solution" name="solution" rows="4"
-                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                  placeholder="Provide your response or solution to the client..."></textarea>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">This will be visible to the client</p>
-                    </div>
-
                     <div class="mb-6">
-                        <label for="admin_notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Admin Notes (Internal)</label>
-                        <textarea id="admin_notes" name="admin_notes" rows="3"
-                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                  placeholder="Internal notes (not visible to client)..."></textarea>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Internal notes for admin use only</p>
+                        <label for="message" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Message to Client</label>
+                        <textarea id="message" name="message" rows="4"
+                                  class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors shadow-sm resize-none"
+                                  placeholder="Type your response or solution to the client..."></textarea>
+                        <div class="mt-2 flex items-start space-x-2">
+                            <svg class="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">This message will be visible to the client and added to the conversation thread. Be professional and helpful in your response.</p>
+                        </div>
                     </div>
 
-                    <div class="flex justify-end gap-3">
+                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
                         <button type="button" id="cancelReplyBtn"
-                                class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">
+                                class="w-full sm:w-auto px-6 py-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600 transition-colors font-medium">
                             Cancel
                         </button>
                         <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                            <span class="submit-text">Update Complaint</span>
-                            <span class="loading-text hidden">Updating...</span>
+                                class="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium shadow-sm">
+                            <span class="submit-text flex items-center justify-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                </svg>
+                                Send Reply
+                            </span>
+                            <span class="loading-text hidden">
+                                <div class="flex items-center justify-center">
+                                    <svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    Sending...
+                                </div>
+                            </span>
                         </button>
                     </div>
                 </form>
@@ -793,41 +871,229 @@ function closeEvidenceModal() {
 let replyModalInstance = null;
 
 function openReplyModal(complaintId, clientName, referenceNumber) {
+    console.log('openReplyModal called with:', { complaintId, clientName, referenceNumber });
+
     const modal = document.getElementById('replyModal');
     if (!modal) {
         console.error('Reply modal not found');
         return;
     }
 
-    // Close any existing modal
-    if (replyModalInstance) {
-        closeReplyModal();
-    }
+    console.log('Modal found, proceeding...');
 
-    // Reset form
-    const form = document.getElementById('replyForm');
-    if (form) {
-        form.reset();
-    }
-
-    // Set complaint info
-    document.getElementById('complaintId').value = complaintId;
-    document.getElementById('complaintInfo').textContent = `${clientName} - ${referenceNumber}`;
-
-    // Show modal
+    // Show modal first
     modal.classList.remove('hidden');
     replyModalInstance = modal;
 
     // Prevent body scroll
     document.body.style.overflow = 'hidden';
 
-    // Focus on status select
+    console.log('Modal should be visible now');
+
+    // Set complaint info
+    const complaintIdInput = document.getElementById('complaintId');
+    const complaintInfoDiv = document.getElementById('complaintInfo');
+
+    if (complaintIdInput) {
+        complaintIdInput.value = complaintId;
+        console.log('Complaint ID set:', complaintId);
+    }
+
+    if (complaintInfoDiv) {
+        complaintInfoDiv.textContent = `${clientName} - ${referenceNumber}`;
+        console.log('Complaint info set');
+    }
+
+    // Load conversation after modal is shown
     setTimeout(() => {
-        const statusSelect = document.getElementById('status');
-        if (statusSelect) {
-            statusSelect.focus();
-        }
+        console.log('Loading conversation...');
+        loadConversation(complaintId);
     }, 100);
+}
+
+function loadConversation(complaintId) {
+    console.log('loadConversation called with complaintId:', complaintId);
+
+    const conversationMessages = document.getElementById('conversationMessages');
+    if (!conversationMessages) {
+        console.error('conversationMessages element not found');
+        return;
+    }
+
+    console.log('conversationMessages element found');
+
+    // Show loading
+    conversationMessages.innerHTML = `
+        <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+            <svg class="w-6 h-6 animate-spin mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            Loading conversation...
+        </div>
+    `;
+
+    console.log('Making fetch request to:', `/admin/complaints/${complaintId}/conversation`);
+
+    fetch(`/admin/complaints/${complaintId}/conversation`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        }
+    })
+    .then(response => {
+        console.log('Fetch response status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Fetch response data:', data);
+        if (data.success) {
+            displayConversation(data.conversation, data.complaint_info);
+        } else {
+            conversationMessages.innerHTML = `
+                <div class="text-center text-red-500 py-8">
+                    Failed to load conversation
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error loading conversation:', error);
+        conversationMessages.innerHTML = `
+            <div class="text-center text-red-500 py-8">
+                Error loading conversation
+            </div>
+        `;
+    });
+}
+
+function displayConversation(conversation, complaintInfo) {
+    const conversationMessages = document.getElementById('conversationMessages');
+    const messageCount = document.getElementById('messageCount');
+    const currentStatus = document.getElementById('currentStatus');
+    const currentPriority = document.getElementById('currentPriority');
+
+    // Update header info
+    messageCount.textContent = conversation.length;
+    currentStatus.textContent = complaintInfo.status_label || complaintInfo.status;
+    if (currentPriority) {
+        currentPriority.textContent = complaintInfo.priority_label || complaintInfo.priority;
+    }
+
+    // Populate complaint details
+    populateComplaintDetails(complaintInfo);
+
+    if (conversation.length === 0) {
+        conversationMessages.innerHTML = `
+            <div class="text-center text-gray-500 dark:text-gray-400 py-8">
+                <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+                <p class="text-lg font-medium mb-2">No conversation yet</p>
+                <p class="text-sm">Start the conversation by sending a message to the client.</p>
+            </div>
+        `;
+        return;
+    }
+
+    let conversationHtml = '';
+
+    conversation.forEach((message, index) => {
+        const isAdmin = message.sender_type === 'admin';
+        const messageDate = new Date(message.timestamp || message.created_at);
+        const timeAgo = getTimeAgo(messageDate);
+
+        conversationHtml += `
+            <div class="mb-4 ${isAdmin ? 'ml-8' : 'mr-8'}">
+                <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'}">
+                    <div class="max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
+                        isAdmin
+                            ? 'bg-blue-600 text-white rounded-br-none'
+                            : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-600 rounded-bl-none'
+                    }">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-medium ${isAdmin ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}">
+                                ${message.sender_name} ${isAdmin ? '(Admin)' : '(Client)'}
+                            </span>
+                            <span class="text-xs ${isAdmin ? 'text-blue-200' : 'text-gray-400 dark:text-gray-500'} ml-2">
+                                ${timeAgo}
+                            </span>
+                        </div>
+                        <p class="text-sm whitespace-pre-wrap">${escapeHtml(message.message)}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    conversationMessages.innerHTML = conversationHtml;
+
+    // Scroll to bottom
+    const conversationThread = document.getElementById('conversationThread');
+    conversationThread.scrollTop = conversationThread.scrollHeight;
+}
+
+// Utility functions
+function getTimeAgo(date) {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+
+    return date.toLocaleDateString();
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+// Function to populate complaint details in the modal
+function populateComplaintDetails(complaintInfo) {
+    // Populate complaint title (show section only if title exists)
+    const titleSection = document.getElementById('complaintTitleSection');
+    const titleElement = document.getElementById('complaintTitle');
+    if (complaintInfo.complaint_title && complaintInfo.complaint_title.trim()) {
+        titleElement.textContent = complaintInfo.complaint_title;
+        titleSection.classList.remove('hidden');
+    } else {
+        titleSection.classList.add('hidden');
+    }
+
+    // Populate complaint description
+    const descriptionElement = document.getElementById('complaintDescription');
+    if (descriptionElement) {
+        descriptionElement.textContent = complaintInfo.complaint_details || 'No description provided';
+    }
+
+    // Populate category
+    const categoryElement = document.getElementById('complaintCategory');
+    if (categoryElement) {
+        categoryElement.textContent = complaintInfo.category_name || 'Uncategorized';
+    }
+
+    // Populate submission date
+    const dateElement = document.getElementById('complaintDate');
+    if (dateElement) {
+        const date = new Date(complaintInfo.created_at);
+        dateElement.textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    }
+
+    // Populate evidence info
+    const evidenceElement = document.getElementById('complaintEvidence');
+    if (evidenceElement) {
+        const evidenceCount = complaintInfo.evidence_count || 0;
+        evidenceElement.textContent = evidenceCount > 0 ? `${evidenceCount} file(s)` : 'No evidence';
+    }
 }
 
 function closeReplyModal() {
@@ -845,6 +1111,12 @@ function closeReplyModal() {
     const form = document.getElementById('replyForm');
     if (form) {
         form.reset();
+    }
+
+    // Clear conversation
+    const conversationMessages = document.getElementById('conversationMessages');
+    if (conversationMessages) {
+        conversationMessages.innerHTML = '';
     }
 }
 
@@ -878,7 +1150,7 @@ document.getElementById('replyForm').addEventListener('submit', function(e) {
     console.log('Submitting complaint update:', {
         complaintId,
         status: formData.get('status'),
-        solution: formData.get('solution'),
+        message: formData.get('message'),
         admin_notes: formData.get('admin_notes')
     });
 
@@ -891,7 +1163,7 @@ document.getElementById('replyForm').addEventListener('submit', function(e) {
         },
         body: JSON.stringify({
             status: formData.get('status'),
-            solution: formData.get('solution'),
+            message: formData.get('message'),
             admin_notes: formData.get('admin_notes')
         })
     })
@@ -906,24 +1178,24 @@ document.getElementById('replyForm').addEventListener('submit', function(e) {
         console.log('Response data:', data);
 
         if (data.success) {
-            showToast(data.message || 'Complaint updated successfully!', 'success');
-            closeReplyModal();
+            showToast('Reply sent successfully! Conversation updated.', 'success');
 
-            // Update the UI dynamically instead of reloading
+            // Reload the conversation to show the new message
+            loadConversation(complaintId);
+
+            // Clear the message field but keep status and admin notes
+            document.getElementById('message').value = '';
+
+            // Update the UI dynamically
             updateComplaintCardStatus(complaintId, data.data);
-
-            // Optional: Reload page after a short delay for full refresh
-            setTimeout(() => {
-                location.reload();
-            }, 1500);
         } else {
-            showToast(data.message || 'Failed to update complaint', 'error');
+            showToast(data.message || 'Failed to send reply', 'error');
         }
     })
     .catch(error => {
         console.error('Error updating complaint:', error);
 
-        let errorMessage = 'An error occurred while updating the complaint';
+        let errorMessage = 'An error occurred while sending the reply';
         if (error.message.includes('HTTP 422')) {
             errorMessage = 'Validation error: Please check your input';
         } else if (error.message.includes('HTTP 404')) {

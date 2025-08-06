@@ -45,4 +45,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the complaints for the user.
+     */
+    public function complaints()
+    {
+        return $this->hasMany(ClientComplaint::class, 'client_email', 'email');
+    }
 }
