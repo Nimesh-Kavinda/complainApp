@@ -546,7 +546,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Evidence Files</h3>
-                <button onclick="closeEvidenceModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <button id="evidenceModalCloseBtn" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -554,7 +554,6 @@
             </div>
             <div id="evidenceContent" class="p-4">
                 <!-- Evidence files will be loaded here -->
-
             </div>
         </div>
     </div>
@@ -654,10 +653,26 @@ const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribut
                   '{{ csrf_token() }}';
 
 // Evidence Modal Functions
+let evidenceModalInstance = null;
+
 function showEvidenceModal(complaintId, evidenceFiles) {
     const modal = document.getElementById('evidenceModal');
     const content = document.getElementById('evidenceContent');
 
+    if (!modal || !content) {
+        console.error('Evidence modal elements not found');
+        return;
+    }
+
+    // Close any existing modal first
+    if (evidenceModalInstance) {
+        closeEvidenceModal();
+    }
+
+    // Clear content
+    content.innerHTML = '';
+
+    // Build evidence HTML
     let evidenceHtml = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
 
     evidenceFiles.forEach((file, index) => {
@@ -721,11 +736,55 @@ function showEvidenceModal(complaintId, evidenceFiles) {
 
     evidenceHtml += '</div>';
     content.innerHTML = evidenceHtml;
+
+    // Show modal
     modal.classList.remove('hidden');
+    evidenceModalInstance = modal;
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
 }
 
 function closeEvidenceModal() {
-    document.getElementById('evidenceModal').classList.add('hidden');
+    const modal = document.getElementById('evidenceModal');
+    if (!modal) return;
+
+    // Hide modal
+    modal.classList.add('hidden');
+    evidenceModalInstance = null;
+
+    // Restore body scroll
+    document.body.style.overflow = '';
+
+    // Clean up media elements
+    const content = document.getElementById('evidenceContent');
+    if (content) {
+        const videos = content.querySelectorAll('video');
+        const audios = content.querySelectorAll('audio');
+
+        videos.forEach(video => {
+            try {
+                video.pause();
+                video.currentTime = 0;
+            } catch (e) {
+                console.log('Error pausing video:', e);
+            }
+        });
+
+        audios.forEach(audio => {
+            try {
+                audio.pause();
+                audio.currentTime = 0;
+            } catch (e) {
+                console.log('Error pausing audio:', e);
+            }
+        });
+
+        // Clear content after a short delay to prevent flashing
+        setTimeout(() => {
+            content.innerHTML = '';
+        }, 300);
+    }
 }
 
 // Reply Modal Functions
@@ -923,17 +982,51 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 500);
         });
     }
+
+    // Evidence Modal Event Listeners
+    const evidenceModal = document.getElementById('evidenceModal');
+    const evidenceCloseBtn = document.getElementById('evidenceModalCloseBtn');
+    const replyModal = document.getElementById('replyModal');
+
+    // Close evidence modal via close button
+    if (evidenceCloseBtn) {
+        evidenceCloseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeEvidenceModal();
+        });
+    }
+
+    // Close modals when clicking on overlay
+    if (evidenceModal) {
+        evidenceModal.addEventListener('click', function(e) {
+            if (e.target === evidenceModal) {
+                closeEvidenceModal();
+            }
+        });
+    }
+
+    if (replyModal) {
+        replyModal.addEventListener('click', function(e) {
+            if (e.target === replyModal) {
+                closeReplyModal();
+            }
+        });
+    }
+
+    // ESC key handling
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (evidenceModalInstance) {
+                closeEvidenceModal();
+            }
+            if (replyModal && !replyModal.classList.contains('hidden')) {
+                closeReplyModal();
+            }
+        }
+    });
 });
 
-// Close modals when clicking outside
-document.addEventListener('click', function(e) {
-    if (e.target.id === 'evidenceModal') {
-        closeEvidenceModal();
-    }
-    if (e.target.id === 'replyModal') {
-        closeReplyModal();
-    }
-});
 </script>
 
 @endsection
