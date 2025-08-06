@@ -219,32 +219,89 @@ class AdminController extends Controller
     {
         $request->validate([
             'status' => 'required|in:pending,in_progress,resolved,closed,rejected',
-            'solution' => 'nullable|string',
-            'admin_notes' => 'nullable|string'
+            'solution' => 'nullable|string|max:5000',
+            'admin_notes' => 'nullable|string|max:5000'
         ]);
 
         try {
             $complaint = ClientComplaint::findOrFail($id);
 
-            $complaint->update([
+            // Log the update attempt
+            Log::info('Updating complaint status', [
+                'complaint_id' => $id,
+                'old_status' => $complaint->status,
+                'new_status' => $request->status,
+                'admin_id' => Auth::id(),
+                'has_solution' => !empty($request->solution),
+                'has_admin_notes' => !empty($request->admin_notes)
+            ]);
+
+            $updateData = [
                 'status' => $request->status,
-                'solution' => $request->solution,
-                'admin_notes' => $request->admin_notes,
                 'assigned_to' => Auth::id(),
                 'resolved_at' => $request->status === 'resolved' ? now() : null,
                 'closed_at' => $request->status === 'closed' ? now() : null,
+            ];
+
+            // Only update solution if provided
+            if ($request->filled('solution')) {
+                $updateData['solution'] = $request->solution;
+            }
+
+            // Only update admin notes if provided
+            if ($request->filled('admin_notes')) {
+                $updateData['admin_notes'] = $request->admin_notes;
+            }
+
+            $complaint->update($updateData);
+
+            Log::info('Complaint status updated successfully', [
+                'complaint_id' => $id,
+                'new_status' => $complaint->fresh()->status
             ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Complaint updated successfully!',
-                'complaint' => $complaint->fresh()
+                'message' => 'Complaint updated successfully! The client will be notified of the status change.',
+                'complaint' => $complaint->fresh(),
+                'data' => [
+                    'status' => $complaint->fresh()->status,
+                    'status_label' => $complaint->fresh()->status_label,
+                    'status_color' => $complaint->fresh()->status_color,
+                    'assigned_to' => Auth::user()->name,
+                    'updated_at' => $complaint->fresh()->updated_at->format('M d, Y h:i A')
+                ]
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::warning('Validation failed for complaint update', [
+                'complaint_id' => $id,
+                'errors' => $e->errors()
+            ]);
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update complaint.'
+                'message' => 'Validation failed: ' . implode(', ', collect($e->errors())->flatten()->toArray())
+            ], 422);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            Log::error('Complaint not found', ['complaint_id' => $id]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Complaint not found.'
+            ], 404);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to update complaint status', [
+                'complaint_id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update complaint: ' . $e->getMessage()
             ], 500);
         }
     }
