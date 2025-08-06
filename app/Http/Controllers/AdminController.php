@@ -315,7 +315,7 @@ class AdminController extends Controller
     public function getComplaintConversation($id)
     {
         try {
-            $complaint = ClientComplaint::findOrFail($id);
+            $complaint = ClientComplaint::with('category')->findOrFail($id);
 
             return response()->json([
                 'success' => true,
@@ -324,8 +324,20 @@ class AdminController extends Controller
                     'id' => $complaint->id,
                     'reference_number' => $complaint->reference_number,
                     'client_name' => $complaint->client_name,
+                    'client_email' => $complaint->client_email,
+                    'nic' => $complaint->nic,
                     'status' => $complaint->status,
-                    'created_at' => $complaint->created_at->format('M d, Y h:i A')
+                    'status_label' => $complaint->status_label,
+                    'priority' => $complaint->priority,
+                    'priority_label' => $complaint->priority_label,
+                    'complaint_title' => $complaint->complaint_title,
+                    'complaint_details' => $complaint->complaint_details,
+                    'category_name' => $complaint->category ? $complaint->category->category_name : 'Uncategorized',
+                    'evidence_count' => $complaint->hasEvidence() ? $complaint->getEvidenceCount() : 0,
+                    'created_at' => $complaint->created_at->toISOString(),
+                    'updated_at' => $complaint->updated_at->toISOString(),
+                    'solution' => $complaint->solution,
+                    'admin_notes' => $complaint->admin_notes
                 ]
             ]);
         } catch (\Exception $e) {
