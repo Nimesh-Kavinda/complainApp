@@ -565,7 +565,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full">
             <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Reply to Complaint</h3>
-                <button onclick="closeReplyModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                <button id="replyModalCloseBtn" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -584,7 +584,7 @@
 
                     <div class="mb-4">
                         <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Update Status</label>
-                        <select id="status" name="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200">
+                        <select id="status" name="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
                             <option value="pending">Pending</option>
                             <option value="in_progress">In Progress</option>
                             <option value="resolved">Resolved</option>
@@ -596,24 +596,26 @@
                     <div class="mb-4">
                         <label for="solution" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Solution/Response</label>
                         <textarea id="solution" name="solution" rows="4"
-                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200"
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                   placeholder="Provide your response or solution to the client..."></textarea>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">This will be visible to the client</p>
                     </div>
 
                     <div class="mb-6">
                         <label for="admin_notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Admin Notes (Internal)</label>
                         <textarea id="admin_notes" name="admin_notes" rows="3"
-                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200"
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                   placeholder="Internal notes (not visible to client)..."></textarea>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Internal notes for admin use only</p>
                     </div>
 
                     <div class="flex justify-end gap-3">
-                        <button type="button" onclick="closeReplyModal()"
-                                class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500">
+                        <button type="button" id="cancelReplyBtn"
+                                class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600 rounded-md hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">
                             Cancel
                         </button>
                         <button type="submit"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
                             <span class="submit-text">Update Complaint</span>
                             <span class="loading-text hidden">Updating...</span>
                         </button>
@@ -788,15 +790,62 @@ function closeEvidenceModal() {
 }
 
 // Reply Modal Functions
+let replyModalInstance = null;
+
 function openReplyModal(complaintId, clientName, referenceNumber) {
+    const modal = document.getElementById('replyModal');
+    if (!modal) {
+        console.error('Reply modal not found');
+        return;
+    }
+
+    // Close any existing modal
+    if (replyModalInstance) {
+        closeReplyModal();
+    }
+
+    // Reset form
+    const form = document.getElementById('replyForm');
+    if (form) {
+        form.reset();
+    }
+
+    // Set complaint info
     document.getElementById('complaintId').value = complaintId;
     document.getElementById('complaintInfo').textContent = `${clientName} - ${referenceNumber}`;
-    document.getElementById('replyModal').classList.remove('hidden');
+
+    // Show modal
+    modal.classList.remove('hidden');
+    replyModalInstance = modal;
+
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+
+    // Focus on status select
+    setTimeout(() => {
+        const statusSelect = document.getElementById('status');
+        if (statusSelect) {
+            statusSelect.focus();
+        }
+    }, 100);
 }
 
 function closeReplyModal() {
-    document.getElementById('replyModal').classList.add('hidden');
-    document.getElementById('replyForm').reset();
+    const modal = document.getElementById('replyModal');
+    if (!modal) return;
+
+    // Hide modal
+    modal.classList.add('hidden');
+    replyModalInstance = null;
+
+    // Restore body scroll
+    document.body.style.overflow = '';
+
+    // Reset form
+    const form = document.getElementById('replyForm');
+    if (form) {
+        form.reset();
+    }
 }
 
 // Form submission
@@ -806,42 +855,116 @@ document.getElementById('replyForm').addEventListener('submit', function(e) {
     const complaintId = document.getElementById('complaintId').value;
     const formData = new FormData(this);
 
+    // Validate required fields
+    const status = document.getElementById('status').value;
+    if (!status) {
+        showToast('Please select a status', 'error');
+        return;
+    }
+
     const submitBtn = this.querySelector('button[type="submit"]');
     const submitText = submitBtn.querySelector('.submit-text');
     const loadingText = submitBtn.querySelector('.loading-text');
 
+    // Disable form during submission
     submitBtn.disabled = true;
     submitText.classList.add('hidden');
     loadingText.classList.remove('hidden');
+
+    // Disable form inputs
+    const formInputs = this.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => input.disabled = true);
+
+    console.log('Submitting complaint update:', {
+        complaintId,
+        status: formData.get('status'),
+        solution: formData.get('solution'),
+        admin_notes: formData.get('admin_notes')
+    });
 
     fetch(`/admin/complaints/${complaintId}/status`, {
         method: 'PUT',
         headers: {
             'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
         },
-        body: formData
+        body: JSON.stringify({
+            status: formData.get('status'),
+            solution: formData.get('solution'),
+            admin_notes: formData.get('admin_notes')
+        })
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Response status:', response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
+        console.log('Response data:', data);
+
         if (data.success) {
-            showToast(data.message, 'success');
+            showToast(data.message || 'Complaint updated successfully!', 'success');
             closeReplyModal();
-            location.reload(); // Refresh the page to show updated data
+
+            // Update the UI dynamically instead of reloading
+            updateComplaintCardStatus(complaintId, data.data);
+
+            // Optional: Reload page after a short delay for full refresh
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
         } else {
-            showToast(data.message, 'error');
+            showToast(data.message || 'Failed to update complaint', 'error');
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        showToast('An error occurred while updating the complaint', 'error');
+        console.error('Error updating complaint:', error);
+
+        let errorMessage = 'An error occurred while updating the complaint';
+        if (error.message.includes('HTTP 422')) {
+            errorMessage = 'Validation error: Please check your input';
+        } else if (error.message.includes('HTTP 404')) {
+            errorMessage = 'Complaint not found';
+        } else if (error.message.includes('HTTP 500')) {
+            errorMessage = 'Server error: Please try again later';
+        }
+
+        showToast(errorMessage, 'error');
     })
     .finally(() => {
+        // Re-enable form
         submitBtn.disabled = false;
         submitText.classList.remove('hidden');
         loadingText.classList.add('hidden');
+
+        // Re-enable form inputs
+        formInputs.forEach(input => input.disabled = false);
     });
 });
+
+// Function to update complaint card status dynamically
+function updateComplaintCardStatus(complaintId, statusData) {
+    if (!statusData) return;
+
+    // Update status badge in card view
+    const cardStatusBadge = document.querySelector(`.status-badge-${complaintId}`);
+    if (cardStatusBadge && statusData.status_color) {
+        cardStatusBadge.className = `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium status-badge-${complaintId} ${statusData.status_color}`;
+        cardStatusBadge.textContent = statusData.status_label || statusData.status;
+    }
+
+    // Update status badge in table view
+    const tableStatusBadge = document.querySelector(`#complaint-row-${complaintId} .status-badge-${complaintId}`);
+    if (tableStatusBadge && statusData.status_color) {
+        tableStatusBadge.className = `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium status-badge-${complaintId} ${statusData.status_color}`;
+        tableStatusBadge.textContent = statusData.status_label || statusData.status;
+    }
+
+    console.log('Updated complaint card status for complaint:', complaintId);
+}
 
 // Delete complaint function
 function deleteComplaint(complaintId, referenceNumber) {
@@ -987,6 +1110,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const evidenceModal = document.getElementById('evidenceModal');
     const evidenceCloseBtn = document.getElementById('evidenceModalCloseBtn');
     const replyModal = document.getElementById('replyModal');
+    const replyCloseBtn = document.getElementById('replyModalCloseBtn');
+    const cancelReplyBtn = document.getElementById('cancelReplyBtn');
 
     // Close evidence modal via close button
     if (evidenceCloseBtn) {
@@ -994,6 +1119,24 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             e.stopPropagation();
             closeEvidenceModal();
+        });
+    }
+
+    // Close reply modal via close button
+    if (replyCloseBtn) {
+        replyCloseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeReplyModal();
+        });
+    }
+
+    // Close reply modal via cancel button
+    if (cancelReplyBtn) {
+        cancelReplyBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeReplyModal();
         });
     }
 
@@ -1020,7 +1163,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (evidenceModalInstance) {
                 closeEvidenceModal();
             }
-            if (replyModal && !replyModal.classList.contains('hidden')) {
+            if (replyModalInstance) {
                 closeReplyModal();
             }
         }
