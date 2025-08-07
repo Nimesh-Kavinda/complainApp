@@ -424,7 +424,7 @@
         // File upload validation and display
         const evidenceInput = document.getElementById('evidence');
         const fileUploadArea = document.querySelector('.file-upload-area');
-        
+
         evidenceInput.addEventListener('change', function() {
             const files = this.files;
             const maxFiles = 10;
@@ -490,13 +490,13 @@
 
             // Check file types and sizes
             const allowedTypes = ['image/', 'video/', 'audio/', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
-            
+
             for (let file of files) {
                 if (file.size > 10 * 1024 * 1024) {
                     showNotification(`File "${file.name}" is too large. Maximum size is 10MB.`, 'error');
                     return;
                 }
-                
+
                 if (!allowedTypes.some(type => file.type.startsWith(type))) {
                     showNotification(`File "${file.name}" is not a supported format.`, 'error');
                     return;
@@ -535,12 +535,12 @@
 
         let html = '<div class="mt-4 space-y-2">';
         html += `<div class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Selected Files (${files.length}/10):</div>`;
-        
+
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             const fileSize = (file.size / 1024 / 1024).toFixed(2);
             const fileIcon = getFileIcon(file.type, file.name);
-            
+
             html += `
                 <div class="flex items-center justify-between bg-gradient-to-r from-red-50 to-gray-50 dark:from-red-900/20 dark:to-gray-800/20 p-3 rounded-lg border border-red-200 dark:border-red-800 hover:shadow-md transition-all duration-300 group">
                     <div class="flex items-center space-x-3">
@@ -560,7 +560,7 @@
                         <span class="text-xs px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full border border-green-200 dark:border-green-800">
                             ✓ Ready
                         </span>
-                        <button type="button" onclick="removeFile(${i})" 
+                        <button type="button" onclick="removeFile(${i})"
                                 class="text-red-400 hover:text-red-600 dark:hover:text-red-300 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded"
                                 title="Remove file">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -572,11 +572,11 @@
             `;
         }
         html += '</div>';
-        
+
         // Add summary
         const totalSize = Array.from(files).reduce((total, file) => total + file.size, 0);
         const totalSizeMB = (totalSize / 1024 / 1024).toFixed(2);
-        
+
         html += `
             <div class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <div class="flex items-center text-sm">
@@ -590,13 +590,13 @@
                 </div>
             </div>
         `;
-        
+
         fileList.innerHTML = html;
     }
 
     function getFileIcon(mimeType, fileName) {
         const extension = fileName.split('.').pop().toLowerCase();
-        
+
         if (mimeType.startsWith('image/')) {
             return `<svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
@@ -627,20 +627,20 @@
     function removeFile(index) {
         const input = document.getElementById('evidence');
         const dt = new DataTransfer();
-        
+
         // Add all files except the one at the specified index
         for (let i = 0; i < input.files.length; i++) {
             if (i !== index) {
                 dt.items.add(input.files[i]);
             }
         }
-        
+
         // Update the input with the new file list
         input.files = dt.files;
-        
+
         // Update the display
         updateFileDisplay(input);
-        
+
         // Show notification
         showNotification('File removed successfully', 'success');
     }

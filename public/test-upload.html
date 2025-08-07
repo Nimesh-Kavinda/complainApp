@@ -19,7 +19,7 @@
 </head>
 <body>
     <h1>🚀 Multi-File Upload Test for Complaint Portal</h1>
-    
+
     <div class="info">
         <h3>📋 Test Instructions:</h3>
         <ul>
@@ -33,8 +33,8 @@
 
     <form id="testForm" enctype="multipart/form-data">
         <div class="upload-area" id="uploadArea">
-            <input type="file" id="evidence" name="evidence[]" multiple 
-                   accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt" 
+            <input type="file" id="evidence" name="evidence[]" multiple
+                   accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
                    style="display: none;">
             <label for="evidence" style="cursor: pointer; display: block;">
                 <div style="font-size: 48px; margin-bottom: 10px;">📎</div>
@@ -43,10 +43,10 @@
                 <p style="color: #666; font-size: 14px;">📋 Select up to 10 files at once (10MB max each)</p>
             </label>
         </div>
-        
+
         <div id="fileList"></div>
         <div id="uploadStatus"></div>
-        
+
         <button type="button" id="testUpload" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px;">
             🧪 Test Upload Process
         </button>
@@ -118,13 +118,13 @@
             }
 
             const allowedTypes = ['image/', 'video/', 'audio/', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
-            
+
             for (let file of files) {
                 if (file.size > 10 * 1024 * 1024) {
                     showStatus(`❌ Error: File "${file.name}" is too large. Maximum size is 10MB.`, 'error');
                     return;
                 }
-                
+
                 if (!allowedTypes.some(type => file.type.startsWith(type))) {
                     showStatus(`❌ Error: File "${file.name}" is not a supported format.`, 'error');
                     return;
@@ -142,12 +142,12 @@
             }
 
             let html = `<h3>📁 Selected Files (${files.length}/10):</h3>`;
-            
+
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const fileSize = (file.size / 1024 / 1024).toFixed(2);
                 const fileIcon = getFileIcon(file.type, file.name);
-                
+
                 html += `
                     <div class="file-item">
                         <div style="display: flex; align-items: center;">
@@ -161,17 +161,17 @@
                     </div>
                 `;
             }
-            
+
             const totalSize = Array.from(files).reduce((total, file) => total + file.size, 0);
             const totalSizeMB = (totalSize / 1024 / 1024).toFixed(2);
-            
+
             html += `
                 <div style="margin-top: 15px; padding: 10px; background: #e7f3ff; border-radius: 5px;">
                     <strong>📊 Summary:</strong> ${files.length} file${files.length !== 1 ? 's' : ''} • ${totalSizeMB} MB total
                     ${files.length === 10 ? ' (Maximum reached)' : ''}
                 </div>
             `;
-            
+
             fileList.innerHTML = html;
         }
 
@@ -186,13 +186,13 @@
 
         function removeFile(index) {
             const dt = new DataTransfer();
-            
+
             for (let i = 0; i < evidenceInput.files.length; i++) {
                 if (i !== index) {
                     dt.items.add(evidenceInput.files[i]);
                 }
             }
-            
+
             evidenceInput.files = dt.files;
             updateFileDisplay(evidenceInput.files);
             showStatus(`✅ File removed successfully!`, 'success');
@@ -214,7 +214,7 @@
             }
 
             showStatus(`🧪 Testing upload process for ${files.length} file${files.length !== 1 ? 's' : ''}...`, 'success');
-            
+
             // Simulate the backend processing
             setTimeout(() => {
                 showStatus(`✅ Upload simulation completed! The complaint form backend can handle these ${files.length} files.`, 'success');
