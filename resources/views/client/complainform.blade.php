@@ -192,21 +192,20 @@
                 </label>
                 <input type="text" id="userType" name="userType" required
                     class="mt-1 w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 input-focus transition-all duration-300"
-                    value="{{ Auth::user()->role ?? '' }}" readonly
-                    oninput="toggleFields()">
+                    value="{{ Auth::user()->role ?? '' }}" readonly>
             </div>
 
             <!-- NIC (Only for Clients) -->
-            <div id="nicField" class="form-field group mt-4 hidden">
+            <div id="nicField" class="form-field group" style="display: none;">
                 <label for="nic" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300 group-focus-within:text-red-600 dark:group-focus-within:text-red-400">
                     <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
                     </svg>
                     NIC Number *
                 </label>
-                <input type="text" id="nic" name="nic" required
+                <input type="text" id="nic" name="nic"
                     class="mt-1 w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 input-focus transition-all duration-300 hover:border-red-300"
-                    placeholder="Enter your NIC number">
+                    placeholder="Enter your NIC number (e.g., 123456789V or 123456789012)">
                 <p class="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center">
                     <svg class="w-3 h-3 mr-1 text-red-400" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
@@ -216,7 +215,7 @@
             </div>
 
             <!-- Staff ID (Only for Staff) -->
-            <div id="staffIdField" class="form-field group mt-4 hidden">
+            <div id="staffIdField" class="form-field group" style="display: none;">
                 <label for="staffId" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300 group-focus-within:text-red-600 dark:group-focus-within:text-red-400">
                     <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
@@ -520,25 +519,73 @@
         const staffIdField = document.getElementById('staffIdField');
         const nicInput = document.getElementById('nic');
 
+        console.log('User type detected:', userType); // Debug log
+
         if (userType === 'client') {
-            nicField.classList.remove('hidden');
-            staffIdField.classList.add('hidden');
-            nicInput.required = true;
-            // Add animation
-            setTimeout(() => nicField.style.animation = 'fade-in-up 0.5s ease-out', 100);
-        } else if (userType === 'staff' || userType === 'staff_member') {
-            staffIdField.classList.remove('hidden');
-            nicField.classList.add('hidden');
-            nicInput.required = false;
-            // Add animation
-            setTimeout(() => staffIdField.style.animation = 'fade-in-up 0.5s ease-out', 100);
+            // Show NIC field for clients
+            nicField.style.display = 'block';
+            nicField.style.opacity = '1';
+            nicField.style.animation = 'fade-in-up 0.5s ease-out';
+            staffIdField.style.display = 'none';
+            if (nicInput) nicInput.required = true;
+            console.log('Showing NIC field for client'); // Debug log
+        } else if (userType === 'staff' || userType === 'staff_member' || userType === 'admin') {
+            // Show Staff ID field for staff
+            staffIdField.style.display = 'block';
+            staffIdField.style.opacity = '1';
+            staffIdField.style.animation = 'fade-in-up 0.5s ease-out';
+            nicField.style.display = 'none';
+            if (nicInput) nicInput.required = false;
+            console.log('Showing Staff ID field for staff'); // Debug log
         } else {
             // Hide both if userType is unrecognized
-            nicField.classList.add('hidden');
-            staffIdField.classList.add('hidden');
-            nicInput.required = false;
+            nicField.style.display = 'none';
+            staffIdField.style.display = 'none';
+            if (nicInput) nicInput.required = false;
+            console.log('Hiding both fields - unrecognized user type'); // Debug log
         }
     }
-</script>
 
+    // Call toggleFields immediately when the script loads AND after a short delay
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, calling toggleFields'); // Debug log
+
+        // Call immediately
+        toggleFields();
+
+        // Call again after a short delay to ensure everything is loaded
+        setTimeout(function() {
+            console.log('Delayed call to toggleFields'); // Debug log
+            toggleFields();
+        }, 100);
+
+        // Add form validation
+        const form = document.getElementById('complaintForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const userType = document.getElementById('userType').value.toLowerCase().trim();
+                const nicField = document.getElementById('nic');
+
+                if (userType === 'client' && (!nicField || !nicField.value.trim())) {
+                    e.preventDefault();
+                    showNotification('Please enter your NIC number', 'error');
+                    if (nicField) nicField.focus();
+                    return false;
+                }
+
+                // NIC validation for clients
+                if (userType === 'client' && nicField && nicField.value.trim()) {
+                    const nicPattern = /^[0-9]{9}[vVxX]$|^[0-9]{12}$/;
+                    if (!nicPattern.test(nicField.value.trim())) {
+                        e.preventDefault();
+                        showNotification('Please enter a valid NIC number (e.g., 123456789V or 123456789012)', 'error');
+                        nicField.focus();
+                        return false;
+                    }
+                }
+            });
+        }
+    });
+
+    </script>
 @endsection
