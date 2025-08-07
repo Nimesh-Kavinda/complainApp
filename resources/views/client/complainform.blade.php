@@ -387,7 +387,7 @@
 
         // Add form validation
         const form = document.querySelector('form');
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('#com_submit', function(e) {
             const userType = document.getElementById('userType').value.toLowerCase().trim();
             const nicField = document.getElementById('nic');
 
