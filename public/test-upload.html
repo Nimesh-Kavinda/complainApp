@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-File Upload Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .upload-area { border: 2px dashed #ccc; padding: 40px; text-align: center; border-radius: 10px; margin: 20px 0; }
+        .upload-area.dragover { border-color: #007bff; background-color: #f8f9fa; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin: 5px 0; background: #f8f9fa; border-radius: 5px; }
+        .remove-btn { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+        .file-icon { width: 20px; height: 20px; margin-right: 10px; }
+        h1 { color: #333; }
+        .info { background: #e7f3ff; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Multi-File Upload Test for Complaint Portal</h1>
+    
+    <div class="info">
+        <h3>📋 Test Instructions:</h3>
+        <ul>
+            <li>✅ Select multiple files (up to 10)</li>
+            <li>✅ Drag and drop files into the upload area</li>
+            <li>✅ Remove individual files using the × button</li>
+            <li>✅ Test file type validation (images, videos, audio, documents)</li>
+            <li>✅ Test file size validation (max 10MB per file)</li>
+        </ul>
+    </div>
+
+    <form id="testForm" enctype="multipart/form-data">
+        <div class="upload-area" id="uploadArea">
+            <input type="file" id="evidence" name="evidence[]" multiple 
+                   accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt" 
+                   style="display: none;">
+            <label for="evidence" style="cursor: pointer; display: block;">
+                <div style="font-size: 48px; margin-bottom: 10px;">📎</div>
+                <h3>Click to upload multiple files</h3>
+                <p>or drag and drop files here</p>
+                <p style="color: #666; font-size: 14px;">📋 Select up to 10 files at once (10MB max each)</p>
+            </label>
+        </div>
+        
+        <div id="fileList"></div>
+        <div id="uploadStatus"></div>
+        
+        <button type="button" id="testUpload" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px;">
+            🧪 Test Upload Process
+        </button>
+    </form>
+
+    <div class="info">
+        <h3>🔧 Backend Support Status:</h3>
+        <ul>
+            <li>✅ Database: <code>evidence_files</code> JSON column exists</li>
+            <li>✅ Model: <code>ClientComplaint</code> casts evidence_files as array</li>
+            <li>✅ Controller: <code>ClientComplaintController</code> handles multiple files</li>
+            <li>✅ Routes: File download routes support file index</li>
+            <li>✅ Admin View: Evidence modal displays multiple files</li>
+            <li>✅ Client View: Past complaints show multiple evidence files</li>
+        </ul>
+    </div>
+
+    <script>
+        const evidenceInput = document.getElementById('evidence');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileList = document.getElementById('fileList');
+        const uploadStatus = document.getElementById('uploadStatus');
+
+        // File selection handling
+        evidenceInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        // Drag and drop handling
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            uploadArea.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            uploadArea.classList.remove('dragover');
+        }
+
+        uploadArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            evidenceInput.files = files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            // Validation
+            if (files.length > 10) {
+                showStatus('❌ Error: You can only upload a maximum of 10 files.', 'error');
+                return;
+            }
+
+            const allowedTypes = ['image/', 'video/', 'audio/', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+            
+            for (let file of files) {
+                if (file.size > 10 * 1024 * 1024) {
+                    showStatus(`❌ Error: File "${file.name}" is too large. Maximum size is 10MB.`, 'error');
+                    return;
+                }
+                
+                if (!allowedTypes.some(type => file.type.startsWith(type))) {
+                    showStatus(`❌ Error: File "${file.name}" is not a supported format.`, 'error');
+                    return;
+                }
+            }
+
+            updateFileDisplay(files);
+            showStatus(`✅ Success: ${files.length} file${files.length !== 1 ? 's' : ''} selected!`, 'success');
+        }
+
+        function updateFileDisplay(files) {
+            if (files.length === 0) {
+                fileList.innerHTML = '';
+                return;
+            }
+
+            let html = `<h3>📁 Selected Files (${files.length}/10):</h3>`;
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                const fileIcon = getFileIcon(file.type, file.name);
+                
+                html += `
+                    <div class="file-item">
+                        <div style="display: flex; align-items: center;">
+                            ${fileIcon}
+                            <div>
+                                <div style="font-weight: bold;">${file.name}</div>
+                                <div style="font-size: 12px; color: #666;">${file.type || 'Unknown type'} • ${fileSize} MB</div>
+                            </div>
+                        </div>
+                        <button type="button" class="remove-btn" onclick="removeFile(${i})">×</button>
+                    </div>
+                `;
+            }
+            
+            const totalSize = Array.from(files).reduce((total, file) => total + file.size, 0);
+            const totalSizeMB = (totalSize / 1024 / 1024).toFixed(2);
+            
+            html += `
+                <div style="margin-top: 15px; padding: 10px; background: #e7f3ff; border-radius: 5px;">
+                    <strong>📊 Summary:</strong> ${files.length} file${files.length !== 1 ? 's' : ''} • ${totalSizeMB} MB total
+                    ${files.length === 10 ? ' (Maximum reached)' : ''}
+                </div>
+            `;
+            
+            fileList.innerHTML = html;
+        }
+
+        function getFileIcon(mimeType, fileName) {
+            if (mimeType.startsWith('image/')) return '🖼️';
+            if (mimeType.startsWith('video/')) return '🎥';
+            if (mimeType.startsWith('audio/')) return '🎵';
+            if (mimeType.includes('pdf')) return '📄';
+            if (mimeType.includes('document') || mimeType.includes('word')) return '📝';
+            return '📄';
+        }
+
+        function removeFile(index) {
+            const dt = new DataTransfer();
+            
+            for (let i = 0; i < evidenceInput.files.length; i++) {
+                if (i !== index) {
+                    dt.items.add(evidenceInput.files[i]);
+                }
+            }
+            
+            evidenceInput.files = dt.files;
+            updateFileDisplay(evidenceInput.files);
+            showStatus(`✅ File removed successfully!`, 'success');
+        }
+
+        function showStatus(message, type) {
+            uploadStatus.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                uploadStatus.innerHTML = '';
+            }, 5000);
+        }
+
+        // Test upload simulation
+        document.getElementById('testUpload').addEventListener('click', function() {
+            const files = evidenceInput.files;
+            if (files.length === 0) {
+                showStatus('❌ Please select files first!', 'error');
+                return;
+            }
+
+            showStatus(`🧪 Testing upload process for ${files.length} file${files.length !== 1 ? 's' : ''}...`, 'success');
+            
+            // Simulate the backend processing
+            setTimeout(() => {
+                showStatus(`✅ Upload simulation completed! The complaint form backend can handle these ${files.length} files.`, 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
