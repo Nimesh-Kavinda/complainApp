@@ -140,6 +140,20 @@
                             </span>
                         </button>
                     </a>
+
+                      <a href="{{ route('client.complain') }}">
+                       <button class="group w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-2xl shadow-2xl hover:shadow-red-500/25 transform hover:-translate-y-3 hover:scale-105 transition-all duration-500 border border-red-500/50 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-r from-red-500/0 via-white/10 to-red-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                            <span class="flex items-center justify-center relative z-10">
+                                <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 14a4 4 0 10-8 0m8 0a4 4 0 01-8 0m8 0v1a3 3 0 01-3 3H9a3 3 0 01-3-3v-1m13-4v6m3-3h-6" />
+                                    </svg>
+                               Staff Registration
+                            </span>
+                        </button>
+                   </a>
+
                 </div>
             </div>
         </div>

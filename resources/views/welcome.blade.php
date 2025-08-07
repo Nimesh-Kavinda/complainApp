@@ -99,6 +99,7 @@
     bottom: 5%; right: 20%; width: 90px; height: 90px;
     animation-delay: 9s; background: #000000;
 }
+
 </style>
 
 <div class="min-h-screen bg-gradient-to-br from-white via-gray-50 to-red-50 dark:from-black dark:via-gray-900 dark:to-red-950 relative overflow-hidden">
@@ -117,6 +118,7 @@
 
     <!-- Hero Section -->
     <section class="pt-24 pb-16 px-4 sm:px-6 lg:px-8 relative z-10">
+
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-16 animate-fade-in-up">
                 <div class="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-red-600/20 to-red-700/20 border border-red-500/30 text-red-600 dark:text-red-400 text-sm font-medium mb-6 backdrop-blur-sm">
@@ -150,7 +152,7 @@
                             <svg class="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                             </svg>
-                            Track Status
+                            My Complaints History
                         </span>
                     </a>
                 </div>
