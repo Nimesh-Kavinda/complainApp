@@ -6,6 +6,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientComplaintController;
 use App\Http\Controllers\DepartmentHeadController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StaffRegistrationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -78,6 +79,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/staff-registration/status', [StaffRegistrationController::class, 'getRegistrationStatus'])->name('staff-registration.status');
 });
 
+//staff routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+    Route::get('/staff/complain', [StaffController::class, 'complainForm'])->name('staff.complain');
+});
 
 // Department Head Routes
 Route::middleware(['auth'])->group(function () {
