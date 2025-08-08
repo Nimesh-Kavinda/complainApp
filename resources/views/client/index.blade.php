@@ -142,7 +142,7 @@
                     </a>
 
                       <a href="{{ route('client.complain') }}">
-                       <button class="group w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-red-400 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-2xl shadow-2xl hover:shadow-red-500/25 transform hover:-translate-y-3 hover:scale-105 transition-all duration-500 border border-red-500/50 relative overflow-hidden">
+                       <button class="group w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-gray-700 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-2xl shadow-2xl hover:shadow-red-500/25 transform hover:-translate-y-3 hover:scale-105 transition-all duration-500 relative overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-r from-red-500/0 via-white/10 to-red-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                             <span class="flex items-center justify-center relative z-10">
                                 <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
