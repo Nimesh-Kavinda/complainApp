@@ -125,7 +125,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($department->headOfDepartment)
                                 <div class="flex items-center">
-                                    <div class="w-8 h-8 bg-gradient-to-r from-red-500 to-gray-800 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                                    <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-800 dark:bg-gradient-to-r dark:from-red-500 dark:to-gray-800 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
                                         {{ strtoupper(substr($department->headOfDepartment->name, 0, 1)) }}
                                     </div>
                                     <div>
