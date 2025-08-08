@@ -1,24 +1,24 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+<div class="min-h-screen bg-white dark:bg-gray-900">
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-red-600 to-gray-800 shadow-2xl">
+    <div class="bg-white dark:bg-gray-800 shadow-2xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mr-6">
+                    <div class="w-16 h-16 bg-gray-800/50 dark:bg-gray-500/20 rounded-2xl flex items-center justify-center mr-6">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-4xl font-bold text-white">Department Management</h1>
-                        <p class="text-red-100 text-lg mt-2">Create departments and assign department heads</p>
+                        <h1 class="text-4xl font-bold text-gray dark:text-white">Department Management</h1>
+                        <p class="text-blue-500 dark:text-red-400 text-lg mt-2">Create departments and assign department heads</p>
                     </div>
                 </div>
                 <button onclick="openAddDepartmentModal()"
-                        class="bg-white text-red-600 hover:bg-red-50 font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center">
+                        class="bg-blue-600 hover:bg-blue-700 dark:bg-green-500 dark:hover:bg-green-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
@@ -125,7 +125,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($department->headOfDepartment)
                                 <div class="flex items-center">
-                                    <div class="w-8 h-8 bg-gradient-to-r from-red-500 to-gray-800 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
+                                    <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-800 dark:bg-gradient-to-r dark:from-red-500 dark:to-gray-800 rounded-full flex items-center justify-center text-white text-sm font-bold mr-3">
                                         {{ strtoupper(substr($department->headOfDepartment->name, 0, 1)) }}
                                     </div>
                                     <div>
@@ -138,7 +138,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $department->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $department->is_active ? 'bg-green-200 dark:bg-green-800 text-green-800 dark:text-white' : 'bg-red-200 dark:bg-red-800 text-red-800 dark:text-white' }}">
                                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                         @if($department->is_active)
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
@@ -154,13 +154,6 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <div class="flex space-x-2">
-                                    <button onclick="viewDepartment({{ $department->id }})"
-                                            class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                        </svg>
-                                    </button>
                                     <button onclick="toggleDepartmentStatus({{ $department->id }}, {{ $department->is_active ? 'false' : 'true' }})"
                                             class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,21 +192,21 @@
 <!-- Add Department Modal -->
 <div id="addDepartmentModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
     <div class="flex items-center justify-center min-h-screen px-4 py-8">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-2xl w-full max-h-[95vh] overflow-y-auto border border-gray-200 dark:border-gray-600">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-600">
             <!-- Modal Header -->
-            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-red-500 to-gray-800 rounded-t-3xl">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r bg-white dark:bg-gray-500 rounded-t-3xl">
                 <div class="flex items-center">
-                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                    <div class="w-12 h-12 bg-gray-800/50 dark:bg-white/20 rounded-xl flex items-center justify-center mr-4">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-2xl font-bold text-white">Add New Department</h3>
-                        <p class="text-red-100 text-sm">Create department and assign department head</p>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Add New Department</h3>
+                        <p class="text-blue-600 dark:text-red-400 text-sm">Create department and assign department head</p>
                     </div>
                 </div>
-                <button onclick="closeAddDepartmentModal()" type="button" class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-xl">
+                <button onclick="closeAddDepartmentModal()" type="button" class="text-gray-500 dark:text-white hover:bg-blue-600/80 dark:hover:bg-red-600/80 transition-colors p-2 rounded-xl">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -229,7 +222,7 @@
                     <!-- Department Information -->
                     <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
                         <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 mr-2 text-blue-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
                             Department Information
@@ -261,7 +254,7 @@
                     <!-- Department Head Information -->
                     <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
                         <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                            <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 mr-2 text-blue-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
                             Department Head Information
@@ -297,13 +290,6 @@
                                     <input type="password" id="head_password" name="head_password" required
                                            class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300 pr-12"
                                            placeholder="Create a secure password (min 8 characters)">
-                                    <button type="button" onclick="generatePassword()"
-                                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-red-500 transition-colors"
-                                            title="Generate Password">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                        </svg>
-                                    </button>
                                 </div>
                                 <p class="text-xs text-gray-500 mt-1">This password will be used by the department head to login</p>
                             </div>
@@ -345,17 +331,6 @@ function closeAddDepartmentModal() {
 
 function resetForm() {
     document.getElementById('addDepartmentForm').reset();
-}
-
-// Generate random password
-function generatePassword() {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-    let password = '';
-    for (let i = 0; i < 12; i++) {
-        password += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    document.getElementById('head_password').value = password;
-    showNotification('Password generated successfully', 'success');
 }
 
 // Submit form
@@ -407,22 +382,6 @@ document.getElementById('addDepartmentForm').addEventListener('submit', async fu
     }
 });
 
-// Department management functions
-async function viewDepartment(departmentId) {
-    try {
-        const response = await fetch(`/admin/departments/${departmentId}`);
-        const data = await response.json();
-
-        if (data.success) {
-            // Show department details modal (you can implement this)
-            console.log('Department details:', data.department);
-            showNotification('Department details loaded', 'success');
-        }
-    } catch (error) {
-        console.error('Error viewing department:', error);
-        showNotification('Failed to load department details', 'error');
-    }
-}
 
 async function toggleDepartmentStatus(departmentId, newStatus) {
     try {

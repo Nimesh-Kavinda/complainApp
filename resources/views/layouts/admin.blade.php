@@ -96,7 +96,7 @@
                                     d="M12 4v16m8-8H4" />
                             </svg>
                         Add Department
-                        <span class="ml-auto bg-yellow-100 text-blue-800 dark:bg-yellow-600 dark:text-blue-200 text-xs px-2 py-1 rounded-full">{{ App\Models\Department::all()->count() }}</span>
+                        <span class="ml-auto bg-green-100 text-blue-800 dark:bg-green-600 dark:text-blue-200 text-xs px-2 py-1 rounded-full">{{ App\Models\Department::all()->count() }}</span>
                     </a>
                 </li>
             </ul>

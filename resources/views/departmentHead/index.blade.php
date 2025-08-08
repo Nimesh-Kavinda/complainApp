@@ -1,33 +1,33 @@
 @extends('layouts.departmentHead')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+<div class="min-h-screen bg-white dark:bg-gray-800">
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-red-600 to-gray-800 shadow-2xl">
+    <div class="bg-white dark:bg-gray-800 shadow-2xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <div class="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mr-6">
+                    <div class="w-16 h-16 bg-gray-800/50 dark:bg-slate-700/50 rounded-2xl flex items-center justify-center mr-6">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-4xl font-bold text-white">Department Head Dashboard</h1>
-                        <p class="text-red-100 text-lg mt-2">{{ $department->name }} Department</p>
-                        <p class="text-red-200 text-sm">Welcome, {{ Auth::user()->name }}</p>
+                        <h1 class="text-4xl font-bold text-gray-900 dark:text-white">Department Head Dashboard</h1>
+                        <p class="text-blue-600 dark:text-red-400 text-lg mt-2">{{ $department->name }} Department</p>
+                        <p class="text-blue-600 dark:text-red-400 text-sm">Welcome, {{ Auth::user()->name }}</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="text-white/80 text-sm">Department Head Since</div>
-                    <div class="text-white text-lg font-semibold">{{ $department->created_at->format('M Y') }}</div>
+                    <div class="text-gray-600 dark:text-gray-400/80 text-sm">Department Head Since</div>
+                    <div class="text-gray-600 dark:text-gray-400/80 text-lg font-semibold">{{ $department->created_at->format('M Y') }}</div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white dark:bg-gray-800">
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-xl transform hover:scale-105 transition-all duration-300">
