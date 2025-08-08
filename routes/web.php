@@ -6,6 +6,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientComplaintController;
 use App\Http\Controllers\DepartmentHeadController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StaffRegistrationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -78,6 +79,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/staff-registration/status', [StaffRegistrationController::class, 'getRegistrationStatus'])->name('staff-registration.status');
 });
 
+//staff routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+    Route::get('/staff/complain', [StaffController::class, 'complainForm'])->name('staff.complaint.form');
+    Route::post('/staff/complaint/store', [StaffController::class, 'storeComplaint'])->name('staff.complaint.store');
+    Route::get('/staff/past-complaints', [StaffController::class, 'pastComplaints'])->name('staff.pastcomplaints');
+    Route::get('/staff/complaint/{id}', [StaffController::class, 'viewComplaint'])->name('staff.complaint.view');
+    Route::get('/staff/complaint/{id}/evidence/{fileIndex}', [StaffController::class, 'downloadEvidence'])->name('staff.complaint.evidence');
+    Route::post('/staff/complaint/{id}/feedback', [StaffController::class, 'updateComplaintStatus'])->name('staff.complaint.feedback');
+});
 
 // Department Head Routes
 Route::middleware(['auth'])->group(function () {
@@ -86,6 +97,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/department-head/staff/{staffMember}', [DepartmentHeadController::class, 'viewStaffMember'])->name('department.head.staff.view');
     Route::post('/department-head/staff/{staffMember}/status', [DepartmentHeadController::class, 'updateStaffStatus'])->name('department.head.staff.updateStatus');
     Route::get('/department-head/stats', [DepartmentHeadController::class, 'getStats'])->name('department.head.stats');
+
+    // Staff Complaints for Department Heads
+    Route::get('/department-head/staff-complaints', [StaffController::class, 'departmentComplaints'])->name('department.head.staff.complaints');
+    Route::get('/department-head/staff-complaint/{id}', [StaffController::class, 'departmentComplaintDetails'])->name('department.head.staff.complaint.view');
+    Route::post('/department-head/staff-complaint/{id}/status', [StaffController::class, 'updateDepartmentComplaintStatus'])->name('department.head.staff.complaint.updateStatus');
 });
 
 
