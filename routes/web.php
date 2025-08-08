@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientComplaintController;
+use App\Http\Controllers\StaffRegistrationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -36,7 +37,9 @@ Route::put('/admin/complaints/{id}/status', [AdminController::class, 'updateComp
 Route::get('/admin/complaints/{id}/conversation', [AdminController::class, 'getComplaintConversation'])->name('admin.complaints.conversation');
 Route::delete('/admin/complaints/{id}', [AdminController::class, 'deleteComplaint'])->name('admin.complaints.delete');
 
-
+// Staff Registration Routes (Admin)
+Route::get('/admin/staff-registrations', [StaffRegistrationController::class, 'index'])->name('admin.staff-registrations');
+Route::post('/admin/staff-registrations/{id}/status', [StaffRegistrationController::class, 'updateStatus'])->name('admin.staff-registrations.updateStatus');
 
 
 
@@ -56,4 +59,11 @@ Route::get('/client/complaint/success/{id}', [ClientComplaintController::class, 
 Route::get('/client/complaint/{id}', [ClientComplaintController::class, 'show'])->name('client.complaint.show');
 Route::get('/client/complaint/{id}/evidence/{fileIndex}', [ClientComplaintController::class, 'downloadEvidence'])->name('client.complaint.evidence');
 Route::post('/client/complaint/{id}/feedback', [ClientComplaintController::class, 'submitFeedback'])->name('client.complaint.feedback');
+
+// Staff Registration Routes (Client/User)
+Route::middleware('auth')->group(function () {
+    Route::get('/staff-registration/departments', [StaffRegistrationController::class, 'getDepartments'])->name('staff-registration.departments');
+    Route::post('/staff-registration/submit', [StaffRegistrationController::class, 'store'])->name('staff-registration.submit');
+    Route::get('/staff-registration/status', [StaffRegistrationController::class, 'getRegistrationStatus'])->name('staff-registration.status');
+});
 
