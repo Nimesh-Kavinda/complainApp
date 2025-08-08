@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>VAMPIOR DESIGNS - Admin Dashboard</title>
+    <title>VAMPIOR DESIGNS - Department Head Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -41,7 +41,7 @@
                 </div>
                 <div>
                     <h1 class="text-white font-bold text-sm">VAMPIOR DESIGNS</h1>
-                    <p class="text-purple-100 text-xs">Admin Panel</p>
+                    <p class="text-purple-100 text-xs">Department Head Panel</p>
                 </div>
             </div>
             <button id="closeSidebar" class="lg:hidden text-white hover:bg-white/20 p-1 rounded">
@@ -54,7 +54,7 @@
         <nav class="mt-6 px-4">
             <ul class="space-y-2">
                 <li>
-                    <a href="{{ route('admin.index') }}" class="nav-link active flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <a href="#" class="nav-link active flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6a2 2 0 01-2 2H10a2 2 0 01-2-2V5z"></path>
@@ -63,40 +63,30 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.complaints') }}"class="nav-link active flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <a href="#"class="nav-link active flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.864-.833-2.634 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
                         </svg>
                         Complaints
-                        <span class="ml-auto bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-xs px-2 py-1 rounded-full">{{ App\Models\ClientComplaint::all()->count() }}</span>
+                        <span class="ml-auto bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-xs px-2 py-1 rounded-full">42</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.users') }}" class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <a href="#" class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
                         </svg>
-                        Users
-                        <span class="ml-auto bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs px-2 py-1 rounded-full">{{ App\Models\User::all()->count() }}</span>
+                        Staff Members
+                        <span class="ml-auto bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs px-2 py-1 rounded-full">10</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('admin.category') }}"class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <a href="#"class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
-                        Categories
-                        <span class="ml-auto bg-yellow-100 text-blue-800 dark:bg-yellow-600 dark:text-blue-200 text-xs px-2 py-1 rounded-full">{{ App\Models\Category::all()->count() }}</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.departments') }}"class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4" />
-                            </svg>
-                        Add Department
-                        <span class="ml-auto bg-yellow-100 text-blue-800 dark:bg-yellow-600 dark:text-blue-200 text-xs px-2 py-1 rounded-full">{{ App\Models\Department::all()->count() }}</span>
+                        Requests
+                        <span class="ml-auto bg-yellow-100 text-blue-800 dark:bg-yellow-600 dark:text-blue-200 text-xs px-2 py-1 rounded-full">5</span>
                     </a>
                 </li>
             </ul>
@@ -128,7 +118,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
                     </button>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Department Head Dashboard</h1>
                 </div>
 
                 <div class="flex items-center space-x-4">

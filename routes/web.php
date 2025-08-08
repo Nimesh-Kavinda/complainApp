@@ -4,6 +4,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientComplaintController;
+use App\Http\Controllers\DepartmentHeadController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\StaffRegistrationController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -35,8 +38,19 @@ Route::get('/admin/complaints', [AdminController::class, 'complains'])->name('ad
 Route::put('/admin/complaints/{id}/status', [AdminController::class, 'updateComplaintStatus'])->name('admin.complaints.updateStatus');
 Route::get('/admin/complaints/{id}/conversation', [AdminController::class, 'getComplaintConversation'])->name('admin.complaints.conversation');
 Route::delete('/admin/complaints/{id}', [AdminController::class, 'deleteComplaint'])->name('admin.complaints.delete');
+Route::get('/admin/add-department', [DepartmentController::class, 'index'])->name('admin.departments');
 
+// Department Management Routes (Admin)
+Route::middleware('auth')->group(function () {
+    Route::post('/admin/departments', [DepartmentController::class, 'store'])->name('admin.departments.store');
+    Route::get('/admin/departments/{department}', [DepartmentController::class, 'show'])->name('admin.departments.show');
+    Route::put('/admin/departments/{department}/status', [DepartmentController::class, 'updateStatus'])->name('admin.departments.updateStatus');
+    Route::delete('/admin/departments/{department}', [DepartmentController::class, 'destroy'])->name('admin.departments.destroy');
+});
 
+// Staff Registration Routes (Admin)
+Route::get('/admin/staff-registrations', [StaffRegistrationController::class, 'index'])->name('admin.staff-registrations');
+Route::post('/admin/staff-registrations/{id}/status', [StaffRegistrationController::class, 'updateStatus'])->name('admin.staff-registrations.updateStatus');
 
 
 
@@ -56,4 +70,22 @@ Route::get('/client/complaint/success/{id}', [ClientComplaintController::class, 
 Route::get('/client/complaint/{id}', [ClientComplaintController::class, 'show'])->name('client.complaint.show');
 Route::get('/client/complaint/{id}/evidence/{fileIndex}', [ClientComplaintController::class, 'downloadEvidence'])->name('client.complaint.evidence');
 Route::post('/client/complaint/{id}/feedback', [ClientComplaintController::class, 'submitFeedback'])->name('client.complaint.feedback');
+
+// Staff Registration Routes (Client/User)
+Route::middleware('auth')->group(function () {
+    Route::get('/staff-registration/departments', [StaffRegistrationController::class, 'getDepartments'])->name('staff-registration.departments');
+    Route::post('/staff-registration/submit', [StaffRegistrationController::class, 'store'])->name('staff-registration.submit');
+    Route::get('/staff-registration/status', [StaffRegistrationController::class, 'getRegistrationStatus'])->name('staff-registration.status');
+});
+
+
+// Department Head Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/department-head', [DepartmentHeadController::class, 'index'])->name('department.head.index');
+    Route::get('/department-head/staff', [DepartmentHeadController::class, 'staffMembers'])->name('department.head.staff');
+    Route::get('/department-head/staff/{staffMember}', [DepartmentHeadController::class, 'viewStaffMember'])->name('department.head.staff.view');
+    Route::post('/department-head/staff/{staffMember}/status', [DepartmentHeadController::class, 'updateStaffStatus'])->name('department.head.staff.updateStatus');
+    Route::get('/department-head/stats', [DepartmentHeadController::class, 'getStats'])->name('department.head.stats');
+});
+
 

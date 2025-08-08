@@ -141,13 +141,13 @@
                         </button>
                     </a>
 
-                      <a href="{{ route('client.complain') }}">
+                      <a href="#" onclick="openStaffRegistrationModal()">
                        <button class="group w-full sm:w-auto px-10 py-5 bg-gradient-to-r from-gray-700 to-red-500 hover:from-red-500 hover:to-red-600 text-white font-bold rounded-2xl shadow-2xl hover:shadow-red-500/25 transform hover:-translate-y-3 hover:scale-105 transition-all duration-500 relative overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-r from-red-500/0 via-white/10 to-red-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                             <span class="flex items-center justify-center relative z-10">
                                 <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M16 14a4 4 0 10-8 0m8 0a4 4 0 01-8 0m8 0v1a3 3 0 01-3 3H9a3 3 0 01-3-3v-1m13-4v6m3-3h-6" />
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
                                Staff Registration
                             </span>
@@ -396,5 +396,378 @@
     </section>
 
     </section>
+
+<!-- Staff Registration Modal -->
+<div id="staffRegistrationModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen px-4 py-8">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto border border-gray-200 dark:border-gray-600 relative">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-red-500 to-gray-800 rounded-t-3xl">
+                <div class="flex items-center">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-white">Staff Registration</h3>
+                        <p class="text-red-100 text-sm">Apply to become a staff member at Vampior Designs</p>
+                    </div>
+                </div>
+                <button onclick="closeStaffRegistrationModal()" type="button" class="text-white/80 hover:text-white transition-colors p-2 hover:bg-white/10 rounded-xl">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="p-8">
+                <!-- Registration Status Alert (will be populated by JavaScript) -->
+                <div id="registrationStatusAlert" class="hidden mb-6"></div>
+
+                <!-- Registration Form -->
+                <form id="staffRegistrationForm" class="space-y-6">
+                    @csrf
+
+                    <!-- Staff ID -->
+                    <div class="form-group">
+                        <label for="staff_id" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                            <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"></path>
+                            </svg>
+                            Staff ID *
+                        </label>
+                        <input type="text" id="staff_id" name="staff_id" required
+                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300"
+                               placeholder="Enter your unique staff ID (e.g., EMP001, ST2023001)">
+                        <p class="text-xs text-gray-500 mt-1">Your official staff identification number</p>
+                    </div>
+
+                    <!-- Department -->
+                    <div class="form-group">
+                        <label for="department" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                            <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                            Department *
+                        </label>
+                        <select id="department" name="department" required
+                                class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300">
+                            <option value="">Select your department...</option>
+                            <!-- Options will be populated by JavaScript -->
+                        </select>
+                        <p class="text-xs text-gray-500 mt-1">Choose the department you'll be working in</p>
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div class="form-group">
+                        <label for="date_of_birth" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                            <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Date of Birth *
+                        </label>
+                        <input type="date" id="date_of_birth" name="date_of_birth" required
+                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300"
+                               max="{{ date('Y-m-d', strtotime('-16 years')) }}">
+                        <p class="text-xs text-gray-500 mt-1">You must be at least 16 years old</p>
+                    </div>
+
+                    <!-- NIC Number -->
+                    <div class="form-group">
+                        <label for="nic_number" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                            <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            NIC Number *
+                        </label>
+                        <input type="text" id="nic_number" name="nic_number" required
+                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-300"
+                               placeholder="Enter your NIC number (e.g., 199712345678 or 971234567V)"
+                               pattern="[0-9]{9}[vVxX]|[0-9]{12}">
+                        <p class="text-xs text-gray-500 mt-1">Your National Identity Card number</p>
+                    </div>
+
+                    <!-- Staff ID Image Upload -->
+                    <div class="form-group">
+                        <label for="staff_id_image" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                            <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Staff ID Image *
+                        </label>
+                        <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-6 text-center hover:border-red-400 transition-colors duration-300">
+                            <input type="file" id="staff_id_image" name="staff_id_image" accept="image/*" required
+                                   class="hidden" onchange="handleImageUpload(this)">
+                            <label for="staff_id_image" class="cursor-pointer block">
+                                <svg class="w-12 h-12 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                <span class="text-lg font-medium text-gray-600 dark:text-gray-400">Click to upload Staff ID image</span>
+                                <br>
+                                <span class="text-sm text-gray-500">JPG, PNG, GIF up to 5MB</span>
+                            </label>
+                            <div id="imagePreview" class="mt-4 hidden"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Upload a clear photo of your staff ID card or official employment document</p>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <button type="button" onclick="closeStaffRegistrationModal()"
+                                class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submitRegistrationBtn"
+                                class="px-8 py-3 bg-gradient-to-r from-red-600 to-gray-800 hover:from-red-700 hover:to-gray-900 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center">
+                            <svg class="w-5 h-5 mr-2 hidden" id="submitSpinner" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Submit Registration
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Staff Registration Modal Functions
+function openStaffRegistrationModal() {
+    // Check registration status first
+    checkRegistrationStatus();
+    loadDepartments();
+    document.getElementById('staffRegistrationModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeStaffRegistrationModal() {
+    document.getElementById('staffRegistrationModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    resetRegistrationForm();
+}
+
+function resetRegistrationForm() {
+    document.getElementById('staffRegistrationForm').reset();
+    document.getElementById('imagePreview').innerHTML = '';
+    document.getElementById('imagePreview').classList.add('hidden');
+    document.getElementById('registrationStatusAlert').classList.add('hidden');
+}
+
+// Check if user already has a registration
+async function checkRegistrationStatus() {
+    try {
+        const response = await fetch('/staff-registration/status');
+        const data = await response.json();
+
+        if (data.success && data.has_registration) {
+            const registration = data.registration;
+            showRegistrationStatus(registration);
+        }
+    } catch (error) {
+        console.error('Error checking registration status:', error);
+    }
+}
+
+function showRegistrationStatus(registration) {
+    const alertDiv = document.getElementById('registrationStatusAlert');
+    let statusClass = '';
+    let statusText = '';
+    let message = '';
+
+    switch (registration.status) {
+        case 'pending':
+            statusClass = 'bg-yellow-100 border-yellow-500 text-yellow-800';
+            statusText = 'Pending Review';
+            message = 'Your staff registration is currently under review by the department head.';
+            break;
+        case 'approved':
+            statusClass = 'bg-green-100 border-green-500 text-green-800';
+            statusText = 'Approved';
+            message = 'Congratulations! Your staff registration has been approved.';
+            break;
+        case 'rejected':
+            statusClass = 'bg-red-100 border-red-500 text-red-800';
+            statusText = 'Rejected';
+            message = `Your registration was rejected. ${registration.rejection_reason ? 'Reason: ' + registration.rejection_reason : ''}`;
+            break;
+    }
+
+    alertDiv.innerHTML = `
+        <div class="border-l-4 p-4 rounded ${statusClass}">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium">Registration Status: ${statusText}</h3>
+                    <p class="mt-1 text-sm">${message}</p>
+                    <p class="mt-1 text-xs">Submitted: ${new Date(registration.created_at).toLocaleDateString()}</p>
+                </div>
+            </div>
+        </div>
+    `;
+    alertDiv.classList.remove('hidden');
+
+    // Disable form if already has pending or approved registration
+    if (registration.status === 'pending' || registration.status === 'approved') {
+        const form = document.getElementById('staffRegistrationForm');
+        const inputs = form.querySelectorAll('input, select, button[type="submit"]');
+        inputs.forEach(input => input.disabled = true);
+    }
+}
+
+// Load departments
+async function loadDepartments() {
+    try {
+        const response = await fetch('/staff-registration/departments');
+        const data = await response.json();
+
+        if (data.success) {
+            const departmentSelect = document.getElementById('department');
+            departmentSelect.innerHTML = '<option value="">Select your department...</option>';
+
+            data.departments.forEach(department => {
+                const option = document.createElement('option');
+                option.value = department.name;
+                option.textContent = department.name;
+                departmentSelect.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Error loading departments:', error);
+        showNotification('Failed to load departments', 'error');
+    }
+}
+
+// Handle image upload preview
+function handleImageUpload(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('imagePreview');
+
+    if (file) {
+        // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+        if (file.size > 5 * 1024 * 1024) {
+            showNotification('Image size must be less than 5MB', 'error');
+            input.value = '';
+            return;
+        }
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            showNotification('Please select a valid image file', 'error');
+            input.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.innerHTML = `
+                <div class="flex items-center space-x-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <img src="${e.target.result}" alt="Preview" class="w-16 h-16 object-cover rounded-lg">
+                    <div>
+                        <p class="text-sm font-medium text-green-800">${file.name}</p>
+                        <p class="text-xs text-green-600">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                    </div>
+                    <button type="button" onclick="removeImage()" class="text-red-500 hover:text-red-700">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function removeImage() {
+    document.getElementById('staff_id_image').value = '';
+    document.getElementById('imagePreview').innerHTML = '';
+    document.getElementById('imagePreview').classList.add('hidden');
+}
+
+// Submit registration form
+document.getElementById('staffRegistrationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const submitBtn = document.getElementById('submitRegistrationBtn');
+    const spinner = document.getElementById('submitSpinner');
+
+    // Show loading state
+    submitBtn.disabled = true;
+    spinner.classList.remove('hidden');
+    submitBtn.innerHTML = '<svg class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>Submitting...';
+
+    try {
+        const formData = new FormData(this);
+
+        const response = await fetch('/staff-registration/submit', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showNotification(data.message, 'success');
+            closeStaffRegistrationModal();
+        } else {
+            showNotification(data.message || 'Registration failed', 'error');
+        }
+    } catch (error) {
+        console.error('Error submitting registration:', error);
+        showNotification('Failed to submit registration. Please try again.', 'error');
+    } finally {
+        // Reset loading state
+        submitBtn.disabled = false;
+        spinner.classList.add('hidden');
+        submitBtn.innerHTML = 'Submit Registration';
+    }
+});
+
+// Close modal when clicking outside
+document.getElementById('staffRegistrationModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeStaffRegistrationModal();
+    }
+});
+
+// Notification function (if not already defined)
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 ${
+        type === 'error' ? 'bg-red-500 text-white' :
+        type === 'success' ? 'bg-green-500 text-white' :
+        'bg-blue-500 text-white'
+    }`;
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                ${type === 'error' ?
+                    '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>' :
+                    '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>'
+                }
+            </svg>
+            ${message}
+        </div>
+    `;
+
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => notification.remove(), 300);
+    }, 4000);
+}
+</script>
 
 @endsection

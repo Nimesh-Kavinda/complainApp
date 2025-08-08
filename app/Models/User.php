@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -52,5 +53,45 @@ class User extends Authenticatable
     public function complaints()
     {
         return $this->hasMany(ClientComplaint::class, 'client_email', 'email');
+    }
+
+    /**
+     * Get the department the user heads.
+     */
+    public function departmentAsHead()
+    {
+        return $this->hasOne(Department::class, 'head_of_department');
+    }
+
+    /**
+     * Get the staff member record for this user.
+     */
+    public function staffMember()
+    {
+        return $this->hasOne(StaffMember::class);
+    }
+
+    /**
+     * Check if user is admin.
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is department head.
+     */
+    public function isDepartmentHead()
+    {
+        return $this->role === 'department_head';
+    }
+
+    /**
+     * Check if user is staff.
+     */
+    public function isStaff()
+    {
+        return $this->role === 'staff_member';
     }
 }
