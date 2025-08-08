@@ -79,13 +79,17 @@ class StaffRegistrationController extends Controller
                 $imagePath = $file->storeAs('staff_id_images', $filename, 'public');
             }
 
+            // Get department by name to get department_id
+            $department = Department::where('name', $request->department)->first();
+
             // Create staff registration
             $staffMember = StaffMember::create([
                 'user_id' => $user->id,
                 'user_name' => $user->name,
                 'user_email' => $user->email,
                 'staff_id' => $request->staff_id,
-                'department' => $request->department,
+                'department' => $request->department, // Keep for backward compatibility
+                'department_id' => $department->id, // Add department_id relationship
                 'date_of_birth' => $request->date_of_birth,
                 'nic_number' => $request->nic_number,
                 'staff_id_image_path' => $imagePath,

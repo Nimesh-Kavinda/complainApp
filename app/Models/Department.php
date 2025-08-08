@@ -30,7 +30,7 @@ class Department extends Model
 
     public function staffMembers()
     {
-        return $this->hasMany(StaffMember::class, 'department', 'name');
+        return $this->hasMany(StaffMember::class, 'department_id');
     }
 
     // Scopes

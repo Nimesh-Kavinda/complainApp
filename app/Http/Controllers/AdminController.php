@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\ClientComplaint;
+use App\Models\Department;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -376,6 +377,13 @@ class AdminController extends Controller
                 'message' => 'Failed to delete complaint.'
             ], 500);
         }
+    }
+
+    public function departments()
+    {
+        // Fetch all departments to display in the view
+        $departments = Department::all();
+        return view('admin.departments', compact('departments'));
     }
 
 }

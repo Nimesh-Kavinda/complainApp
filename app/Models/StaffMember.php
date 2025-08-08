@@ -14,6 +14,7 @@ class StaffMember extends Model
         'user_name',
         'user_email',
         'staff_id',
+        'department_id',
         'department',
         'date_of_birth',
         'nic_number',
@@ -44,7 +45,7 @@ class StaffMember extends Model
 
     public function department()
     {
-        return $this->belongsTo(Department::class, 'department', 'name');
+        return $this->belongsTo(Department::class, 'department_id');
     }
 
     // Scopes
