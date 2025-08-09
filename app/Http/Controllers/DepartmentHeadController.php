@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Department;
 use App\Models\StaffMember;
+use App\Models\StaffComplaint;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -159,4 +160,113 @@ class DepartmentHeadController extends Controller
 
         return response()->json(['success' => true, 'stats' => $stats]);
     }
+
+    public function staffcomplaints()
+    {
+        $user = Auth::user();
+        $department = $user->departmentAsHead;
+
+        if (!$department) {
+            abort(403, 'You do not have access to this department.');
+        }
+
+        $complaints = $department->staffComplaints()
+            ->with(['staffMember.user', 'department'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('departmentHead.staffComplaints', compact('complaints', 'department'));
+    }
+
+    /**
+     * Show detailed view of a staff complaint
+     */
+    public function showStaffComplaint(StaffComplaint $complaint)
+    {
+        $user = Auth::user();
+        $department = $user->departmentAsHead;
+
+        // Check if this complaint belongs to the department head's department
+        if (!$department || $complaint->department_id !== $department->id) {
+            abort(403, 'You do not have access to this complaint.');
+        }
+
+        $complaint->load(['staffMember.user', 'department']);
+
+        return view('departmentHead.staffComplaintDetails', compact('complaint', 'department'));
+    }
+
+    /**
+     * Add response/solution to staff complaint
+     */
+    public function addStaffComplaintResponse(Request $request, StaffComplaint $complaint)
+    {
+        $user = Auth::user();
+        $department = $user->departmentAsHead;
+
+        // Check if this complaint belongs to the department head's department
+        if (!$department || $complaint->department_id !== $department->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have access to this complaint.'
+            ], 403);
+        }
+
+        try {
+            $validated = $request->validate([
+                'response_message' => 'required|string|max:2000',
+                'status' => 'required|in:pending,in_review,resolved,rejected'
+            ]);
+
+            // Get existing responses or create new array
+            $responses = $complaint->department_responses ?? [];
+
+            // Add new response
+            $newResponse = [
+                'id' => count($responses) + 1,
+                'message' => $validated['response_message'],
+                'responded_by' => $user->id,
+                'responder_name' => $user->name,
+                'status_set' => $validated['status'],
+                'created_at' => now()->toISOString(),
+                'formatted_date' => now()->format('M d, Y h:i A')
+            ];
+
+            $responses[] = $newResponse;
+
+            // Update complaint
+            $complaint->update([
+                'department_responses' => $responses,
+                'status' => $validated['status'],
+                'reviewed_by' => $user->id,
+                'reviewed_at' => now(),
+                'solution' => $validated['response_message'] // Also save as main solution
+            ]);
+
+            Log::info('Department head added response to staff complaint', [
+                'complaint_id' => $complaint->id,
+                'department_head_id' => $user->id,
+                'status' => $validated['status']
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Response added successfully!',
+                'response' => $newResponse,
+                'complaint' => $complaint->fresh(['staffMember.user', 'department'])
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error adding staff complaint response', [
+                'complaint_id' => $complaint->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add response: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
 }
