@@ -144,17 +144,27 @@
                     </h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @foreach($complaint->evidence_files as $index => $file)
+                        @php
+                            // Handle both string paths and array file objects
+                            if (is_array($file)) {
+                                $filePath = $file['path'] ?? $file['file_path'] ?? '';
+                                $fileName = $file['name'] ?? $file['original_name'] ?? basename($filePath);
+                            } else {
+                                $filePath = $file;
+                                $fileName = basename($file);
+                            }
+                        @endphp
                         <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 flex items-center justify-between">
                             <div class="flex items-center">
                                 <svg class="w-8 h-8 text-gray-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
                                 <div>
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ basename($file) }}</p>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $fileName }}</p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">Evidence {{ $index + 1 }}</p>
                                 </div>
                             </div>
-                            <button onclick="previewFile('{{ $file }}', '{{ basename($file) }}')"
+                            <button onclick="previewFile('{{ $filePath }}', '{{ $fileName }}')"
                                     class="px-3 py-1 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 rounded-lg text-sm font-medium transition-colors">
                                 View
                             </button>
