@@ -248,24 +248,7 @@
                     </form>
                 </div>
 
-                <!-- Quick Actions -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Quick Actions</h3>
-                    <div class="space-y-3">
-                        <button onclick="markAsUrgent()"
-                                class="w-full px-4 py-2 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-700 dark:text-red-400 rounded-lg font-medium transition-colors text-sm">
-                            Mark as Urgent
-                        </button>
-                        <button onclick="requestMoreInfo()"
-                                class="w-full px-4 py-2 bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 text-yellow-700 dark:text-yellow-400 rounded-lg font-medium transition-colors text-sm">
-                            Request More Info
-                        </button>
-                        <button onclick="escalateComplaint()"
-                                class="w-full px-4 py-2 bg-orange-100 hover:bg-orange-200 dark:bg-orange-900/30 dark:hover:bg-orange-900/50 text-orange-700 dark:text-orange-400 rounded-lg font-medium transition-colors text-sm">
-                            Escalate to Admin
-                        </button>
-                    </div>
-                </div>
+
 
                 <!-- Complaint Info -->
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
@@ -412,21 +395,7 @@ function closeFilePreview() {
     document.getElementById('filePreviewModal').classList.add('hidden');
 }
 
-// Quick actions
-function markAsUrgent() {
-    document.getElementById('status').value = 'in_review';
-    document.getElementById('response_message').value = 'This complaint has been marked as urgent and requires immediate attention.';
-}
 
-function requestMoreInfo() {
-    document.getElementById('status').value = 'pending';
-    document.getElementById('response_message').value = 'We need additional information to properly address your complaint. Please provide more details about the issue.';
-}
-
-function escalateComplaint() {
-    document.getElementById('status').value = 'in_review';
-    document.getElementById('response_message').value = 'This complaint has been escalated to the administration team for further review and action.';
-}
 
 // Toast notification function
 function showToast(message, type = 'info') {
