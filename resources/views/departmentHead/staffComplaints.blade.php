@@ -62,14 +62,12 @@
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 group overflow-hidden">
                     <!-- Status indicator bar -->
                     <div class="h-1 bg-gradient-to-r
-                        @if($complaint->status === 'pending') from-yellow-400 to-yellow-500
-                        @elseif($complaint->status === 'in_review') from-blue-400 to-blue-500
-                        @elseif($complaint->status === 'resolved') from-green-400 to-green-500
-                        @elseif($complaint->status === 'rejected') from-red-400 to-red-500
-                        @else from-gray-400 to-gray-500
-                        @endif">
+                        {{ $complaint->status === 'pending' ? 'from-yellow-400 to-yellow-500' :
+                        ($complaint->status === 'in_review' ? 'from-blue-400 to-blue-500' :
+                        ($complaint->status === 'resolved' ? 'from-green-400 to-green-500' :
+                        ($complaint->status === 'rejected' ? 'from-red-400 to-red-500' :
+                            'from-gray-400 to-gray-500'))) }}">
                     </div>
-
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex-1">
@@ -77,15 +75,15 @@
                                     <h3 class="text-xl font-bold text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                                         {{ $complaint->complaint_title }}
                                     </h3>
-                                    <span class="px-3 py-1 rounded-full text-xs font-semibold
-                                        @if($complaint->status === 'pending') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
-                                        @elseif($complaint->status === 'in_review') bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400
-                                        @elseif($complaint->status === 'resolved') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
-                                        @elseif($complaint->status === 'rejected') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
-                                        @else bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400
-                                        @endif">
+                                   <span class="px-3 py-1 rounded-full text-xs font-semibold
+                                        {{ $complaint->status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                                        ($complaint->status === 'in_review' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                                        ($complaint->status === 'resolved' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                                        ($complaint->status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
+                                            'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'))) }}">
                                         {{ ucfirst($complaint->status) }}
                                     </span>
+
                                 </div>
 
                                 <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
@@ -115,13 +113,13 @@
 
                                 <div class="flex items-center gap-3">
                                     <span class="px-2 py-1 rounded-lg text-xs font-medium
-                                        @if($complaint->priority === 'low') bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400
-                                        @elseif($complaint->priority === 'medium') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400
-                                        @elseif($complaint->priority === 'high') bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400
-                                        @elseif($complaint->priority === 'urgent') bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400
-                                        @endif">
+                                        {{ $complaint->priority === 'low' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                                        ($complaint->priority === 'medium' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                                        ($complaint->priority === 'high' ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400' :
+                                        ($complaint->priority === 'urgent' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : ''))) }}">
                                         {{ ucfirst($complaint->priority) }} Priority
                                     </span>
+
 
                                     @if($complaint->evidence_files && count($complaint->evidence_files) > 0)
                                         <span class="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-medium flex items-center gap-1">
