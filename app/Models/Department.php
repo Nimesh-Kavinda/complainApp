@@ -33,6 +33,11 @@ class Department extends Model
         return $this->hasMany(StaffMember::class, 'department_id');
     }
 
+    public function staffComplaints()
+    {
+        return $this->hasMany(StaffComplaint::class, 'department_id');
+    }
+
     // Scopes
     public function scopeActive($query)
     {

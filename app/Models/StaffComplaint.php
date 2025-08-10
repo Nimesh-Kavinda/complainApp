@@ -37,11 +37,13 @@ class StaffComplaint extends Model
         'follow_up_notes',
         'reviewed_by',
         'reviewed_at',
-        'review_notes'
+        'review_notes',
+        'department_responses'
     ];
 
     protected $casts = [
         'evidence_files' => 'array',
+        'department_responses' => 'array',
         'assigned_at' => 'datetime',
         'resolved_at' => 'datetime',
         'closed_at' => 'datetime',

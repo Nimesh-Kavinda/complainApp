@@ -99,9 +99,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/department-head/stats', [DepartmentHeadController::class, 'getStats'])->name('department.head.stats');
 
     // Staff Complaints for Department Heads
-    Route::get('/department-head/staff-complaints', [StaffController::class, 'departmentComplaints'])->name('department.head.staff.complaints');
-    Route::get('/department-head/staff-complaint/{id}', [StaffController::class, 'departmentComplaintDetails'])->name('department.head.staff.complaint.view');
-    Route::post('/department-head/staff-complaint/{id}/status', [StaffController::class, 'updateDepartmentComplaintStatus'])->name('department.head.staff.complaint.updateStatus');
+    Route::get('/department-head/staff-complaints', [DepartmentHeadController::class, 'staffcomplaints'])->name('department.head.staff.complaints');
+    Route::get('/department-head/staff-complaints/{complaint}', [DepartmentHeadController::class, 'showStaffComplaint'])->name('department.head.staff.complaint.show');
+    Route::post('/department-head/staff-complaints/{complaint}/response', [DepartmentHeadController::class, 'addStaffComplaintResponse'])->name('department.head.staff.complaint.response');
 });
 
 
