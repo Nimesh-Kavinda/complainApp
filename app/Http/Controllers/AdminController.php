@@ -197,6 +197,10 @@ class AdminController extends Controller
 
         // Get filter options
         $categories = Category::all();
+        $departments = Department::with('headOfDepartment')
+            ->where('is_active', true)
+            ->whereNotNull('head_of_department')
+            ->get();
         $statuses = ['pending', 'in_progress', 'resolved', 'closed', 'rejected'];
         $priorities = ['low', 'medium', 'high', 'urgent'];
 
@@ -213,7 +217,7 @@ class AdminController extends Controller
                 ->count()
         ];
 
-        return view('admin.clientComplains', compact('complaints', 'categories', 'statuses', 'priorities', 'stats', 'nicComplaintCounts'));
+        return view('admin.clientComplains', compact('complaints', 'categories', 'departments', 'statuses', 'priorities', 'stats', 'nicComplaintCounts'));
     }
 
     public function updateComplaintStatus(Request $request, $id)

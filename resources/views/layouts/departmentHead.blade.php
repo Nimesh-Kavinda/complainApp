@@ -76,6 +76,21 @@
                         <span class="ml-auto bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-xs px-2 py-1 rounded-full">{{ $complaintsCount }}</span>
                     </a>
                 </li>
+                 <li>
+                    <a href="{{ route('department.head.admin.assigned.complaints') }}" class="nav-link flex items-center px-4 py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.864-.833-2.634 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                        Admin Assigned Complaints
+                        @php
+                            $user = auth()->user();
+                            $department = $user->departmentAsHead ?? null;
+                            $complaintsCount = $department ? $department->staffComplaints()->count() : 0;
+                        @endphp
+                        <span class="ml-auto bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-xs px-2 py-1 rounded-full">{{ $complaintsCount }}</span>
+                    </a>
+                </li>
+
             </ul>
         </nav>
 

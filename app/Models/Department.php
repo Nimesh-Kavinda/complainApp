@@ -38,6 +38,14 @@ class Department extends Model
         return $this->hasMany(StaffComplaint::class, 'department_id');
     }
 
+    /**
+     * Get complaint assignments for this department
+     */
+    public function complaintAssignments()
+    {
+        return $this->hasMany(ComplaintAssignment::class);
+    }
+
     // Scopes
     public function scopeActive($query)
     {

@@ -367,12 +367,20 @@
 
                                 <!-- Action Buttons -->
                                 <div class="flex items-center space-x-2 mx-2">
-                                    <button onclick="openReplyModal({{ $complaint->id }}, '{{ $complaint->client_name }}', '{{ $complaint->reference_number }}')"
-                                            class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                    <button onclick="openAssignModal({{ $complaint->id }}, '{{ $complaint->client_name }}', '{{ $complaint->reference_number }}')"
+                                            class="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-800 text-white text-sm font-medium rounded-lg transition-colors">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                         </svg>
                                         Assign
+                                    </button>
+
+                                    <button onclick="openDiscussionModal({{ $complaint->id }}, '{{ $complaint->client_name }}', '{{ $complaint->reference_number }}')"
+                                            class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-3.9-.9L3 21l1.9-5.1A8.955 8.955 0 013 12a8 8 0 1118 0z"></path>
+                                        </svg>
+                                        Discussion
                                     </button>
 
                                     <button onclick="openReplyModal({{ $complaint->id }}, '{{ $complaint->client_name }}', '{{ $complaint->reference_number }}')"
@@ -733,12 +741,472 @@
     </div>
 </div>
 
+<!-- Assignment Modal -->
+<div id="assignModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] border border-gray-200 dark:border-gray-600">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Assign Complaint</h3>
+                <button id="assignModalCloseBtn" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Complaint Info Header -->
+            <div class="p-6 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                <div id="assignComplaintInfo" class="font-medium text-gray-900 dark:text-white mb-2"></div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                    Select departments and set assignment details
+                </div>
+            </div>
+
+            <!-- Assignment Form -->
+            <div class="p-6">
+                <form id="assignForm">
+                    <input type="hidden" id="assignComplaintId" name="complaint_id">
+
+                    <!-- Department Selection -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Select Departments</label>
+                        @if(isset($departments) && count($departments) > 0)
+                            <div id="departmentsList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                @foreach($departments as $department)
+                                    <label class="flex items-center p-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors">
+                                        <input type="checkbox" name="departments[]" value="{{ $department->id }}"
+                                               class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600">
+                                        <div class="ml-3">
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $department->name }}</div>
+                                            <div class="text-xs text-gray-600 dark:text-gray-400">
+                                                Head: {{ $department->headOfDepartment->name ?? 'Not assigned' }}
+                                            </div>
+                                        </div>
+                                    </label>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
+                                <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                                <p class="text-gray-600 dark:text-gray-400 font-medium">No departments available</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">All departments must have assigned heads to be available for complaint assignment.</p>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Priority and Deadline -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="assignPriority" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Priority</label>
+                            <select id="assignPriority" name="priority" class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="assignDeadline" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Deadline</label>
+                            <input type="datetime-local" id="assignDeadline" name="deadline"
+                                   class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        </div>
+                    </div>
+
+                    <!-- Assignment Notes -->
+                    <div class="mb-6">
+                        <label for="assignmentNotes" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Assignment Notes</label>
+                        <textarea id="assignmentNotes" name="assignment_notes" rows="3"
+                                  class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+                                  placeholder="Special instructions or notes for the assigned departments..."></textarea>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
+                        <button type="button" id="cancelAssignBtn"
+                                class="w-full sm:w-auto px-6 py-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 focus:ring-2 focus:ring-gray-300 transition-colors font-medium">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                                class="w-full sm:w-auto px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors font-medium shadow-sm">
+                            <span class="assign-submit-text flex items-center justify-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                                Assign Complaint
+                            </span>
+                            <span class="assign-loading-text hidden">
+                                <div class="flex items-center justify-center">
+                                    <svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    Assigning...
+                                </div>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Discussion Modal -->
+<div id="discussionModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] border border-gray-200 dark:border-gray-600">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Department Discussions</h3>
+                <button id="discussionModalCloseBtn" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Complaint Info Header -->
+            <div class="p-6 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                <div id="discussionComplaintInfo" class="font-medium text-gray-900 dark:text-white mb-2"></div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                    View and manage department assignments and discussions
+                </div>
+            </div>
+
+            <!-- Assignments List -->
+            <div class="flex-1 overflow-hidden">
+                <div id="assignmentsList" class="h-96 overflow-y-auto p-6">
+                    <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+                        <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <p class="font-medium">Loading assignments...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 <script>
 // CSRF token
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
                   '{{ csrf_token() }}';
+
+// Assignment Modal Functions
+let assignModalInstance = null;
+let discussionModalInstance = null;
+
+function openAssignModal(complaintId, clientName, referenceNumber) {
+    console.log('Opening assign modal for complaint:', complaintId);
+
+    const modal = document.getElementById('assignModal');
+    const complaintInfo = document.getElementById('assignComplaintInfo');
+    const complaintIdInput = document.getElementById('assignComplaintId');
+
+    if (!modal || !complaintInfo || !complaintIdInput) {
+        console.error('Assignment modal elements not found');
+        return;
+    }
+
+    // Close any existing modal first
+    if (assignModalInstance) {
+        closeAssignModal();
+    }
+
+    // Set complaint information
+    complaintInfo.textContent = `${referenceNumber} - ${clientName}`;
+    complaintIdInput.value = complaintId;
+
+    // Show modal
+    modal.classList.remove('hidden');
+    assignModalInstance = modal;
+
+    // Set minimum date to today
+    const deadlineInput = document.getElementById('assignDeadline');
+    if (deadlineInput) {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        deadlineInput.min = now.toISOString().slice(0, 16);
+    }
+}
+
+function closeAssignModal() {
+    const modal = document.getElementById('assignModal');
+    const form = document.getElementById('assignForm');
+
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+
+    if (form) {
+        form.reset();
+    }
+
+    assignModalInstance = null;
+}
+
+function openDiscussionModal(complaintId, clientName, referenceNumber) {
+    const modal = document.getElementById('discussionModal');
+    const complaintInfo = document.getElementById('discussionComplaintInfo');
+
+    if (!modal || !complaintInfo) {
+        console.error('Discussion modal elements not found');
+        return;
+    }
+
+    // Close any existing modal first
+    if (discussionModalInstance) {
+        closeDiscussionModal();
+    }
+
+    // Set complaint information
+    complaintInfo.textContent = `${referenceNumber} - ${clientName}`;
+
+    // Show modal
+    modal.classList.remove('hidden');
+    discussionModalInstance = modal;
+
+    // Load assignments and discussions
+    loadComplaintAssignments(complaintId);
+}
+
+function closeDiscussionModal() {
+    const modal = document.getElementById('discussionModal');
+
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+
+    discussionModalInstance = null;
+}
+
+async function handleAssignSubmit(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const complaintId = formData.get('complaint_id');
+
+    // Get selected departments
+    const selectedDepartments = [];
+    const departmentCheckboxes = form.querySelectorAll('input[name="departments[]"]:checked');
+
+    if (departmentCheckboxes.length === 0) {
+        showToast('Please select at least one department', 'error');
+        return;
+    }
+
+    departmentCheckboxes.forEach(checkbox => {
+        selectedDepartments.push(checkbox.value);
+    });
+
+    // Prepare data
+    const assignmentData = {
+        departments: selectedDepartments,
+        priority: formData.get('priority'),
+        deadline: formData.get('deadline'),
+        assignment_notes: formData.get('assignment_notes')
+    };
+
+    console.log('Submitting assignment:', assignmentData);
+
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const submitText = submitBtn.querySelector('.assign-submit-text');
+    const loadingText = submitBtn.querySelector('.assign-loading-text');
+
+    submitText.classList.add('hidden');
+    loadingText.classList.remove('hidden');
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch(`/complaints/${complaintId}/assign`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify(assignmentData)
+        });
+
+        const result = await response.json();
+        console.log('Assignment response:', result);
+
+        if (result.success) {
+            showToast(result.message, 'success');
+            closeAssignModal();
+            refreshData();
+        } else {
+            showToast(result.message || 'Assignment failed', 'error');
+            if (result.errors) {
+                console.log('Validation errors:', result.errors);
+            }
+        }
+    } catch (error) {
+        console.error('Assignment error:', error);
+        showToast('Network error occurred', 'error');
+    } finally {
+        // Reset button state
+        submitText.classList.remove('hidden');
+        loadingText.classList.add('hidden');
+        submitBtn.disabled = false;
+    }
+}
+
+async function loadComplaintAssignments(complaintId) {
+    const assignmentsList = document.getElementById('assignmentsList');
+
+    if (!assignmentsList) {
+        console.error('Assignments list element not found');
+        return;
+    }
+
+    try {
+        const response = await fetch(`/complaints/${complaintId}/assignments`, {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            displayAssignments(result.data);
+        } else {
+            assignmentsList.innerHTML = `
+                <div class="text-center text-red-600 dark:text-red-400 py-8">
+                    <p class="font-medium">Failed to load assignments: ${result.message}</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Load assignments error:', error);
+        assignmentsList.innerHTML = `
+            <div class="text-center text-red-600 dark:text-red-400 py-8">
+                <p class="font-medium">Network error occurred</p>
+            </div>
+        `;
+    }
+}
+
+function displayAssignments(assignments) {
+    const assignmentsList = document.getElementById('assignmentsList');
+
+    if (assignments.length === 0) {
+        assignmentsList.innerHTML = `
+            <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+                <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m6-8v4m0 0l-2-2m2 2l2-2"></path>
+                </svg>
+                <p class="font-medium">No assignments found</p>
+                <p class="text-sm mt-1">This complaint has not been assigned to any departments yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const assignmentsHTML = assignments.map(assignment => `
+        <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-600 p-4 mb-4">
+            <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-900 dark:text-white">${assignment.department.name}</h4>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">Assigned to: ${assignment.assigned_to.name}</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(assignment.status)}">
+                        ${getStatusLabel(assignment.status)}
+                    </span>
+                    <span class="px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(assignment.priority)}">
+                        ${assignment.priority.toUpperCase()}
+                    </span>
+                </div>
+            </div>
+
+            ${assignment.assignment_notes ? `
+                <div class="mb-3">
+                    <p class="text-sm text-gray-700 dark:text-gray-300">${assignment.assignment_notes}</p>
+                </div>
+            ` : ''}
+
+            ${assignment.deadline ? `
+                <div class="mb-3">
+                    <p class="text-xs text-gray-600 dark:text-gray-400">
+                        <span class="font-medium">Deadline:</span> ${new Date(assignment.deadline).toLocaleString()}
+                    </p>
+                </div>
+            ` : ''}
+
+            <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                <span>Assigned: ${new Date(assignment.created_at).toLocaleString()}</span>
+                <span>Messages: ${assignment.discussions ? assignment.discussions.length : 0}</span>
+            </div>
+
+            ${assignment.discussions && assignment.discussions.length > 0 ? `
+                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Recent Discussion</h5>
+                    <div class="space-y-2 max-h-32 overflow-y-auto">
+                        ${assignment.discussions.slice(-3).map(discussion => `
+                            <div class="text-xs">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="font-medium text-gray-900 dark:text-white">${discussion.sender.name}</span>
+                                    <span class="text-gray-500 dark:text-gray-400">${new Date(discussion.sent_at).toLocaleString()}</span>
+                                </div>
+                                <p class="text-gray-700 dark:text-gray-300">${discussion.message}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+
+    assignmentsList.innerHTML = assignmentsHTML;
+}
+
+function getStatusColor(status) {
+    const colors = {
+        'assigned': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+        'in_progress': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+        'pending_feedback': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+        'resolved': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+        'cancelled': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+    };
+    return colors[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+}
+
+function getStatusLabel(status) {
+    const labels = {
+        'assigned': 'Assigned',
+        'in_progress': 'In Progress',
+        'pending_feedback': 'Pending Feedback',
+        'resolved': 'Resolved',
+        'cancelled': 'Cancelled'
+    };
+    return labels[status] || 'Unknown';
+}
+
+function getPriorityColor(priority) {
+    const colors = {
+        'low': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+        'medium': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+        'high': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+        'urgent': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+    };
+    return colors[priority] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+}
 
 // Evidence Modal Functions
 let evidenceModalInstance = null;
@@ -1437,6 +1905,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Assignment Modal Event Listeners
+    const assignModal = document.getElementById('assignModal');
+    const assignModalCloseBtn = document.getElementById('assignModalCloseBtn');
+    const cancelAssignBtn = document.getElementById('cancelAssignBtn');
+    const assignForm = document.getElementById('assignForm');
+
+    if (assignModalCloseBtn) {
+        assignModalCloseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeAssignModal();
+        });
+    }
+
+    if (cancelAssignBtn) {
+        cancelAssignBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeAssignModal();
+        });
+    }
+
+    if (assignModal) {
+        assignModal.addEventListener('click', function(e) {
+            if (e.target === assignModal) {
+                closeAssignModal();
+            }
+        });
+    }
+
+    if (assignForm) {
+        assignForm.addEventListener('submit', handleAssignSubmit);
+    }
+
+    // Discussion Modal Event Listeners
+    const discussionModal = document.getElementById('discussionModal');
+    const discussionModalCloseBtn = document.getElementById('discussionModalCloseBtn');
+
+    if (discussionModalCloseBtn) {
+        discussionModalCloseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeDiscussionModal();
+        });
+    }
+
+    if (discussionModal) {
+        discussionModal.addEventListener('click', function(e) {
+            if (e.target === discussionModal) {
+                closeDiscussionModal();
+            }
+        });
+    }
+
     // ESC key handling
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
@@ -1445,6 +1967,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if (replyModalInstance) {
                 closeReplyModal();
+            }
+            if (assignModalInstance) {
+                closeAssignModal();
+            }
+            if (discussionModalInstance) {
+                closeDiscussionModal();
             }
         }
     });

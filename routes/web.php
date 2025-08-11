@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientComplaintController;
+use App\Http\Controllers\ComplaintAssignmentController;
 use App\Http\Controllers\DepartmentHeadController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\StaffController;
@@ -47,6 +48,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/departments/{department}', [DepartmentController::class, 'show'])->name('admin.departments.show');
     Route::put('/admin/departments/{department}/status', [DepartmentController::class, 'updateStatus'])->name('admin.departments.updateStatus');
     Route::delete('/admin/departments/{department}', [DepartmentController::class, 'destroy'])->name('admin.departments.destroy');
+});
+
+// Complaint Assignment Routes (Admin & Department Heads)
+Route::middleware('auth')->group(function () {
+    // Admin assignment routes
+    Route::post('/complaints/{id}/assign', [ComplaintAssignmentController::class, 'assignComplaint'])->name('complaints.assign');
+    Route::get('/complaints/{id}/assignments', [ComplaintAssignmentController::class, 'getComplaintAssignments'])->name('complaints.assignments.get');
+
+    // Discussion routes (Admin & Department Heads)
+    Route::post('/assignments/{assignment}/messages', [ComplaintAssignmentController::class, 'sendMessage'])->name('assignments.messages.send');
+    Route::put('/assignments/{assignment}/status', [ComplaintAssignmentController::class, 'updateAssignmentStatus'])->name('assignments.status.update');
+    Route::post('/assignments/{assignment}/messages/read', [ComplaintAssignmentController::class, 'markMessagesAsRead'])->name('assignments.messages.read');
+
+    // Dashboard stats
+    Route::get('/assignments/dashboard-stats', [ComplaintAssignmentController::class, 'getDashboardStats'])->name('assignments.dashboard.stats');
 });
 
 // Staff Registration Routes (Admin)
@@ -102,6 +118,18 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/department-head/staff-complaints', [DepartmentHeadController::class, 'staffcomplaints'])->name('department.head.staff.complaints');
     Route::get('/department-head/staff-complaints/{complaint}', [DepartmentHeadController::class, 'showStaffComplaint'])->name('department.head.staff.complaint.show');
     Route::post('/department-head/staff-complaints/{complaint}/response', [DepartmentHeadController::class, 'addStaffComplaintResponse'])->name('department.head.staff.complaint.response');
+
+    // Admin Assigned Complaints for Department Heads
+    Route::get('/department-head/admin-assigned-complaints', [DepartmentHeadController::class, 'adminAssignedComplaints'])->name('department.head.admin.assigned.complaints');
+    Route::post('/department-head/admin-assigned-complaints/{assignment}/discussion', [DepartmentHeadController::class, 'sendDiscussionMessage'])->name('department.head.assignment.discussion.send');
+    Route::get('/department-head/admin-assigned-complaints/{assignment}/discussions', [DepartmentHeadController::class, 'getDiscussionMessages'])->name('department.head.assignment.discussions.get');
+    Route::patch('/department-head/admin-assigned-complaints/{assignment}/status', [DepartmentHeadController::class, 'updateAssignmentStatus'])->name('department.head.assignment.status.update');
+});
+
+// Additional Admin Routes for Discussions
+Route::middleware(['auth'])->group(function () {
+    Route::post('/admin/complaint-assignments/{assignment}/discussion', [ComplaintAssignmentController::class, 'sendAdminResponse'])->name('admin.assignment.discussion.send');
+    Route::get('/admin/complaint-assignments/{assignment}/discussions', [ComplaintAssignmentController::class, 'getAssignmentDiscussions'])->name('admin.assignment.discussions.get');
 });
 
 

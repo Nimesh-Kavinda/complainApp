@@ -87,6 +87,22 @@ class ClientComplaint extends Model
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
+    /**
+     * Get all assignments for this complaint
+     */
+    public function assignments()
+    {
+        return $this->hasMany(ComplaintAssignment::class);
+    }
+
+    /**
+     * Get active assignments for this complaint
+     */
+    public function activeAssignments()
+    {
+        return $this->hasMany(ComplaintAssignment::class)->active();
+    }
+
     // Scopes
     public function scopePending($query)
     {
