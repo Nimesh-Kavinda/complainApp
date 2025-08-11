@@ -366,7 +366,15 @@
                                 @endif
 
                                 <!-- Action Buttons -->
-                                <div class="flex items-center space-x-2">
+                                <div class="flex items-center space-x-2 mx-2">
+                                    <button onclick="openReplyModal({{ $complaint->id }}, '{{ $complaint->client_name }}', '{{ $complaint->reference_number }}')"
+                                            class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+                                        </svg>
+                                        Assign
+                                    </button>
+
                                     <button onclick="openReplyModal({{ $complaint->id }}, '{{ $complaint->client_name }}', '{{ $complaint->reference_number }}')"
                                             class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -376,7 +384,7 @@
                                     </button>
 
                                     <button onclick="deleteComplaint({{ $complaint->id }}, '{{ $complaint->reference_number }}')"
-                                            class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                            class="inline-flex items-center px-2 py-1 bg-red-600 hover:bg-red-700 text-white btn-small text-sm font-medium rounded-lg transition-colors">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
