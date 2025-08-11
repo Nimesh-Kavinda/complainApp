@@ -233,7 +233,16 @@
 
             <!-- Cards View (Default) -->
             <div id="cardsView" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mx-3">
-                @foreach($complaints as $complaint)
+                <!-- Debug Info -->
+                <div class="col-span-full mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded">
+                    <strong>Debug Info:</strong>
+                    Total complaints loaded: {{ $complaints->count() }}
+                    @if($complaints->count() > 0)
+                        | First complaint ID: {{ $complaints->first()->id }}
+                    @endif
+                </div>
+
+                @forelse($complaints as $complaint)
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 {{ $complaint->has_multiple_complaints ? 'ring-2 ring-orange-200 dark:ring-orange-800' : '' }}"
                          id="complaint-card-{{ $complaint->id }}">
 
@@ -367,7 +376,7 @@
 
                                 <!-- Action Buttons -->
                                 <div class="flex items-center space-x-2 mx-2">
-                                    <button onclick="openAssignModal({{ $complaint->id }}, '{{ $complaint->client_name }}', '{{ $complaint->reference_number }}')"
+                                    <button onclick="openAssignModal({{ $complaint->id }}, {{ json_encode($complaint->client_name) }}, {{ json_encode($complaint->reference_number) }})"
                                             class="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-800 text-white text-sm font-medium rounded-lg transition-colors">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -375,7 +384,7 @@
                                         Assign
                                     </button>
 
-                                    <button onclick="openDiscussionModal({{ $complaint->id }}, '{{ $complaint->client_name }}', '{{ $complaint->reference_number }}')"
+                                    <button onclick="openDiscussionModal({{ $complaint->id }}, {{ json_encode($complaint->client_name) }}, {{ json_encode($complaint->reference_number) }})"
                                             class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-3.9-.9L3 21l1.9-5.1A8.955 8.955 0 013 12a8 8 0 1118 0z"></path>
@@ -383,7 +392,7 @@
                                         Discussion
                                     </button>
 
-                                    <button onclick="openReplyModal({{ $complaint->id }}, '{{ $complaint->client_name }}', '{{ $complaint->reference_number }}')"
+                                    <button onclick="openReplyModal({{ $complaint->id }}, {{ json_encode($complaint->client_name) }}, {{ json_encode($complaint->reference_number) }})"
                                             class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
@@ -391,7 +400,7 @@
                                         Reply
                                     </button>
 
-                                    <button onclick="deleteComplaint({{ $complaint->id }}, '{{ $complaint->reference_number }}')"
+                                    <button onclick="deleteComplaint({{ $complaint->id }}, {{ json_encode($complaint->reference_number) }})"
                                             class="inline-flex items-center px-2 py-1 bg-red-600 hover:bg-red-700 text-white btn-small text-sm font-medium rounded-lg transition-colors">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -402,7 +411,15 @@
                             </div>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <div class="col-span-full p-8 text-center bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                        <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No Complaints Found</h3>
+                        <p class="text-gray-500 dark:text-gray-400">There are currently no complaints to display.</p>
+                    </div>
+                @endforelse
             </div>
             <!-- Table View (Hidden by default) -->
             <div id="tableView" class="hidden bg-white dark:bg-gray-800 shadow-sm rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden mx-3">
@@ -504,11 +521,11 @@
 
                                     <td class="px-6 py-4">
                                         <div class="flex items-center gap-2">
-                                            <button onclick="openReplyModal({{ $complaint->id }}, '{{ $complaint->client_name }}', '{{ $complaint->reference_number }}')"
+                                            <button onclick="openReplyModal({{ $complaint->id }}, {{ json_encode($complaint->client_name) }}, {{ json_encode($complaint->reference_number) }})"
                                                     class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors">
                                                 Reply
                                             </button>
-                                            <button onclick="deleteComplaint({{ $complaint->id }}, '{{ $complaint->reference_number }}')"
+                                            <button onclick="deleteComplaint({{ $complaint->id }}, {{ json_encode($complaint->reference_number) }})"
                                                     class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors">
                                                 Delete
                                             </button>
@@ -855,9 +872,13 @@
 <!-- Discussion Modal -->
 <div id="discussionModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
     <div class="flex items-center justify-center min-h-screen px-4">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] border border-gray-200 dark:border-gray-600">
-            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Department Discussions</h3>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-7xl w-full max-h-[95vh] border border-gray-200 dark:border-gray-600 flex flex-col">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Department Discussions</h3>
+                    <div id="discussionComplaintInfo" class="text-sm text-gray-600 dark:text-gray-400 mt-1"></div>
+                </div>
                 <button id="discussionModalCloseBtn" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -865,22 +886,99 @@
                 </button>
             </div>
 
-            <!-- Complaint Info Header -->
-            <div class="p-6 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                <div id="discussionComplaintInfo" class="font-medium text-gray-900 dark:text-white mb-2"></div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                    View and manage department assignments and discussions
+            <!-- Main Content Area -->
+            <div class="flex flex-1 overflow-hidden">
+                <!-- Assignments Sidebar -->
+                <div class="w-1/3 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+                    <div class="p-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                        <h4 class="font-semibold text-gray-900 dark:text-white text-sm">Assigned Departments</h4>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">Click to view discussion</p>
+                    </div>
+                    <div id="assignmentsList" class="flex-1 overflow-y-auto">
+                        <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+                            <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                            <p class="font-medium">Loading assignments...</p>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Assignments List -->
-            <div class="flex-1 overflow-hidden">
-                <div id="assignmentsList" class="h-96 overflow-y-auto p-6">
-                    <div class="text-center text-gray-600 dark:text-gray-300 py-8">
-                        <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                        </svg>
-                        <p class="font-medium">Loading assignments...</p>
+                <!-- Chat Area -->
+                <div class="flex-1 flex flex-col">
+                    <!-- Chat Header -->
+                    <div id="chatHeader" class="p-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600 hidden">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h5 id="chatDepartmentName" class="font-semibold text-gray-900 dark:text-white"></h5>
+                                <p id="chatAssignmentInfo" class="text-sm text-gray-600 dark:text-gray-400"></p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span id="chatStatus" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Messages Area -->
+                    <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-4 hidden">
+                        <!-- Messages will be loaded here -->
+                    </div>
+
+                    <!-- Default State -->
+                    <div id="defaultChatState" class="flex-1 flex items-center justify-center">
+                        <div class="text-center text-gray-600 dark:text-gray-300">
+                            <svg class="w-12 h-12 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-3.9-.9L3 21l1.9-5.1A8.955 8.955 0 013 12a8 8 0 1118 0z"></path>
+                            </svg>
+                            <p class="font-medium text-lg">Select an Assignment</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Choose a department assignment to view and respond to discussions</p>
+                        </div>
+                    </div>
+
+                    <!-- Message Input Area -->
+                    <div id="messageInputArea" class="p-4 border-t border-gray-200 dark:border-gray-700 hidden">
+                        <form id="adminResponseForm" class="space-y-3">
+                            <div class="flex space-x-3">
+                                <div class="flex-1">
+                                    <textarea
+                                        id="adminMessageInput"
+                                        placeholder="Type your response to the department..."
+                                        rows="3"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none"></textarea>
+                                </div>
+                                <div class="flex flex-col space-y-2">
+                                    <label class="flex items-center justify-center w-12 h-12 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                        <input type="file" id="adminMessageFile" name="file" accept="image/*,video/*,.pdf,.doc,.docx" class="hidden">
+                                        <svg class="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                                        </svg>
+                                    </label>
+                                    <button
+                                        type="submit"
+                                        class="w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center justify-center">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="filePreview" class="hidden bg-gray-50 dark:bg-gray-700 p-3 rounded-lg border border-gray-200 dark:border-gray-600">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div id="fileIcon" class="flex-shrink-0"></div>
+                                        <div>
+                                            <p id="fileName" class="text-sm font-medium text-gray-900 dark:text-white"></p>
+                                            <p id="fileSize" class="text-xs text-gray-600 dark:text-gray-400"></p>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="clearFileSelection()" class="text-red-600 hover:text-red-700">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -895,19 +993,81 @@
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
                   '{{ csrf_token() }}';
 
+// Test function to check if JavaScript is working
+window.testJS = function() {
+    console.log('JavaScript is working!');
+    alert('JavaScript is working!');
+    return true;
+};
+
+// Test all modal opening functions directly
+window.testAllModals = function() {
+    console.log('Testing modal functions...');
+
+    // Get first complaint ID from the page
+    const firstCard = document.querySelector('[id^="complaint-card-"]');
+    if (!firstCard) {
+        alert('No complaint cards found!');
+        return false;
+    }
+
+    const complaintId = firstCard.id.replace('complaint-card-', '');
+    console.log('Found complaint ID:', complaintId);
+
+    // Test assign modal
+    console.log('Testing assign modal...');
+    try {
+        openAssignModal(complaintId, 'Test Client', 'TEST-001');
+        alert('Assign modal test completed - check if modal opened');
+    } catch (error) {
+        console.error('Assign modal error:', error);
+        alert('Assign modal failed: ' + error.message);
+    }
+
+    return true;
+};
+
+// Test button clicks directly
+window.testButtonClicks = function() {
+    console.log('Testing button clicks...');
+
+    // Find all assign buttons and add click listeners to test
+    const assignButtons = document.querySelectorAll('[onclick*="openAssignModal"]');
+    console.log('Found assign buttons:', assignButtons.length);
+
+    if (assignButtons.length > 0) {
+        console.log('Testing first assign button click...');
+        try {
+            assignButtons[0].click();
+            alert('Button click test completed - check if modal opened');
+        } catch (error) {
+            console.error('Button click error:', error);
+            alert('Button click failed: ' + error.message);
+        }
+    } else {
+        alert('No assign buttons found!');
+    }
+
+    return true;
+};
+
 // Assignment Modal Functions
 let assignModalInstance = null;
 let discussionModalInstance = null;
 
 function openAssignModal(complaintId, clientName, referenceNumber) {
-    console.log('Opening assign modal for complaint:', complaintId);
+    console.log('Opening assign modal for complaint:', complaintId, clientName, referenceNumber);
 
     const modal = document.getElementById('assignModal');
     const complaintInfo = document.getElementById('assignComplaintInfo');
     const complaintIdInput = document.getElementById('assignComplaintId');
 
     if (!modal || !complaintInfo || !complaintIdInput) {
-        console.error('Assignment modal elements not found');
+        console.error('Assignment modal elements not found', {
+            modal: !!modal,
+            complaintInfo: !!complaintInfo,
+            complaintIdInput: !!complaintIdInput
+        });
         return;
     }
 
@@ -931,6 +1091,8 @@ function openAssignModal(complaintId, clientName, referenceNumber) {
         now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
         deadlineInput.min = now.toISOString().slice(0, 16);
     }
+
+    console.log('Assignment modal opened successfully');
 }
 
 function closeAssignModal() {
@@ -948,12 +1110,22 @@ function closeAssignModal() {
     assignModalInstance = null;
 }
 
+// Discussion Modal Variables
+// reuse existing discussionModalInstance declared earlier
+let currentAssignmentId = null;
+let currentComplaintId = null;
+
 function openDiscussionModal(complaintId, clientName, referenceNumber) {
+    console.log('Opening discussion modal for complaint:', complaintId, clientName, referenceNumber);
+
     const modal = document.getElementById('discussionModal');
     const complaintInfo = document.getElementById('discussionComplaintInfo');
 
     if (!modal || !complaintInfo) {
-        console.error('Discussion modal elements not found');
+        console.error('Discussion modal elements not found', {
+            modal: !!modal,
+            complaintInfo: !!complaintInfo
+        });
         return;
     }
 
@@ -964,13 +1136,19 @@ function openDiscussionModal(complaintId, clientName, referenceNumber) {
 
     // Set complaint information
     complaintInfo.textContent = `${referenceNumber} - ${clientName}`;
+    currentComplaintId = complaintId;
 
     // Show modal
     modal.classList.remove('hidden');
     discussionModalInstance = modal;
 
+    // Reset chat area
+    resetChatArea();
+
     // Load assignments and discussions
     loadComplaintAssignments(complaintId);
+
+    console.log('Discussion modal opened successfully');
 }
 
 function closeDiscussionModal() {
@@ -981,6 +1159,437 @@ function closeDiscussionModal() {
     }
 
     discussionModalInstance = null;
+    currentAssignmentId = null;
+    currentComplaintId = null;
+}
+
+function resetChatArea() {
+    // Hide chat elements
+    document.getElementById('chatHeader').classList.add('hidden');
+    document.getElementById('messagesContainer').classList.add('hidden');
+    document.getElementById('messageInputArea').classList.add('hidden');
+
+    // Show default state
+    document.getElementById('defaultChatState').classList.remove('hidden');
+
+    // Clear messages
+    document.getElementById('messagesContainer').innerHTML = '';
+
+    // Clear input
+    document.getElementById('adminMessageInput').value = '';
+    clearFileSelection();
+}
+
+function loadComplaintAssignments(complaintId) {
+    const assignmentsList = document.getElementById('assignmentsList');
+
+    // Show loading state
+    assignmentsList.innerHTML = `
+        <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+            <svg class="w-8 h-8 mx-auto mb-3 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <p class="font-medium">Loading assignments...</p>
+        </div>
+    `;
+
+    fetch(`/complaints/${complaintId}/assignments`, {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayAssignments(data.assignments);
+        } else {
+            throw new Error(data.message || 'Failed to load assignments');
+        }
+    })
+    .catch(error => {
+        console.error('Error loading assignments:', error);
+        assignmentsList.innerHTML = `
+            <div class="text-center text-red-600 dark:text-red-400 py-8">
+                <svg class="w-8 h-8 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="font-medium">Error loading assignments</p>
+                <p class="text-sm">${error.message}</p>
+            </div>
+        `;
+    });
+}
+
+function displayAssignments(assignments) {
+    const assignmentsList = document.getElementById('assignmentsList');
+
+    if (!assignments || assignments.length === 0) {
+        assignmentsList.innerHTML = `
+            <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+                <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-4.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7"></path>
+                </svg>
+                <p class="font-medium">No Assignments</p>
+                <p class="text-sm">This complaint has not been assigned to any department yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const assignmentsHtml = assignments.map(assignment => {
+        const statusClass = getStatusClass(assignment.status);
+        const hasNewMessages = assignment.unread_messages_count > 0;
+
+        return `
+            <div class="assignment-item border-b border-gray-200 dark:border-gray-600 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${currentAssignmentId == assignment.id ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500' : ''}"
+                 onclick="selectAssignment(${assignment.id}, ${JSON.stringify(assignment.department.name)}, ${JSON.stringify(assignment.status)}, this)">
+                <div class="flex items-center justify-between mb-2">
+                    <h6 class="font-semibold text-gray-900 dark:text-white text-sm">${assignment.department.name}</h6>
+                    ${hasNewMessages ? '<div class="w-2 h-2 bg-red-500 rounded-full"></div>' : ''}
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusClass}">
+                        ${assignment.status}
+                    </span>
+                    ${hasNewMessages ? `<span class="text-xs text-blue-600 dark:text-blue-400 font-medium">${assignment.unread_messages_count} new</span>` : ''}
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    Assigned ${formatDate(assignment.created_at)}
+                </p>
+            </div>
+        `;
+    }).join('');
+
+    assignmentsList.innerHTML = assignmentsHtml;
+}
+
+function selectAssignment(assignmentId, departmentName, status, element) {
+    currentAssignmentId = assignmentId;
+
+    // Update assignment selection UI
+    document.querySelectorAll('.assignment-item').forEach(item => {
+        item.classList.remove('bg-blue-50', 'dark:bg-blue-900/20', 'border-l-4', 'border-l-blue-500');
+    });
+
+    if (element) {
+        element.classList.add('bg-blue-50', 'dark:bg-blue-900/20', 'border-l-4', 'border-l-blue-500');
+    }
+
+    // Show chat area
+    document.getElementById('defaultChatState').classList.add('hidden');
+    document.getElementById('chatHeader').classList.remove('hidden');
+    document.getElementById('messagesContainer').classList.remove('hidden');
+    document.getElementById('messageInputArea').classList.remove('hidden');
+
+    // Update chat header
+    document.getElementById('chatDepartmentName').textContent = departmentName;
+    document.getElementById('chatAssignmentInfo').textContent = `Assignment #${assignmentId}`;
+
+    const statusSpan = document.getElementById('chatStatus');
+    statusSpan.textContent = status;
+    statusSpan.className = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(status)}`;
+
+    // Load messages
+    loadAssignmentMessages(assignmentId);
+}
+
+function loadAssignmentMessages(assignmentId) {
+    const messagesContainer = document.getElementById('messagesContainer');
+
+    // Show loading state
+    messagesContainer.innerHTML = `
+        <div class="text-center py-4">
+            <svg class="w-6 h-6 mx-auto text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Loading messages...</p>
+        </div>
+    `;
+
+    fetch(`/admin/complaint-assignments/${assignmentId}/discussions`, {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayMessages(data.discussions);
+        } else {
+            throw new Error(data.message || 'Failed to load messages');
+        }
+    })
+    .catch(error => {
+        console.error('Error loading messages:', error);
+        messagesContainer.innerHTML = `
+            <div class="text-center text-red-600 dark:text-red-400 py-4">
+                <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-sm font-medium">Error loading messages</p>
+                <p class="text-xs">${error.message}</p>
+            </div>
+        `;
+    });
+}
+
+function displayMessages(messages) {
+    const messagesContainer = document.getElementById('messagesContainer');
+
+    if (!messages || messages.length === 0) {
+        messagesContainer.innerHTML = `
+            <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+                <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-3.9-.9L3 21l1.9-5.1A8.955 8.955 0 013 12a8 8 0 1118 0z"></path>
+                </svg>
+                <p class="font-medium">No messages yet</p>
+                <p class="text-sm">Start the conversation with the department</p>
+            </div>
+        `;
+        return;
+    }
+
+    const messagesHtml = messages.map(message => {
+    const isAdmin = message.sender_type === 'admin';
+        const avatarClass = isAdmin ? 'bg-blue-500' : 'bg-green-500';
+        const messageClass = isAdmin ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white';
+        const senderName = isAdmin ? 'Admin' : 'Department Head';
+
+        return `
+            <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'} items-end space-x-2">
+                ${!isAdmin ? `<div class="flex-shrink-0 w-8 h-8 ${avatarClass} rounded-full flex items-center justify-center text-white text-sm font-medium">${senderName.charAt(0)}</div>` : ''}
+                <div class="max-w-xs lg:max-w-md">
+                    <div class="${messageClass} rounded-lg px-4 py-2">
+                        <p class="text-sm">${message.message}</p>
+                        ${message.file_path ? `
+                            <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+                                ${renderFileAttachment(message.file_path, message.file_name)}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'} mt-1">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                            ${senderName} • ${formatDateTime(message.created_at)}
+                        </span>
+                    </div>
+                </div>
+                ${isAdmin ? `<div class="flex-shrink-0 w-8 h-8 ${avatarClass} rounded-full flex items-center justify-center text-white text-sm font-medium">${senderName.charAt(0)}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+
+    messagesContainer.innerHTML = messagesHtml;
+
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function renderFileAttachment(filePath, fileName) {
+    const fileExtension = fileName ? fileName.split('.').pop().toLowerCase() : '';
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+    const isVideo = ['mp4', 'avi', 'mov', 'webm'].includes(fileExtension);
+
+    if (isImage) {
+        return `
+            <img src="/storage/${filePath}" alt="${fileName}" class="max-w-full h-auto rounded cursor-pointer"
+                 onclick="openMediaPreview('/storage/${filePath}', 'image', '${fileName}')">
+        `;
+    } else if (isVideo) {
+        return `
+            <video controls class="max-w-full h-auto rounded">
+                <source src="/storage/${filePath}" type="video/${fileExtension}">
+                Your browser does not support the video tag.
+            </video>
+        `;
+    } else {
+        return `
+            <a href="/storage/${filePath}" target="_blank" class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 dark:text-blue-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                </svg>
+                <span class="text-sm">${fileName}</span>
+            </a>
+        `;
+    }
+}
+
+// File handling functions
+function clearFileSelection() {
+    const fileInput = document.getElementById('adminMessageFile');
+    const filePreview = document.getElementById('filePreview');
+
+    fileInput.value = '';
+    filePreview.classList.add('hidden');
+}
+
+function handleFileSelection(event) {
+    const file = event.target.files[0];
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const fileIcon = document.getElementById('fileIcon');
+
+    if (!file) {
+        filePreview.classList.add('hidden');
+        return;
+    }
+
+    // Show file preview
+    fileName.textContent = file.name;
+    fileSize.textContent = formatFileSize(file.size);
+
+    // Set file icon based on type
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+    const isVideo = ['mp4', 'avi', 'mov', 'webm'].includes(fileExtension);
+
+    if (isImage) {
+        fileIcon.innerHTML = `
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+        `;
+    } else if (isVideo) {
+        fileIcon.innerHTML = `
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+            </svg>
+        `;
+    } else {
+        fileIcon.innerHTML = `
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+            </svg>
+        `;
+    }
+
+    filePreview.classList.remove('hidden');
+}
+
+// Media preview function
+function openMediaPreview(src, type, fileName) {
+    // Create modal for media preview
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 z-[100] bg-black bg-opacity-90 flex items-center justify-center p-4';
+    modal.onclick = () => modal.remove();
+
+    if (type === 'image') {
+        modal.innerHTML = `
+            <div class="max-w-full max-h-full">
+                <img src="${src}" alt="${fileName}" class="max-w-full max-h-full object-contain">
+                <p class="text-white text-center mt-2">${fileName}</p>
+            </div>
+        `;
+    }
+
+    document.body.appendChild(modal);
+}
+
+// Admin response form submission
+async function handleAdminResponseSubmit(e) {
+    e.preventDefault();
+
+    if (!currentAssignmentId) {
+        showToast('No assignment selected', 'error');
+        return;
+    }
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const messageInput = document.getElementById('adminMessageInput');
+    const fileInput = document.getElementById('adminMessageFile');
+
+    const message = messageInput.value.trim();
+    const file = fileInput.files[0];
+
+    if (!message && !file) {
+        showToast('Please enter a message or attach a file', 'error');
+        return;
+    }
+
+    // Prepare form data
+    const submitData = new FormData();
+    submitData.append('message', message);
+    if (file) {
+        submitData.append('file', file);
+    }
+
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalHTML = submitBtn.innerHTML;
+    submitBtn.innerHTML = `
+        <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+    `;
+    submitBtn.disabled = true;
+
+    try {
+        const response = await fetch(`/admin/complaint-assignments/${currentAssignmentId}/discussion`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: submitData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Clear form
+            messageInput.value = '';
+            clearFileSelection();
+
+            // Reload messages
+            loadAssignmentMessages(currentAssignmentId);
+
+            showToast('Response sent successfully', 'success');
+        } else {
+            throw new Error(result.message || 'Failed to send response');
+        }
+    } catch (error) {
+        console.error('Error sending response:', error);
+        showToast(error.message || 'Failed to send response', 'error');
+    } finally {
+        // Reset button state
+        submitBtn.innerHTML = originalHTML;
+        submitBtn.disabled = false;
+    }
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+}
+
+function formatDateTime(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString();
+}
+
+function getStatusClass(status) {
+    const statusClasses = {
+        'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+        'in_progress': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+        'resolved': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+        'escalated': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+    };
+    return statusClasses[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
 }
 
 async function handleAssignSubmit(e) {
@@ -1027,185 +1636,49 @@ async function handleAssignSubmit(e) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 'X-CSRF-TOKEN': csrfToken
             },
             body: JSON.stringify(assignmentData)
         });
 
-        const result = await response.json();
+        let result;
+        const text = await response.text();
+        try {
+            result = text ? JSON.parse(text) : {};
+        } catch (parseErr) {
+            console.error('Failed to parse JSON:', parseErr, 'Raw response:', text);
+            throw new Error(`HTTP ${response.status} ${response.statusText}`);
+        }
+
         console.log('Assignment response:', result);
 
+        if (!response.ok) {
+            const msg = result.message || `HTTP ${response.status}`;
+            throw new Error(msg);
+        }
+
         if (result.success) {
-            showToast(result.message, 'success');
+            showToast(result.message || 'Assigned successfully', 'success');
             closeAssignModal();
             refreshData();
         } else {
-            showToast(result.message || 'Assignment failed', 'error');
+            const msg = result.message || 'Assignment failed';
+            showToast(msg, 'error');
             if (result.errors) {
                 console.log('Validation errors:', result.errors);
             }
         }
     } catch (error) {
         console.error('Assignment error:', error);
-        showToast('Network error occurred', 'error');
+        const likelyCsrf = /419|CSRF|unauthenticated|login/i.test(error.message);
+        showToast(likelyCsrf ? 'Session expired. Please refresh and try again.' : (error.message || 'Network error occurred'), 'error');
     } finally {
         // Reset button state
         submitText.classList.remove('hidden');
         loadingText.classList.add('hidden');
         submitBtn.disabled = false;
     }
-}
-
-async function loadComplaintAssignments(complaintId) {
-    const assignmentsList = document.getElementById('assignmentsList');
-
-    if (!assignmentsList) {
-        console.error('Assignments list element not found');
-        return;
-    }
-
-    try {
-        const response = await fetch(`/complaints/${complaintId}/assignments`, {
-            method: 'GET',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
-            }
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            displayAssignments(result.data);
-        } else {
-            assignmentsList.innerHTML = `
-                <div class="text-center text-red-600 dark:text-red-400 py-8">
-                    <p class="font-medium">Failed to load assignments: ${result.message}</p>
-                </div>
-            `;
-        }
-    } catch (error) {
-        console.error('Load assignments error:', error);
-        assignmentsList.innerHTML = `
-            <div class="text-center text-red-600 dark:text-red-400 py-8">
-                <p class="font-medium">Network error occurred</p>
-            </div>
-        `;
-    }
-}
-
-function displayAssignments(assignments) {
-    const assignmentsList = document.getElementById('assignmentsList');
-
-    if (assignments.length === 0) {
-        assignmentsList.innerHTML = `
-            <div class="text-center text-gray-600 dark:text-gray-300 py-8">
-                <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m6-8v4m0 0l-2-2m2 2l2-2"></path>
-                </svg>
-                <p class="font-medium">No assignments found</p>
-                <p class="text-sm mt-1">This complaint has not been assigned to any departments yet.</p>
-            </div>
-        `;
-        return;
-    }
-
-    const assignmentsHTML = assignments.map(assignment => `
-        <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-600 p-4 mb-4">
-            <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center space-x-3">
-                    <div class="flex-shrink-0">
-                        <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-semibold text-gray-900 dark:text-white">${assignment.department.name}</h4>
-                        <p class="text-xs text-gray-600 dark:text-gray-400">Assigned to: ${assignment.assigned_to.name}</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(assignment.status)}">
-                        ${getStatusLabel(assignment.status)}
-                    </span>
-                    <span class="px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(assignment.priority)}">
-                        ${assignment.priority.toUpperCase()}
-                    </span>
-                </div>
-            </div>
-
-            ${assignment.assignment_notes ? `
-                <div class="mb-3">
-                    <p class="text-sm text-gray-700 dark:text-gray-300">${assignment.assignment_notes}</p>
-                </div>
-            ` : ''}
-
-            ${assignment.deadline ? `
-                <div class="mb-3">
-                    <p class="text-xs text-gray-600 dark:text-gray-400">
-                        <span class="font-medium">Deadline:</span> ${new Date(assignment.deadline).toLocaleString()}
-                    </p>
-                </div>
-            ` : ''}
-
-            <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                <span>Assigned: ${new Date(assignment.created_at).toLocaleString()}</span>
-                <span>Messages: ${assignment.discussions ? assignment.discussions.length : 0}</span>
-            </div>
-
-            ${assignment.discussions && assignment.discussions.length > 0 ? `
-                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                    <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-2">Recent Discussion</h5>
-                    <div class="space-y-2 max-h-32 overflow-y-auto">
-                        ${assignment.discussions.slice(-3).map(discussion => `
-                            <div class="text-xs">
-                                <div class="flex items-center space-x-2 mb-1">
-                                    <span class="font-medium text-gray-900 dark:text-white">${discussion.sender.name}</span>
-                                    <span class="text-gray-500 dark:text-gray-400">${new Date(discussion.sent_at).toLocaleString()}</span>
-                                </div>
-                                <p class="text-gray-700 dark:text-gray-300">${discussion.message}</p>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            ` : ''}
-        </div>
-    `).join('');
-
-    assignmentsList.innerHTML = assignmentsHTML;
-}
-
-function getStatusColor(status) {
-    const colors = {
-        'assigned': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        'in_progress': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-        'pending_feedback': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-        'resolved': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        'cancelled': 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-    };
-    return colors[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
-}
-
-function getStatusLabel(status) {
-    const labels = {
-        'assigned': 'Assigned',
-        'in_progress': 'In Progress',
-        'pending_feedback': 'Pending Feedback',
-        'resolved': 'Resolved',
-        'cancelled': 'Cancelled'
-    };
-    return labels[status] || 'Unknown';
-}
-
-function getPriorityColor(priority) {
-    const colors = {
-        'low': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        'medium': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        'high': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-        'urgent': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-    };
-    return colors[priority] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
 }
 
 // Evidence Modal Functions
@@ -1767,13 +2240,7 @@ function showToast(message, type = 'success') {
 }
 
 // Utility function to format file size
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
+// Note: formatFileSize defined earlier; avoid duplicate definitions here.
 
 // Show all complaints for a specific NIC
 function showAllComplaintsForNIC(nic) {
@@ -1942,6 +2409,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Discussion Modal Event Listeners
     const discussionModal = document.getElementById('discussionModal');
     const discussionModalCloseBtn = document.getElementById('discussionModalCloseBtn');
+    const adminResponseForm = document.getElementById('adminResponseForm');
+    const adminMessageFile = document.getElementById('adminMessageFile');
 
     if (discussionModalCloseBtn) {
         discussionModalCloseBtn.addEventListener('click', function(e) {
@@ -1957,6 +2426,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeDiscussionModal();
             }
         });
+    }
+
+    if (adminResponseForm) {
+        adminResponseForm.addEventListener('submit', handleAdminResponseSubmit);
+    }
+
+    if (adminMessageFile) {
+        adminMessageFile.addEventListener('change', handleFileSelection);
     }
 
     // ESC key handling

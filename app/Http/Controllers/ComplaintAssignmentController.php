@@ -112,11 +112,27 @@ class ComplaintAssignmentController extends Controller
                         $query->with('sender')->orderBy('sent_at', 'asc');
                     }
                 ])
-                ->get();
+                ->get()
+                ->map(function ($assignment) {
+                    // Count unread messages for admin
+                    // Unread messages for admin are department head messages not yet read
+                    $unreadCount = $assignment->discussions()
+                        ->where('sender_type', 'department_head')
+                        ->whereNull('read_at')
+                        ->count();
+
+                    return [
+                        'id' => $assignment->id,
+                        'department' => $assignment->department,
+                        'status' => $assignment->status,
+                        'created_at' => $assignment->created_at,
+                        'unread_messages_count' => $unreadCount
+                    ];
+                });
 
             return response()->json([
                 'success' => true,
-                'data' => $assignments
+                'assignments' => $assignments
             ]);
 
         } catch (\Exception $e) {
@@ -377,28 +393,48 @@ class ComplaintAssignmentController extends Controller
         }
 
         $request->validate([
-            'message' => 'required|string|max:2000',
-            'attachments.*' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,pdf,doc,docx,txt',
+            'message' => 'required_without:file|string|max:2000',
+            'file' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,gif,webp,mp4,avi,mov,webm,pdf,doc,docx,txt',
             'is_important' => 'boolean'
         ]);
 
         try {
-            $attachments = [];
+            $filePath = null;
+            $fileName = null;
+            $attachment = null;
+            $messageType = 'text';
 
-            // Handle file uploads
-            if ($request->hasFile('attachments')) {
-                foreach ($request->file('attachments') as $file) {
-                    $filename = time() . '_' . $file->getClientOriginalName();
-                    $path = $file->store('complaint_discussions', 'public');
+            // Handle single file upload
+            if ($request->hasFile('file')) {
+                $file = $request->file('file');
+                $fileName = $file->getClientOriginalName();
+                $storedPath = $file->store('complaint_discussions', 'public');
 
-                    $attachments[] = [
-                        'original_name' => $file->getClientOriginalName(),
-                        'stored_name' => $filename,
-                        'path' => $path,
-                        'size' => $file->getSize(),
-                        'mime_type' => $file->getMimeType()
-                    ];
+                // Determine message type based on mime
+                $mime = $file->getClientMimeType();
+                if (str_starts_with($mime, 'image/')) {
+                    $messageType = 'image';
+                } elseif (str_starts_with($mime, 'video/')) {
+                    $messageType = 'video';
+                } elseif (in_array($mime, [
+                    'application/pdf',
+                    'application/msword',
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'text/plain'
+                ])) {
+                    $messageType = 'document';
+                } else {
+                    $messageType = 'file';
                 }
+
+                $attachment = [
+                    'name' => $fileName,
+                    'path' => $storedPath,
+                    'size' => $file->getSize(),
+                    'type' => $messageType,
+                    'mime_type' => $mime,
+                ];
+                $filePath = $storedPath; // for response compatibility
             }
 
             $discussion = ComplaintDiscussion::create([
@@ -406,8 +442,8 @@ class ComplaintAssignmentController extends Controller
                 'sender_id' => Auth::id(),
                 'sender_type' => 'admin',
                 'message' => $request->message,
-                'message_type' => 'text',
-                'attachments' => $attachments,
+                'message_type' => $messageType,
+                'attachments' => $attachment ? [$attachment] : null,
                 'is_important' => $request->boolean('is_important', false),
                 'sent_at' => now()
             ]);
@@ -418,10 +454,14 @@ class ComplaintAssignmentController extends Controller
                 'discussion' => [
                     'id' => $discussion->id,
                     'message' => $discussion->message,
+                    'message_type' => $discussion->message_type,
                     'sender_name' => Auth::user()->name,
                     'sender_type' => 'admin',
+                    // Derive file fields for frontend compatibility
+                    'file_path' => $filePath,
+                    'file_name' => $fileName,
+                    'created_at' => $discussion->sent_at,
                     'sent_at' => $discussion->sent_at->format('M d, Y h:i A'),
-                    'attachments' => $discussion->attachments,
                     'is_important' => $discussion->is_important
                 ]
             ]);
@@ -454,16 +494,35 @@ class ComplaintAssignmentController extends Controller
             ->orderBy('sent_at', 'asc')
             ->get()
             ->map(function($discussion) {
+                // Map attachments to simple file fields for UI if present
+                $filePath = null;
+                $fileName = null;
+                if (is_array($discussion->attachments) && count($discussion->attachments) > 0) {
+                    $first = $discussion->attachments[0];
+                    $filePath = $first['path'] ?? null;
+                    $fileName = $first['name'] ?? null;
+                }
                 return [
                     'id' => $discussion->id,
                     'message' => $discussion->message,
+                    'message_type' => $discussion->message_type,
                     'sender_name' => $discussion->sender->name,
                     'sender_type' => $discussion->sender_type,
+                    'file_path' => $filePath,
+                    'file_name' => $fileName,
+                    'created_at' => $discussion->sent_at,
                     'sent_at' => $discussion->sent_at->format('M d, Y h:i A'),
                     'attachments' => $discussion->attachments,
                     'is_important' => $discussion->is_important
                 ];
             });
+
+        // Mark messages as read by admin
+        // Mark unread dept messages as read for admin
+        $assignment->discussions()
+            ->where('sender_type', 'department_head')
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
 
         return response()->json([
             'success' => true,
