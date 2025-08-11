@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="min-h-screen my-12 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+<div class="min-h-screen my-12 bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-black">
     <!-- Header Section -->
-    <div class="bg-gradient-to-r from-red-600 to-gray-800 shadow-2xl">
+    <div class="bg-gradient-to-r from-blue-700 via-purple-600 to-green-600 dark:from-red-600 dark:to-gray-800 shadow-2xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">

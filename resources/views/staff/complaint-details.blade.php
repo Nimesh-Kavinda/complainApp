@@ -2,8 +2,8 @@
 
 @section('content')
 
-<div class="my-12 min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-    <div class="bg-gradient-to-r from-red-600 to-gray-800 shadow-2xl">
+<div class="my-16 min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-black">
+    <div class="bg-gradient-to-r from-blue-700 via-purple-600 to-green-600 dark:from-red-600 dark:to-gray-800 shadow-2xl">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">

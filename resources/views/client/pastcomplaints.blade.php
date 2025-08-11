@@ -26,6 +26,20 @@
 
 @keyframes pulse-glow {
     0%, 100% {
+        box-shadow: 0 0 5px rgba(59, 130, 246, 0.3), 0 0 10px rgba(147, 51, 234, 0.2), 0 0 15px rgba(34, 197, 94, 0.1);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 30px rgba(147, 51, 234, 0.4), 0 0 40px rgba(34, 197, 94, 0.3);
+    }
+}
+
+/* Dark mode pulse-glow for red theme */
+.dark .animate-pulse-glow {
+    animation: pulse-glow-dark 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-dark {
+    0%, 100% {
         box-shadow: 0 0 5px rgba(239, 68, 68, 0.3);
     }
     50% {
@@ -82,23 +96,37 @@
 
 .bg-floating:nth-child(1) {
     top: 5%; left: 5%; width: 100px; height: 100px;
-    animation-delay: 0s; background: #ef4444;
+    animation-delay: 0s; background: linear-gradient(135deg, #3b82f6, #8b5cf6);
 }
 .bg-floating:nth-child(2) {
     top: 15%; right: 10%; width: 80px; height: 80px;
-    animation-delay: 3s; background: #000000;
+    animation-delay: 3s; background: linear-gradient(135deg, #8b5cf6, #22c55e);
 }
 .bg-floating:nth-child(3) {
     bottom: 20%; left: 15%; width: 60px; height: 60px;
-    animation-delay: 6s; background: #ef4444;
+    animation-delay: 6s; background: linear-gradient(135deg, #22c55e, #3b82f6);
 }
 .bg-floating:nth-child(4) {
     bottom: 5%; right: 20%; width: 90px; height: 90px;
-    animation-delay: 9s; background: #000000;
+    animation-delay: 9s; background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+}
+
+/* Dark mode floating elements */
+.dark .bg-floating:nth-child(1) {
+    background: #ef4444;
+}
+.dark .bg-floating:nth-child(2) {
+    background: #000000;
+}
+.dark .bg-floating:nth-child(3) {
+    background: #ef4444;
+}
+.dark .bg-floating:nth-child(4) {
+    background: #000000;
 }
 </style>
 
-<div class="min-h-screen bg-gradient-to-br from-white via-gray-50 to-red-50 dark:from-black dark:via-gray-900 dark:to-red-950 mt-12 relative overflow-hidden">
+<div class="min-h-screen bg-gradient-to-br from-slate-100 via-blue-100 to-purple-100 dark:from-black dark:via-gray-900 dark:to-red-950 mt-12 relative overflow-hidden">
     <!-- Floating Background Elements -->
     <div class="bg-floating"></div>
     <div class="bg-floating"></div>
@@ -107,9 +135,9 @@
 
     <!-- Animated Background -->
     <div class="absolute inset-0 overflow-hidden">
-        <div class="absolute -top-40 -right-40 w-80 h-80 bg-red-600/5 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-red-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div class="absolute top-1/2 right-1/4 w-60 h-60 bg-red-600/3 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/8 dark:bg-red-600/5 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/8 dark:bg-red-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div class="absolute top-1/2 right-1/4 w-60 h-60 bg-green-500/8 dark:bg-red-600/3 rounded-full blur-3xl animate-pulse delay-2000"></div>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
@@ -117,13 +145,13 @@
         <div class="mb-8 animate-fade-in-up">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between mb-6">
                 <div>
-                    <div class="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-red-600/20 to-red-700/20 border border-red-500/30 text-red-600 dark:text-red-400 text-sm font-medium mb-4 backdrop-blur-sm">
+                    <div class="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-200/50 via-purple-200/50 to-green-200/50 dark:from-red-600/20 dark:to-red-700/20 border border-blue-300/50 dark:border-red-500/30 text-blue-700 dark:text-red-400 text-sm font-medium mb-4 backdrop-blur-sm">
                         <svg class="w-4 h-4 mr-2 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                         </svg>
                         Complaint Tracking Dashboard
                     </div>
-                    <h1 class="text-4xl font-black text-transparent bg-gradient-to-r from-black to-red-600 dark:from-white dark:to-red-400 bg-clip-text mb-3">
+                    <h1 class="text-4xl font-black text-transparent bg-gradient-to-r from-blue-700 via-purple-600 to-green-600 dark:from-white dark:to-red-400 bg-clip-text mb-3">
                         My Complaint History
                     </h1>
                     <p class="text-gray-600 dark:text-gray-300 text-lg">
@@ -131,8 +159,8 @@
                     </p>
                 </div>
                 <div class="mt-4 lg:mt-0 animate-slide-in-right">
-                    <a href="{{ route('client.complain') }}" class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 to-black hover:from-red-700 hover:to-gray-900 text-white rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-red-500/25 relative overflow-hidden">
-                        <span class="absolute inset-0 bg-gradient-to-r from-red-500/0 via-white/10 to-red-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                    <a href="{{ route('client.complain') }}" class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-red-600 dark:to-black dark:hover:from-red-700 dark:hover:to-gray-900 text-white rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-blue-500/25 dark:hover:shadow-red-500/25 relative overflow-hidden">
+                        <span class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-white/10 to-purple-500/0 dark:from-red-500/0 dark:via-white/10 dark:to-red-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                         <svg class="w-5 h-5 mr-2 group-hover:rotate-90 transition-transform duration-300 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
@@ -143,26 +171,26 @@
 
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
-                <div class="stat-card bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-red-200/30 dark:border-red-800/30 p-6 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
+                <div class="stat-card bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-blue-200/30 dark:border-red-800/30 p-6 hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-red-500/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-red-500 dark:to-red-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-bold text-gray-600 dark:text-gray-400 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-300">Total</p>
+                            <p class="text-sm font-bold text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-red-400 transition-colors duration-300">Total</p>
                             <p class="text-3xl font-black text-gray-900 dark:text-white">{{ $stats['total'] }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="stat-card bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-red-200/30 dark:border-red-800/30 p-6 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
+                <div class="stat-card bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-orange-200/30 dark:border-red-800/30 p-6 hover:shadow-2xl hover:shadow-orange-500/10 dark:hover:shadow-red-500/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-yellow-500 dark:from-yellow-500 dark:to-orange-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -175,10 +203,10 @@
                     </div>
                 </div>
 
-                <div class="stat-card bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-red-200/30 dark:border-red-800/30 p-6 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
+                <div class="stat-card bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-green-200/30 dark:border-red-800/30 p-6 hover:shadow-2xl hover:shadow-green-500/10 dark:hover:shadow-red-500/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 dark:from-green-500 dark:to-emerald-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -191,26 +219,26 @@
                     </div>
                 </div>
 
-                <div class="stat-card bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-red-200/30 dark:border-red-800/30 p-6 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
+                <div class="stat-card bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-purple-200/30 dark:border-red-800/30 p-6 hover:shadow-2xl hover:shadow-purple-500/10 dark:hover:shadow-red-500/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 dark:from-blue-500 dark:to-indigo-500 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                 </svg>
                             </div>
                         </div>
                         <div class="ml-4">
-                            <p class="text-sm font-bold text-gray-600 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">In Progress</p>
+                            <p class="text-sm font-bold text-gray-600 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-blue-400 transition-colors duration-300">In Progress</p>
                             <p class="text-3xl font-black text-gray-900 dark:text-white">{{ $stats['in_progress'] }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="stat-card bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-red-200/30 dark:border-red-800/30 p-6 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
+                <div class="stat-card bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-gray-200/30 dark:border-red-800/30 p-6 hover:shadow-2xl hover:shadow-gray-500/10 dark:hover:shadow-red-500/10 transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-gradient-to-br from-black to-gray-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                            <div class="w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-600 dark:from-black dark:to-gray-700 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
@@ -228,7 +256,7 @@
         @if($complaints->count() > 0)
             <div class="space-y-6 animate-fade-in-up" style="animation-delay: 0.4s;">
                 @foreach($complaints as $complaint)
-                    <div class="bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-red-200/30 dark:border-red-800/30 hover:shadow-2xl hover:shadow-red-500/10 transition-all duration-500 hover:scale-102 hover:-translate-y-1 group relative overflow-hidden"
+                    <div class="bg-white/90 dark:bg-black/90 backdrop-blur-lg rounded-2xl shadow-xl border border-blue-200/30 dark:border-red-800/30 hover:shadow-2xl hover:shadow-blue-500/10 dark:hover:shadow-red-500/10 transition-all duration-500 hover:scale-102 hover:-translate-y-1 group relative overflow-hidden"
                          id="complaint-card-{{ $complaint->id }}">
 
                         <!-- Animated border gradient -->
