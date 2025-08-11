@@ -215,7 +215,7 @@ class DepartmentHeadController extends Controller
         try {
             $validated = $request->validate([
                 'response_message' => 'required|string|max:2000',
-                'status' => 'required|in:pending,in_review,resolved,rejected'
+                'status' => 'required|in:pending,in_progress,resolved,closed'
             ]);
 
             // Get existing responses or create new array

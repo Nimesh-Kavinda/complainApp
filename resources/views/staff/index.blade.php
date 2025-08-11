@@ -104,6 +104,9 @@
 
                 <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black mb-8 animate-fade-in-up delay-300">
                     <span class="bg-gradient-to-r from-white via-gray-100 to-red-100 bg-clip-text text-transparent leading-tight">
+                        Staff
+                    </span>
+                    <span class="bg-gradient-to-r from-white via-gray-100 to-red-100 bg-clip-text text-transparent leading-tight">
                         Complaint
                     </span>
                     <br>

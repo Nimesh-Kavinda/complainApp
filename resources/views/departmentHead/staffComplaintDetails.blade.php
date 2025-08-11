@@ -227,9 +227,9 @@
                             <select id="status" name="status" required
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
                                 <option value="pending" {{ $complaint->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="in_review" {{ $complaint->status === 'in_review' ? 'selected' : '' }}>In Review</option>
+                                <option value="in_progress" {{ $complaint->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
                                 <option value="resolved" {{ $complaint->status === 'resolved' ? 'selected' : '' }}>Resolved</option>
-                                <option value="rejected" {{ $complaint->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                <option value="closed" {{ $complaint->status === 'closed' ? 'selected' : '' }}>Closed</option>
                             </select>
                         </div>
                         <div class="mb-4">
@@ -304,7 +304,7 @@
     </div>
 </div>
 
-@push('scripts')
+
 <script>
 // Form submission
 document.getElementById('responseForm').addEventListener('submit', async function(e) {
@@ -421,5 +421,4 @@ document.getElementById('filePreviewModal').addEventListener('click', function(e
     }
 });
 </script>
-@endpush
 @endsection
