@@ -1325,10 +1325,162 @@ function openDiscussionModal(complaintId, clientName, referenceNumber) {
     // Reset chat area to default state
     resetChatArea();
 
-    // Load assignments for this complaint
-    loadComplaintAssignments(complaintId);
+    // Load assignments for this complaint and auto-display conversations
+    loadComplaintAssignmentsAndDiscussions(complaintId);
 
     console.log('✅ Discussion modal opened successfully');
+}
+
+function loadComplaintAssignmentsAndDiscussions(complaintId) {
+    console.log('📄 Loading assignments and discussions for complaint:', complaintId);
+
+    const assignmentsList = document.getElementById('assignmentsList');
+    if (!assignmentsList) {
+        console.error('❌ Assignments list not found');
+        return;
+    }
+
+    assignmentsList.innerHTML = `
+        <div class="p-4 text-center">
+            <div class="animate-spin w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full mx-auto mb-3"></div>
+            <p class="text-gray-600 dark:text-gray-400">Loading assignments...</p>
+        </div>
+    `;
+
+    fetch(`/complaints/${complaintId}/assignments`, {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        console.log('📄 Assignments response:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('📄 Assignments data:', data);
+        if (data.success) {
+            displayAssignmentsWithDiscussions(data.assignments);
+        } else {
+            throw new Error(data.message || 'Failed to load assignments');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Error loading assignments:', error);
+        assignmentsList.innerHTML = `
+            <div class="p-4 text-center text-red-600 dark:text-red-400">
+                <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-sm font-medium">Error loading assignments</p>
+                <p class="text-xs">${error.message}</p>
+                <button onclick="loadComplaintAssignmentsAndDiscussions(${complaintId})" class="mt-2 text-blue-600 hover:text-blue-700 text-sm underline">
+                    Retry
+                </button>
+            </div>
+        `;
+    });
+}
+
+function displayAssignmentsWithDiscussions(assignments) {
+    console.log('📋 Displaying assignments:', assignments);
+
+    const assignmentsList = document.getElementById('assignmentsList');
+    if (!assignments || assignments.length === 0) {
+        assignmentsList.innerHTML = `
+            <div class="p-4 text-center text-gray-600 dark:text-gray-400">
+                <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                <p class="font-medium">No assignments found</p>
+                <p class="text-sm mt-1">This complaint hasn't been assigned to any department yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Create assignment list with discussions preview
+    const html = assignments.map((assignment, index) => {
+        const unreadCount = assignment?.unread_messages_count || 0;
+        const assignmentItemId = `assignment-item-${assignment.id}`;
+
+        return `
+        <div class="assignment-item border-b border-gray-200 dark:border-gray-600 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+             id="${assignmentItemId}"
+             onclick="selectAssignmentAndLoadDiscussion(${assignment.id}, '${assignment.department.name}', '${assignment.status}', this)">
+            <div class="p-4">
+                <div class="flex justify-between items-start mb-2">
+                    <div class="flex-1">
+                        <h6 class="font-semibold text-gray-900 dark:text-white text-sm">${assignment.department.name}</h6>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">Assignment #${assignment.id}</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        ${unreadCount > 0 ? `
+                            <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                                ${unreadCount}
+                            </span>
+                        ` : ''}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(assignment.status)}">
+                            ${assignment.status}
+                        </span>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-500">
+                    Assigned ${formatDate(assignment.created_at)}
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+
+    assignmentsList.innerHTML = html;
+
+    // Auto-select first assignment and load its discussion
+    if (assignments.length > 0) {
+        const firstAssignment = assignments[0];
+        setTimeout(() => {
+            selectAssignmentAndLoadDiscussion(
+                firstAssignment.id,
+                firstAssignment.department.name,
+                firstAssignment.status,
+                document.getElementById(`assignment-item-${firstAssignment.id}`)
+            );
+        }, 100);
+    }
+}
+
+function selectAssignmentAndLoadDiscussion(assignmentId, departmentName, status, element) {
+    console.log('🏢 Selected assignment:', assignmentId, departmentName);
+
+    // Store current assignment ID globally
+    window.currentAssignmentId = assignmentId;
+
+    // Update assignment selection UI
+    document.querySelectorAll('.assignment-item').forEach(item => {
+        item.classList.remove('bg-blue-50', 'dark:bg-blue-900/20', 'border-l-4', 'border-l-blue-500', 'selected');
+    });
+
+    if (element) {
+        element.classList.add('bg-blue-50', 'dark:bg-blue-900/20', 'border-l-4', 'border-l-blue-500', 'selected');
+        element.dataset.assignmentId = assignmentId; // Add assignment ID to element
+    }
+
+    // Show chat area
+    document.getElementById('defaultChatState').classList.add('hidden');
+    document.getElementById('chatHeader').classList.remove('hidden');
+    document.getElementById('messagesContainer').classList.remove('hidden');
+    document.getElementById('messageInputArea').classList.remove('hidden');
+
+    // Update chat header
+    document.getElementById('chatDepartmentName').textContent = departmentName;
+    document.getElementById('chatAssignmentInfo').textContent = `Assignment #${assignmentId}`;
+
+    const statusSpan = document.getElementById('chatStatus');
+    statusSpan.textContent = status;
+    statusSpan.className = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(status)}`;
+
+    // Load messages for this assignment
+    loadAssignmentDiscussions(assignmentId);
 }
 
 function closeDiscussionModal() {
@@ -1552,20 +1704,52 @@ function displayMessages(messages) {
     }
 
     const messagesHtml = messages.map(message => {
+        console.log('💬 Processing message:', message);
         const isAdmin = message.sender_type === 'admin';
         const avatarClass = isAdmin ? 'bg-blue-500' : 'bg-green-500';
         const messageClass = isAdmin ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white';
         const senderName = isAdmin ? 'Admin' : 'Department Head';
+        const senderInitial = isAdmin ? 'A' : 'D';
+
+        // Handle attachments - support both single file_path and multiple attachments
+        let attachmentHtml = '';
+        if (message.file_path && message.file_name) {
+            // Single file attachment (legacy format)
+            attachmentHtml = `
+                <div class="mt-2 pt-2 border-t ${isAdmin ? 'border-blue-400' : 'border-gray-300 dark:border-gray-600'}">
+                    ${renderFileAttachment(message.file_path, message.file_name)}
+                </div>
+            `;
+        } else if (message.attachments && Array.isArray(message.attachments) && message.attachments.length > 0) {
+            // Multiple attachments (new format)
+            const attachmentsHtml = message.attachments.map(attachment => {
+                const fileName = attachment.original_name || attachment.name || 'Unknown file';
+                const filePath = attachment.path;
+                return renderFileAttachment(filePath, fileName);
+            }).join('');
+
+            attachmentHtml = `
+                <div class="mt-2 pt-2 border-t ${isAdmin ? 'border-blue-400' : 'border-gray-300 dark:border-gray-600'}">
+                    ${attachmentsHtml}
+                </div>
+            `;
+        }
 
         return `
             <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'} items-end space-x-2 mb-4">
                 ${!isAdmin ? `<div class="flex-shrink-0 w-8 h-8 ${avatarClass} rounded-full flex items-center justify-center text-white text-sm font-medium">${senderName.charAt(0)}</div>` : ''}
                 <div class="max-w-xs lg:max-w-md">
-                    <div class="${messageClass} rounded-lg px-4 py-2 shadow-sm">
+                    <div class="${messageClass} rounded-lg px-4 py-3 shadow-sm">
                         <p class="text-sm whitespace-pre-wrap">${escapeHtml(message.message)}</p>
-                        ${message.file_path ? `
-                            <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
-                                ${renderFileAttachment(message.file_path, message.file_name)}
+                        ${attachmentHtml}
+                        ${message.is_important ? `
+                            <div class="mt-2 pt-2 border-t ${isAdmin ? 'border-blue-400' : 'border-gray-300 dark:border-gray-600'}">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${isAdmin ? 'bg-red-200 text-red-800' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'}">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Important
+                                </span>
                             </div>
                         ` : ''}
                     </div>
@@ -1607,7 +1791,216 @@ function openReplyModal(complaintId, clientName, referenceNumber) {
 
     modal.classList.remove('hidden');
     replyModalInstance = modal;
+
+    // Load complaint details and conversation after a short delay
+    // This ensures the modal is fully rendered
+    setTimeout(() => {
+        loadComplaintConversation(complaintId);
+    }, 100);
+
     console.log('✅ Reply modal opened successfully');
+}
+
+function loadComplaintConversation(complaintId) {
+    console.log('📥 Loading conversation for complaint:', complaintId);
+
+    const conversationContainer = document.getElementById('conversationMessages');
+    const complaintDetails = document.getElementById('complaintDetails');
+
+    // Show loading state
+    conversationContainer.innerHTML = `
+        <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+            <svg class="w-6 h-6 mx-auto mb-3 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <p class="font-medium">Loading conversation...</p>
+        </div>
+    `;
+
+    fetch(`/admin/complaints/${complaintId}/conversation`, {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        console.log('📥 Conversation response:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('📥 Conversation data:', data);
+        if (data.success) {
+            // Update complaint details (with error handling)
+            if (data.complaint_info) {
+                updateComplaintDetails(data.complaint_info);
+            } else {
+                console.warn('⚠️ No complaint_info in response');
+            }
+
+            // Display conversation
+            if (data.conversation) {
+                displayConversation(data.conversation);
+
+                // Update message count
+                const messageCount = document.getElementById('messageCount');
+                if (messageCount) {
+                    messageCount.textContent = data.conversation.length;
+                }
+            } else {
+                console.warn('⚠️ No conversation in response');
+                displayConversation([]);
+            }
+        } else {
+            throw new Error(data.message || 'Failed to load conversation');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Error loading conversation:', error);
+        conversationContainer.innerHTML = `
+            <div class="text-center text-red-600 dark:text-red-400 py-8">
+                <svg class="w-6 h-6 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="font-medium">Error loading conversation</p>
+                <p class="text-sm">${error.message}</p>
+                <button onclick="loadComplaintConversation(${complaintId})" class="mt-2 text-blue-600 hover:text-blue-700 text-sm underline">
+                    Retry
+                </button>
+            </div>
+        `;
+    });
+}
+
+function updateComplaintDetails(complaintInfo) {
+    console.log('📝 Updating complaint details:', complaintInfo);
+
+    // Check if complaintInfo exists
+    if (!complaintInfo) {
+        console.error('❌ Complaint info is undefined');
+        return;
+    }
+
+    // Update basic info with safe access
+    const currentStatus = document.getElementById('currentStatus');
+    const currentPriority = document.getElementById('currentPriority');
+
+    if (currentStatus) {
+        const statusText = complaintInfo.status_label || complaintInfo.status || 'Unknown';
+        currentStatus.textContent = statusText;
+        console.log('✅ Updated status to:', statusText);
+    } else {
+        console.warn('⚠️ currentStatus element not found');
+    }
+
+    if (currentPriority) {
+        const priorityText = complaintInfo.priority_label || complaintInfo.priority || 'Normal';
+        currentPriority.textContent = priorityText;
+        console.log('✅ Updated priority to:', priorityText);
+    } else {
+        console.warn('⚠️ currentPriority element not found');
+    }
+
+    // Update detailed info
+    const complaintTitle = document.getElementById('complaintTitle');
+    const complaintDescription = document.getElementById('complaintDescription');
+    const complaintCategory = document.getElementById('complaintCategory');
+    const complaintDate = document.getElementById('complaintDate');
+    const complaintEvidence = document.getElementById('complaintEvidence');
+
+    if (complaintTitle) {
+        complaintTitle.textContent = complaintInfo.complaint_title || 'No title provided';
+        const titleSection = document.getElementById('complaintTitleSection');
+        if (titleSection && complaintInfo.complaint_title) {
+            titleSection.classList.remove('hidden');
+        }
+    }
+
+    if (complaintDescription) {
+        complaintDescription.textContent = complaintInfo.complaint_details || 'No description provided';
+    }
+
+    if (complaintCategory) {
+        complaintCategory.textContent = complaintInfo.category_name || 'Uncategorized';
+    }
+
+    if (complaintDate) {
+        const date = new Date(complaintInfo.created_at);
+        complaintDate.textContent = date.toLocaleDateString();
+    }
+
+    if (complaintEvidence) {
+        const evidenceCount = complaintInfo.evidence_count || 0;
+        complaintEvidence.textContent = evidenceCount > 0 ? `${evidenceCount} files` : 'None';
+    }
+
+    // Pre-fill current status in form
+    const statusSelect = document.getElementById('status');
+    if (statusSelect) {
+        statusSelect.value = complaintInfo.status;
+    }
+}
+
+function displayConversation(conversation) {
+    console.log('💬 Displaying conversation:', conversation);
+
+    const conversationContainer = document.getElementById('conversationMessages');
+    if (!conversationContainer) {
+        console.error('❌ Conversation container not found');
+        return;
+    }
+
+    if (!conversation || conversation.length === 0) {
+        conversationContainer.innerHTML = `
+            <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+                <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+                <p class="font-medium">No conversation yet</p>
+                <p class="text-sm">Start by sending a reply below</p>
+            </div>
+        `;
+        return;
+    }
+
+    console.log(`💬 Rendering ${conversation.length} messages`);
+    const conversationHtml = conversation.map(message => {
+        const isAdmin = message.sender_type === 'admin';
+        const timeFormatted = formatDateTime(message.created_at || message.timestamp);
+
+        return `
+            <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'} mb-4">
+                <div class="max-w-xs lg:max-w-md ${isAdmin ? 'order-2' : 'order-1'}">
+                    <div class="flex items-center mb-1 ${isAdmin ? 'justify-end' : 'justify-start'}">
+                        <span class="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            ${isAdmin ? 'Admin' : 'Client'}
+                        </span>
+                        <span class="text-xs text-gray-500 dark:text-gray-500 ml-2">
+                            ${timeFormatted}
+                        </span>
+                    </div>
+                    <div class="rounded-lg px-4 py-2 ${isAdmin ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'}">
+                        <p class="text-sm whitespace-pre-wrap">${escapeHtml(message.message)}</p>
+                        ${message.status_update ? `
+                            <div class="mt-2 pt-2 border-t ${isAdmin ? 'border-blue-500' : 'border-gray-300 dark:border-gray-600'}">
+                                <p class="text-xs opacity-90">Status updated to: <strong>${message.status_update}</strong></p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    conversationContainer.innerHTML = conversationHtml;
+
+    // Scroll to bottom
+    const conversationThread = document.getElementById('conversationThread');
+    if (conversationThread) {
+        conversationThread.scrollTop = conversationThread.scrollHeight;
+    }
+
+    console.log('✅ Conversation displayed successfully');
 }
 
 function closeReplyModal() {
@@ -2778,8 +3171,7 @@ function displayConversation(conversation, complaintInfo) {
     conversationMessages.innerHTML = conversationHtml;
 
     // Scroll to bottom
-    const conversationThread = document.getElementById('conversationThread');
-    conversationThread.scrollTop = conversationThread.scrollHeight;
+    conversationMessages.scrollTop = conversationMessages.scrollHeight;
 }
 
 // Utility functions
@@ -3249,6 +3641,490 @@ document.addEventListener('DOMContentLoaded', function() {
     window.displayAssignments = displayAssignments;
     window.selectAssignment = selectAssignment;
 });
+
+// Test function for modal functionality
+function testModalsFunction() {
+    console.log('🧪 Testing modal functionality...');
+
+    // Test Reply modal
+    console.log('🧪 Testing Reply modal...');
+    const firstComplaint = document.querySelector('[data-complaint-id]');
+    if (firstComplaint) {
+        const complaintId = firstComplaint.getAttribute('data-complaint-id');
+        console.log('🧪 Found complaint ID:', complaintId);
+
+        // Test opening Reply modal
+        try {
+            openReplyModal(complaintId, 'Test Client', 'REF-123');
+            console.log('✅ Reply modal opened successfully');
+
+            // Wait for modal to load then test conversation loading
+            setTimeout(() => {
+                console.log('🧪 Testing conversation loading...');
+                loadComplaintConversation(complaintId);
+            }, 1000);
+
+        } catch (error) {
+            console.error('❌ Reply modal failed:', error);
+        }
+
+        setTimeout(() => {
+            closeAllModals();
+
+            // Test Discussion modal
+            console.log('🧪 Testing Discussion modal...');
+            try {
+                openDiscussionModal(complaintId, 'Test Client', 'REF-123');
+                console.log('✅ Discussion modal opened successfully');
+            } catch (error) {
+                console.error('❌ Discussion modal failed:', error);
+            }
+        }, 3000);
+    } else {
+        console.error('❌ No complaints found to test');
+    }
+}
+
+// Quick test function for conversation endpoint
+function testConversationEndpoint(complaintId = 1) {
+    console.log('🧪 Testing conversation endpoint for complaint:', complaintId);
+    fetch(`/admin/complaints/${complaintId}/conversation`, {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('✅ Conversation endpoint response:', data);
+        if (data.success && data.conversation) {
+            console.log(`📊 Found ${data.conversation.length} messages`);
+            data.conversation.forEach((msg, index) => {
+                console.log(`  ${index + 1}. ${msg.sender_type}: ${msg.message.substring(0, 50)}...`);
+            });
+
+            // Test the update function directly
+            console.log('🧪 Testing updateComplaintDetails with received data...');
+            if (data.complaint_info) {
+                updateComplaintDetails(data.complaint_info);
+                console.log('✅ updateComplaintDetails completed successfully');
+            } else {
+                console.error('❌ No complaint_info in response');
+            }
+
+            // Test conversation display
+            console.log('🧪 Testing displayConversation with received data...');
+            displayConversation(data.conversation);
+            console.log('✅ displayConversation completed successfully');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Conversation endpoint failed:', error);
+    });
+}
+
+// Debug function to test modal opening
+function debugReplyModal(complaintId = 1) {
+    console.log('🐛 Debug: Opening reply modal for complaint:', complaintId);
+
+    // Test if modal exists
+    const modal = document.getElementById('replyModal');
+    if (!modal) {
+        console.error('❌ Reply modal not found!');
+        return;
+    }
+
+    console.log('✅ Reply modal found');
+
+    // Test opening the modal
+    try {
+        openReplyModal(complaintId, 'Test Client', 'TEST-001');
+        console.log('✅ Modal opened successfully');
+
+        // Wait a bit then test conversation loading
+        setTimeout(() => {
+            console.log('🧪 Testing conversation loading...');
+            testConversationEndpoint(complaintId);
+        }, 1000);
+
+    } catch (error) {
+        console.error('❌ Error opening modal:', error);
+    }
+}
+
+// Reply Form Submission Handler
+function setupReplyFormHandler() {
+    const replyForm = document.getElementById('replyForm');
+    if (replyForm) {
+        replyForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('📧 Reply form submitted');
+
+            const complaintId = document.getElementById('complaintId').value;
+            const status = document.getElementById('status').value;
+            const message = document.getElementById('message').value;
+            const adminNotes = document.getElementById('admin_notes').value;
+
+            if (!status || !message.trim()) {
+                alert('Please select a status and enter a message');
+                return;
+            }
+
+            const submitBtn = replyForm.querySelector('button[type="submit"]');
+            const submitText = submitBtn.querySelector('.submit-text');
+            const loadingText = submitBtn.querySelector('.loading-text');
+
+            // Show loading state
+            submitText.classList.add('hidden');
+            loadingText.classList.remove('hidden');
+            submitBtn.disabled = true;
+
+            const formData = new FormData();
+            formData.append('status', status);
+            formData.append('message', message);
+            formData.append('admin_notes', adminNotes);
+
+            fetch(`/admin/complaints/${complaintId}/reply`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ Reply sent successfully');
+                    // Clear the form
+                    document.getElementById('message').value = '';
+                    document.getElementById('admin_notes').value = '';
+                    // Reload conversation
+                    loadComplaintConversation(complaintId);
+                    // Show success message
+                    showNotification('Reply sent successfully!', 'success');
+                } else {
+                    throw new Error(data.message || 'Failed to send reply');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error sending reply:', error);
+                showNotification('Failed to send reply: ' + error.message, 'error');
+            })
+            .finally(() => {
+                // Reset button state
+                submitText.classList.remove('hidden');
+                loadingText.classList.add('hidden');
+                submitBtn.disabled = false;
+            });
+        });
+    }
+}
+
+// Discussion Message Sending
+function sendDiscussionMessage(assignmentId) {
+    console.log('💬 Sending discussion message for assignment:', assignmentId);
+
+    const messageInput = document.getElementById('discussionMessageInput');
+    const fileInput = document.getElementById('adminMessageFile');
+    const message = messageInput.value.trim();
+
+    if (!message) {
+        alert('Please enter a message');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('message', message);
+    formData.append('is_important', document.getElementById('messageImportant')?.checked || false);
+
+    if (fileInput.files[0]) {
+        formData.append('file', fileInput.files[0]);
+    }
+
+    const sendBtn = document.getElementById('sendDiscussionBtn');
+    if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Sending...';
+    }
+
+    fetch(`/admin/complaint-assignments/${assignmentId}/discussion`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('✅ Discussion message sent successfully');
+            messageInput.value = '';
+            fileInput.value = '';
+            clearFileSelection();
+            // Reload assignment discussions
+            loadAssignmentDiscussions(assignmentId);
+            showNotification('Message sent successfully!', 'success');
+        } else {
+            throw new Error(data.message || 'Failed to send message');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Error sending discussion message:', error);
+        showNotification('Failed to send message: ' + error.message, 'error');
+    })
+    .finally(() => {
+        if (sendBtn) {
+            sendBtn.disabled = false;
+            sendBtn.textContent = 'Send Message';
+        }
+    });
+}
+
+// Load Assignment Discussions
+function loadAssignmentDiscussions(assignmentId) {
+    console.log('📄 Loading discussions for assignment:', assignmentId);
+
+    const messagesContainer = document.getElementById('messagesContainer');
+    if (!messagesContainer) {
+        console.error('❌ Messages container not found');
+        return;
+    }
+
+    messagesContainer.innerHTML = `
+        <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+            <svg class="w-6 h-6 mx-auto mb-3 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <p class="font-medium">Loading messages...</p>
+        </div>
+    `;
+
+    fetch(`/admin/complaint-assignments/${assignmentId}/discussions`, {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('📄 Assignment discussions data:', data);
+        if (data.success) {
+            displayMessages(data.discussions);
+        } else {
+            throw new Error(data.message || 'Failed to load discussions');
+        }
+    })
+    .catch(error => {
+        console.error('❌ Error loading assignment discussions:', error);
+        messagesContainer.innerHTML = `
+            <div class="text-center text-red-600 dark:text-red-400 py-8">
+                <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-sm font-medium">Error loading discussions</p>
+                <p class="text-xs">${error.message}</p>
+                <button onclick="loadAssignmentDiscussions(${assignmentId})" class="mt-2 text-blue-600 hover:text-blue-700 text-sm underline">
+                    Retry
+                </button>
+            </div>
+        `;
+    });
+}
+
+// Notification System
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+        type === 'success' ? 'bg-green-500 text-white' :
+        type === 'error' ? 'bg-red-500 text-white' :
+        'bg-blue-500 text-white'
+    } transform transition-transform duration-300 translate-x-full`;
+
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    // Slide in
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 100);
+
+    // Slide out and remove
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}// Auto-test on page load
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎯 Page loaded - modals ready for testing');
+    console.log('🎯 Call testModalsFunction() in console to test modal functionality');
+
+    // Initialize form handlers
+    setupReplyFormHandler();
+    setupDiscussionFormHandler();
+
+    console.log('✅ Form handlers initialized');
+});
+
+// Discussion Form Handler
+function setupDiscussionFormHandler() {
+    const discussionForm = document.getElementById('adminResponseForm');
+    if (discussionForm) {
+        discussionForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('💬 Discussion form submitted');
+
+            const messageInput = document.getElementById('adminMessageInput');
+            const fileInput = document.getElementById('adminMessageFile');
+            const message = messageInput.value.trim();
+
+            if (!message) {
+                alert('Please enter a message');
+                return;
+            }
+
+            // Get selected assignment ID
+            const selectedAssignment = document.querySelector('.assignment-item.selected');
+            if (!selectedAssignment) {
+                alert('Please select an assignment first');
+                return;
+            }
+
+            const assignmentId = selectedAssignment.dataset.assignmentId;
+
+            const formData = new FormData();
+            formData.append('message', message);
+
+            if (fileInput.files[0]) {
+                formData.append('file', fileInput.files[0]);
+            }
+
+            const submitBtn = discussionForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+
+            fetch(`/admin/complaint-assignments/${assignmentId}/discussion`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('✅ Discussion message sent successfully');
+                    messageInput.value = '';
+                    fileInput.value = '';
+                    clearFileSelection();
+                    // Reload assignment discussions
+                    loadAssignmentDiscussions(assignmentId);
+                    showNotification('Message sent successfully!', 'success');
+                } else {
+                    throw new Error(data.message || 'Failed to send message');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error sending discussion message:', error);
+                showNotification('Failed to send message: ' + error.message, 'error');
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+            });
+        });
+    }
+}
+
+// Debug and test functions
+function testModalFunctions() {
+    console.log('🧪 Testing modal functions...');
+
+    // Test 1: Check if essential elements exist
+    const replyModal = document.getElementById('replyModal');
+    const discussionModal = document.getElementById('discussionModal');
+    const conversationMessages = document.getElementById('conversationMessages');
+    const assignmentDiscussion = document.getElementById('assignmentDiscussion');
+
+    console.log('✅ Elements found:');
+    console.log('  - Reply Modal:', !!replyModal);
+    console.log('  - Discussion Modal:', !!discussionModal);
+    console.log('  - Conversation Messages:', !!conversationMessages);
+    console.log('  - Assignment Discussion:', !!assignmentDiscussion);
+
+    // Test 2: Check if CSRF token exists
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    console.log('  - CSRF Token:', !!csrfToken);
+
+    // Test 3: Test a conversation load (use first complaint if available)
+    const firstComplaintCard = document.querySelector('[data-complaint-id]');
+    if (firstComplaintCard) {
+        const testComplaintId = firstComplaintCard.getAttribute('data-complaint-id');
+        console.log('  - Test Complaint ID:', testComplaintId);
+
+        // Test the debug endpoint
+        fetch('/admin/complaints/conversation/' + testComplaintId)
+            .then(response => response.json())
+            .then(data => {
+                console.log('✅ Test endpoint response:', data);
+
+                if (data.complaint_info) {
+                    console.log('  - Complaint Info available:', !!data.complaint_info);
+                    console.log('  - Status Label:', data.complaint_info.status_label);
+                    console.log('  - Priority Label:', data.complaint_info.priority_label);
+                }
+
+                if (data.messages) {
+                    console.log('  - Messages count:', data.messages.length);
+                }
+            })
+            .catch(error => {
+                console.error('❌ Test endpoint error:', error);
+            });
+    } else {
+        console.log('  - No complaint cards found for testing');
+    }
+
+    console.log('🧪 Test completed - check console for results');
+}
+
+// Quick debug info function
+function debugInfo() {
+    console.log('🔍 Current Debug Info:');
+    console.log('  - Current view:', currentView);
+    console.log('  - Current complaint ID:', currentComplaintId);
+    console.log('  - Reply modal instance:', !!replyModalInstance);
+    console.log('  - Discussion modal instance:', !!discussionModalInstance);
+
+    const modals = {
+        reply: document.getElementById('replyModal'),
+        discussion: document.getElementById('discussionModal'),
+        assignment: document.getElementById('assignModal'),
+        evidence: document.getElementById('evidenceModal')
+    };
+
+    console.log('  - Modal elements:', modals);
+}
+
+// Test reply modal with real data
+function testReplyModal() {
+    const firstComplaintCard = document.querySelector('[data-complaint-id]');
+    if (firstComplaintCard) {
+        const testComplaintId = firstComplaintCard.getAttribute('data-complaint-id');
+        console.log('🧪 Testing Reply Modal with complaint:', testComplaintId);
+
+        const clientName = firstComplaintCard.querySelector('.font-semibold')?.textContent || 'Test Client';
+        const refNumber = firstComplaintCard.querySelector('.text-sm')?.textContent || 'REF001';
+
+        openReplyModal(testComplaintId, clientName, refNumber);
+    } else {
+        console.log('❌ No complaint cards found for testing');
+    }
+}
 
 </script>
 

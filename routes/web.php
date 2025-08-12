@@ -39,6 +39,7 @@ Route::put('/admin/users/{id}/role', [AdminController::class, 'updateUserRole'])
 Route::get('/admin/complaints', [AdminController::class, 'complains'])->name('admin.complaints');
 Route::put('/admin/complaints/{id}/status', [AdminController::class, 'updateComplaintStatus'])->name('admin.complaints.updateStatus');
 Route::get('/admin/complaints/{id}/conversation', [AdminController::class, 'getComplaintConversation'])->name('admin.complaints.conversation');
+Route::post('/admin/complaints/{id}/reply', [AdminController::class, 'replyToComplaint'])->name('admin.complaints.reply');
 Route::delete('/admin/complaints/{id}', [AdminController::class, 'deleteComplaint'])->name('admin.complaints.delete');
 Route::get('/admin/add-department', [DepartmentController::class, 'index'])->name('admin.departments');
 

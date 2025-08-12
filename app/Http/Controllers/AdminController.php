@@ -353,6 +353,52 @@ class AdminController extends Controller
         }
     }
 
+    public function replyToComplaint(Request $request, $id)
+    {
+        try {
+            $complaint = ClientComplaint::findOrFail($id);
+
+            $request->validate([
+                'status' => 'required|in:pending,in_progress,resolved,closed,rejected',
+                'message' => 'required|string'
+            ]);
+
+            // Update the complaint status
+            $complaint->status = $request->status;
+
+            // Update admin notes if provided
+            if ($request->filled('admin_notes')) {
+                $complaint->admin_notes = $request->admin_notes;
+            }
+
+            // Add message to conversation
+            $conversation = $complaint->getConversation();
+            $newMessage = [
+                'message' => $request->message,
+                'sender_type' => 'admin',
+                'created_at' => now()->toISOString(),
+                'status_update' => $request->status
+            ];
+
+            $conversation[] = $newMessage;
+            $complaint->conversation = $conversation;
+
+            $complaint->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reply sent successfully!',
+                'conversation' => $complaint->getConversation()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send reply: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function deleteComplaint($id)
     {
         try {
