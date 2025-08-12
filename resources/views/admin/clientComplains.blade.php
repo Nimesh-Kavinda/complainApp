@@ -1298,6 +1298,7 @@ function closeAssignModal() {
         modal.classList.add('hidden');
     }
     assignModalInstance = null;
+    location.reload();
 }
 
 // Discussion Modal with Chat Interface
@@ -1491,6 +1492,8 @@ function closeDiscussionModal() {
     discussionModalInstance = null;
     window.currentDiscussionComplaintId = null;
     resetChatArea();
+    location.reload();
+
 }
 
 function resetChatArea() {
@@ -1510,6 +1513,7 @@ function resetChatArea() {
     const messageInput = document.getElementById('adminMessageInput');
     if (messageInput) messageInput.value = '';
     clearFileSelection();
+
 }
 
 function loadComplaintAssignments(complaintId) {
@@ -2068,6 +2072,7 @@ function closeReplyModal() {
         modal.classList.add('hidden');
     }
     replyModalInstance = null;
+    location.reload();
 }
 
 // Evidence Modal
@@ -2092,6 +2097,7 @@ function closeEvidenceModal() {
         modal.classList.add('hidden');
     }
     evidenceModalInstance = null;
+    location.reload();
 }
 
 // View Toggle Function
