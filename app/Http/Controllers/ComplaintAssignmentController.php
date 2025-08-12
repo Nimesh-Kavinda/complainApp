@@ -384,11 +384,11 @@ class ComplaintAssignmentController extends Controller
     {
         $assignment = ComplaintAssignment::findOrFail($assignmentId);
 
-        // Verify user is admin
-        if (Auth::user()->role !== 'admin') {
+        // Verify user is admin or department head
+        if (Auth::user()->role !== 'md' && Auth::user()->role !== 'department_head') {
             return response()->json([
                 'success' => false,
-                'message' => 'Only admins can respond to discussions.'
+                'message' => 'Only admins or department heads can respond to discussions.'
             ], 403);
         }
 
@@ -481,11 +481,11 @@ class ComplaintAssignmentController extends Controller
     {
         $assignment = ComplaintAssignment::findOrFail($assignmentId);
 
-        // Verify user is admin
-        if (Auth::user()->role !== 'admin') {
+        // Verify user is admin or department head
+        if (Auth::user()->role !== 'md' && Auth::user()->role !== 'department_head') {
             return response()->json([
                 'success' => false,
-                'message' => 'Only admins can view discussions.'
+                'message' => 'Only admins or department heads can view discussions.'
             ], 403);
         }
 
