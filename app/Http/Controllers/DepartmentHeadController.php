@@ -6,9 +6,12 @@ use App\Models\Department;
 use App\Models\StaffMember;
 use App\Models\StaffComplaint;
 use App\Models\User;
+use App\Models\ComplaintAssignment;
+use App\Models\ComplaintDiscussion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class DepartmentHeadController extends Controller
 {
@@ -265,6 +268,222 @@ class DepartmentHeadController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to add response: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    /**
+     * Display admin assigned complaints for this department head
+     */
+    public function adminAssignedComplaints()
+    {
+        $user = Auth::user();
+        $department = $user->departmentAsHead;
+
+        if (!$department) {
+            abort(403, 'You are not assigned as a department head.');
+        }
+
+        // Get all complaint assignments for this department head
+        $assignments = ComplaintAssignment::with([
+            'clientComplaint.category',
+            'department',
+            'assignedBy',
+            'discussions.sender',
+            'discussions' => function($query) {
+                $query->orderBy('sent_at', 'desc');
+            }
+        ])
+        ->where('assigned_to', $user->id)
+        ->where('department_id', $department->id)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+        return view('departmentHead.admin-assingedComplaints', compact('assignments', 'department'));
+    }
+
+    /**
+     * Send a message in complaint discussion
+     */
+    public function sendDiscussionMessage(Request $request, $assignmentId)
+    {
+        $user = Auth::user();
+        $department = $user->departmentAsHead;
+
+        if (!$department) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not assigned as a department head.'
+            ], 403);
+        }
+
+        $assignment = ComplaintAssignment::findOrFail($assignmentId);
+
+        // Verify this assignment belongs to the current department head
+        if ($assignment->assigned_to !== $user->id || $assignment->department_id !== $department->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You can only send messages for your assigned complaints.'
+            ], 403);
+        }
+
+        $request->validate([
+            'message' => 'required|string|max:2000',
+            'attachments.*' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,pdf,doc,docx,txt',
+            'is_important' => 'boolean'
+        ]);
+
+        try {
+            $attachments = [];
+
+            // Handle file uploads
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $filename = time() . '_' . $file->getClientOriginalName();
+                    $path = $file->store('complaint_discussions', 'public');
+
+                    $attachments[] = [
+                        'original_name' => $file->getClientOriginalName(),
+                        'stored_name' => $filename,
+                        'path' => $path,
+                        'size' => $file->getSize(),
+                        'mime_type' => $file->getMimeType()
+                    ];
+                }
+            }
+
+            $discussion = ComplaintDiscussion::create([
+                'complaint_assignment_id' => $assignment->id,
+                'sender_id' => $user->id,
+                'sender_type' => 'department_head',
+                'message' => $request->message,
+                'message_type' => 'text',
+                'attachments' => $attachments,
+                'is_important' => $request->boolean('is_important', false),
+                'sent_at' => now()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Message sent successfully',
+                'discussion' => [
+                    'id' => $discussion->id,
+                    'message' => $discussion->message,
+                    'sender_name' => $user->name,
+                    'sender_type' => 'department_head',
+                    'sent_at' => $discussion->sent_at->format('M d, Y h:i A'),
+                    'attachments' => $discussion->attachments,
+                    'is_important' => $discussion->is_important
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error sending discussion message: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send message. Please try again.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get discussion messages for a complaint assignment
+     */
+    public function getDiscussionMessages($assignmentId)
+    {
+        $user = Auth::user();
+        $department = $user->departmentAsHead;
+
+        if (!$department) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not assigned as a department head.'
+            ], 403);
+        }
+
+        $assignment = ComplaintAssignment::findOrFail($assignmentId);
+
+        // Verify this assignment belongs to the current department head
+        if ($assignment->assigned_to !== $user->id || $assignment->department_id !== $department->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You can only view messages for your assigned complaints.'
+            ], 403);
+        }
+
+        $discussions = $assignment->discussions()
+            ->with('sender')
+            ->orderBy('sent_at', 'asc')
+            ->get()
+            ->map(function($discussion) {
+                return [
+                    'id' => $discussion->id,
+                    'message' => $discussion->message,
+                    'sender_name' => $discussion->sender->name,
+                    'sender_type' => $discussion->sender_type,
+                    'sent_at' => $discussion->sent_at->format('M d, Y h:i A'),
+                    'attachments' => $discussion->attachments,
+                    'is_important' => $discussion->is_important
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'discussions' => $discussions
+        ]);
+    }
+
+    /**
+     * Update assignment status
+     */
+    public function updateAssignmentStatus(Request $request, $assignmentId)
+    {
+        $user = Auth::user();
+        $department = $user->departmentAsHead;
+
+        if (!$department) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not assigned as a department head.'
+            ], 403);
+        }
+
+        $assignment = ComplaintAssignment::findOrFail($assignmentId);
+
+        // Verify this assignment belongs to the current department head
+        if ($assignment->assigned_to !== $user->id || $assignment->department_id !== $department->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You can only update your assigned complaints.'
+            ], 403);
+        }
+
+        $request->validate([
+            'status' => 'required|in:assigned,in_progress,pending_feedback,resolved,cancelled',
+            'resolution_notes' => 'nullable|string|max:1000'
+        ]);
+
+        try {
+            $assignment->update([
+                'status' => $request->status,
+                'resolution_notes' => $request->resolution_notes,
+                'resolved_at' => $request->status === 'resolved' ? now() : null
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Assignment status updated successfully'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error updating assignment status: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update status. Please try again.'
             ], 500);
         }
     }

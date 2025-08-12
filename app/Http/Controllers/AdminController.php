@@ -197,6 +197,10 @@ class AdminController extends Controller
 
         // Get filter options
         $categories = Category::all();
+        $departments = Department::with('headOfDepartment')
+            ->where('is_active', true)
+            ->whereNotNull('head_of_department')
+            ->get();
         $statuses = ['pending', 'in_progress', 'resolved', 'closed', 'rejected'];
         $priorities = ['low', 'medium', 'high', 'urgent'];
 
@@ -213,7 +217,7 @@ class AdminController extends Controller
                 ->count()
         ];
 
-        return view('admin.clientComplains', compact('complaints', 'categories', 'statuses', 'priorities', 'stats', 'nicComplaintCounts'));
+        return view('admin.clientComplains', compact('complaints', 'categories', 'departments', 'statuses', 'priorities', 'stats', 'nicComplaintCounts'));
     }
 
     public function updateComplaintStatus(Request $request, $id)
@@ -345,6 +349,52 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to load conversation.'
+            ], 500);
+        }
+    }
+
+    public function replyToComplaint(Request $request, $id)
+    {
+        try {
+            $complaint = ClientComplaint::findOrFail($id);
+
+            $request->validate([
+                'status' => 'required|in:pending,in_progress,resolved,closed,rejected',
+                'message' => 'required|string'
+            ]);
+
+            // Update the complaint status
+            $complaint->status = $request->status;
+
+            // Update admin notes if provided
+            if ($request->filled('admin_notes')) {
+                $complaint->admin_notes = $request->admin_notes;
+            }
+
+            // Add message to conversation
+            $conversation = $complaint->getConversation();
+            $newMessage = [
+                'message' => $request->message,
+                'sender_type' => 'admin',
+                'created_at' => now()->toISOString(),
+                'status_update' => $request->status
+            ];
+
+            $conversation[] = $newMessage;
+            $complaint->conversation = $conversation;
+
+            $complaint->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reply sent successfully!',
+                'conversation' => $complaint->getConversation()
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send reply: ' . $e->getMessage()
             ], 500);
         }
     }

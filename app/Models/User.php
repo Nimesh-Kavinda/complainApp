@@ -76,7 +76,7 @@ class User extends Authenticatable
      */
     public function isAdmin()
     {
-        return $this->role === 'admin';
+        return $this->role === 'md';
     }
 
     /**
@@ -93,6 +93,30 @@ class User extends Authenticatable
     public function isStaff()
     {
         return $this->role === 'staff_member';
+    }
+
+    /**
+     * Get assignments created by this user (admin)
+     */
+    public function assignmentsCreated()
+    {
+        return $this->hasMany(ComplaintAssignment::class, 'assigned_by');
+    }
+
+    /**
+     * Get assignments assigned to this user (department head)
+     */
+    public function assignmentsReceived()
+    {
+        return $this->hasMany(ComplaintAssignment::class, 'assigned_to');
+    }
+
+    /**
+     * Get discussion messages sent by this user
+     */
+    public function discussionMessages()
+    {
+        return $this->hasMany(ComplaintDiscussion::class, 'sender_id');
     }
 
 
