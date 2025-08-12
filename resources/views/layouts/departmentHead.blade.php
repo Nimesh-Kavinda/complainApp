@@ -87,7 +87,6 @@
                             $department = $user->departmentAsHead ?? null;
                             $complaintsCount = $department ? $department->staffComplaints()->count() : 0;
                         @endphp
-                        <span class="ml-auto bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 text-xs px-2 py-1 rounded-full">{{ $complaintsCount }}</span>
                     </a>
                 </li>
 

@@ -334,6 +334,7 @@ function closeDiscussionModal() {
     document.getElementById('messageInput').value = '';
     document.getElementById('fileInput').value = '';
     document.getElementById('selectedFiles').classList.add('hidden');
+    location.reload();
 }
 
 // Status Modal Functions
@@ -357,6 +358,7 @@ function closeStatusModal() {
     document.getElementById('statusModal').classList.remove('flex');
     currentAssignmentId = null;
     document.getElementById('statusForm').reset();
+    location.reload();
 }
 
 // Load Discussion Messages
@@ -400,7 +402,7 @@ function displayMessages(discussions) {
                 <svg class="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                 </svg>
-                <p>No messages yet. Start the conversation!</p>
+                <p class="font-medium text-gray-800 dark:text-gray-200">No messages yet. Start the conversation!</p>
             </div>
         `;
         return;
@@ -422,10 +424,10 @@ function displayMessages(discussions) {
                 <div class="mt-2 space-y-1">
                     ${discussion.attachments.map(attachment => `
                         <div class="flex items-center space-x-2 text-xs bg-gray-100 dark:bg-gray-700 rounded p-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 text-gray-400 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                             </svg>
-                            <span>${attachment.original_name}</span>
+                            <span class="text-gray-600 dark:text-gray-400">${attachment.original_name}</span>
                         </div>
                     `).join('')}
                 </div>
