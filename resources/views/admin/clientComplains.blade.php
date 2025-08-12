@@ -387,8 +387,8 @@
                                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                             </svg>
-                                            <span class="hidden sm:inline">Assign</span>
-                                            <span class="sm:hidden">Assign</span>
+                                            <span class="hidden sm:inline">Assign to Departments</span>
+
                                         </button>
                                     @else
                                         <!-- Assignment status - show when already assigned -->
@@ -396,8 +396,8 @@
                                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                             </svg>
-                                            <span class="hidden sm:inline">Assigned</span>
-                                            <span class="sm:hidden">✓</span>
+                                            <span class="hidden sm:inline">Assigned ✓</span>
+
                                         </div>
                                     @endif
 
@@ -411,8 +411,7 @@
                                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-3.9-.9L3 21l1.9-5.1A8.955 8.955 0 013 12a8 8 0 1118 0z"></path>
                                             </svg>
-                                            <span class="hidden sm:inline">Discussion</span>
-                                            <span class="sm:hidden">Chat</span>
+                                            <span class="hidden sm:inline">Discussion with Departments</span>
                                             @if($unreadCount > 0)
                                                 <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                                                     {{ $unreadCount > 9 ? '9+' : $unreadCount }}
@@ -427,18 +426,7 @@
                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
                                         </svg>
-                                        <span class="hidden sm:inline">Reply</span>
-                                        <span class="sm:hidden">Reply</span>
-                                    </button>
-
-                                    <!-- Delete/Ignore button - always available -->
-                                    <button onclick="deleteComplaint({{ $complaint->id }}, {{ json_encode($complaint->reference_number) }})"
-                                            class="flex-1 min-w-0 sm:flex-none inline-flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
-                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                        <span class="hidden sm:inline">Ignore</span>
-                                        <span class="sm:hidden">Del</span>
+                                        <span class="hidden sm:inline">Reply to Client</span>
                                     </button>
                                 </div>
                             </div>
@@ -590,11 +578,6 @@
                                             <button onclick="openReplyModal({{ $complaint->id }}, {{ json_encode($complaint->client_name) }}, {{ json_encode($complaint->reference_number) }})"
                                                     class="px-3 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors">
                                                 Reply
-                                            </button>
-
-                                            <button onclick="deleteComplaint({{ $complaint->id }}, {{ json_encode($complaint->reference_number) }})"
-                                                    class="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors">
-                                                Ignore
                                             </button>
                                         </div>
                                     </td>
@@ -2144,16 +2127,7 @@ function toggleView(viewType) {
     localStorage.setItem('complaintsViewType', viewType);
 }
 
-// Delete Complaint Function
-function deleteComplaint(complaintId, referenceNumber) {
-    console.log('🗑️ Delete complaint:', complaintId);
 
-    if (confirm(`Are you sure you want to ignore complaint ${referenceNumber}?`)) {
-        console.log('Deleting complaint...');
-        // Add delete logic here
-        alert('Delete functionality - Add backend logic here');
-    }
-}
 
 // Show Toast Function
 function showToast(message, type = 'success') {
@@ -3236,32 +3210,7 @@ function updateComplaintCardStatus(complaintId, statusData) {
 }
 
 // Delete complaint function
-function deleteComplaint(complaintId, referenceNumber) {
-    if (!confirm(`Are you sure you want to delete complaint ${referenceNumber}? This action cannot be undone.`)) {
-        return;
-    }
 
-    fetch(`/admin/complaints/${complaintId}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showToast(data.message, 'success');
-            document.getElementById(`complaint-row-${complaintId}`).remove();
-        } else {
-            showToast(data.message, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showToast('An error occurred while deleting the complaint', 'error');
-    });
-}
 
 // Toast notification function
 function showToast(message, type = 'success') {
@@ -3514,7 +3463,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.showEvidenceModal = showEvidenceModal;
     window.closeEvidenceModal = closeEvidenceModal;
     window.toggleView = toggleView;
-    window.deleteComplaint = deleteComplaint;
     window.loadComplaintAssignments = loadComplaintAssignments;
     window.displayAssignments = displayAssignments;
     window.selectAssignment = selectAssignment;
