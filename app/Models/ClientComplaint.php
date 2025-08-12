@@ -103,6 +103,34 @@ class ClientComplaint extends Model
         return $this->hasMany(ComplaintAssignment::class)->active();
     }
 
+    /**
+     * Get discussions for this complaint through assignments
+     */
+    public function discussions()
+    {
+        return $this->hasManyThrough(
+            ComplaintDiscussion::class,
+            ComplaintAssignment::class,
+            'client_complaint_id', // Foreign key on the assignments table (pointing to this model)
+            'complaint_assignment_id', // Foreign key on the discussions table (pointing to assignments)
+            'id', // Local key on this model (complaints)
+            'id' // Local key on the intermediate model (assignments)
+        );
+    }
+
+    /**
+     * Get unread discussion count for this complaint
+     */
+    public function getUnreadDiscussionCount()
+    {
+        return ComplaintDiscussion::whereHas('complaintAssignment', function($q) {
+            $q->where('client_complaint_id', $this->id);
+        })
+        ->where('sender_type', '!=', 'admin')
+        ->whereNull('read_at')
+        ->count();
+    }
+
     // Scopes
     public function scopePending($query)
     {
