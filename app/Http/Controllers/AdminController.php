@@ -16,8 +16,9 @@ class AdminController extends Controller
     {
         $categories = Category::all(); // Fetch all categories to display in the view
         $users = User::all(); // Fetch all users to display in the view
-        $complaints = ClientComplaint::all(); // Fetch all complaints to display in the view
-        return view('admin.index', compact('users', 'complaints'));
+        $complaints = ClientComplaint::all();
+        $selectedUser = User::limit(10)->get(); // Fetch 10 users to display in the view
+        return view('admin.index', compact('users', 'complaints', 'selectedUser'));
     }
 
 

@@ -4,26 +4,26 @@
 
 <section class="p-6 bg-gray-100 dark:bg-gray-900 min-h-screen">
   <!-- Page Title -->
-  <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Admin Dashboard</h1>
+  {{-- <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">Admin Dashboard</h1> --}}
 
   <!-- Stats Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
     <!-- Total Users -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <div class="text-gray-500 dark:text-gray-400">Total Users</div>
-      <div class="text-3xl font-bold text-gray-800 dark:text-white">156</div>
+    <div class="bg-blue-500 dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <div class="text-gray-100 font-bold dark:text-gray-400">Total Users</div>
+      <div class="text-3xl font-bold text-gray-100 dark:text-white">{{ $users->count() }}</div>
     </div>
 
     <!-- Total Complaints -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <div class="text-gray-500 dark:text-gray-400">Total Complaints</div>
-      <div class="text-3xl font-bold text-gray-800 dark:text-white">42</div>
+    <div class="bg-yellow-500 dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <div class="text-gray-100 font-bold dark:text-gray-400">Total Complaints</div>
+      <div class="text-3xl font-bold text-gray-100 dark:text-white">{{ $complaints->count() }}</div>
     </div>
 
     <!-- Pending Complaints -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <div class="text-gray-500 dark:text-gray-400">Pending Complaints</div>
-      <div class="text-3xl font-bold text-gray-800 dark:text-white">10</div>
+    <div class="bg-red-500 dark:bg-gray-800 rounded-lg shadow-md p-6">
+      <div class="text-gray-100 font-bold dark:text-gray-400">Pending Complaints</div>
+      <div class="text-3xl font-bold text-gray-100 dark:text-white">{{ $complaints->where('status', 'pending')->count() }}</div>
     </div>
   </div>
 
@@ -41,7 +41,7 @@
         </tr>
       </thead>
       <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-        @foreach ($users as $user)
+        @foreach ($selectedUser as $user)
           <tr>
             <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">{{ $user->name }}</td>
             <td class="px-6 py-4 text-sm text-gray-800 dark:text-gray-100">{{ $user->email }}</td>
