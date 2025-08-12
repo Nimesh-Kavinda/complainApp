@@ -374,38 +374,71 @@
                                     <div></div>
                                 @endif
 
-                                <!-- Action Buttons -->
-                                <div class="flex items-center space-x-2 mx-2">
+                                <!-- Action Buttons - Responsive Layout -->
+                                <div class="flex flex-wrap gap-2 mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    @php
+                                        $hasActiveAssignments = $complaint->activeAssignments()->exists();
+                                    @endphp
+
+                                    @if(!$hasActiveAssignments)
+                                        <!-- Assign button - only show if not assigned -->
                                         <button onclick="openAssignModal({{ $complaint->id }}, {{ json_encode($complaint->client_name) }}, {{ json_encode($complaint->reference_number) }})"
-                                                class="inline-flex items-center px-3 py-2 bg-purple-600 hover:bg-purple-800 text-white text-sm font-medium rounded-lg transition-colors">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                class="flex-1 min-w-0 sm:flex-none inline-flex items-center justify-center px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                             </svg>
-                                            Assign
+                                            <span class="hidden sm:inline">Assign</span>
+                                            <span class="sm:hidden">Assign</span>
                                         </button>
+                                    @else
+                                        <!-- Assignment status - show when already assigned -->
+                                        <div class="flex-1 min-w-0 sm:flex-none inline-flex items-center justify-center px-3 py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-sm font-medium rounded-lg">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span class="hidden sm:inline">Assigned</span>
+                                            <span class="sm:hidden">✓</span>
+                                        </div>
+                                    @endif
 
+                                    @if($hasActiveAssignments)
+                                        <!-- Discussion button - only show if assigned -->
+                                        @php
+                                            $unreadCount = $complaint->getUnreadDiscussionCount();
+                                        @endphp
                                         <button onclick="openDiscussionModal({{ $complaint->id }}, {{ json_encode($complaint->client_name) }}, {{ json_encode($complaint->reference_number) }})"
-                                            class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                class="relative flex-1 min-w-0 sm:flex-none inline-flex items-center justify-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-3.9-.9L3 21l1.9-5.1A8.955 8.955 0 013 12a8 8 0 1118 0z"></path>
                                             </svg>
-                                            Discussion
+                                            <span class="hidden sm:inline">Discussion</span>
+                                            <span class="sm:hidden">Chat</span>
+                                            @if($unreadCount > 0)
+                                                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                                    {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                                                </span>
+                                            @endif
                                         </button>
+                                    @endif
 
+                                    <!-- Reply button - always available -->
                                     <button onclick="openReplyModal({{ $complaint->id }}, {{ json_encode($complaint->client_name) }}, {{ json_encode($complaint->reference_number) }})"
-                                            class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            class="flex-1 min-w-0 sm:flex-none inline-flex items-center justify-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
                                         </svg>
-                                        Reply
+                                        <span class="hidden sm:inline">Reply</span>
+                                        <span class="sm:hidden">Reply</span>
                                     </button>
 
+                                    <!-- Delete/Ignore button - always available -->
                                     <button onclick="deleteComplaint({{ $complaint->id }}, {{ json_encode($complaint->reference_number) }})"
-                                            class="inline-flex items-center px-2 py-1 bg-red-600 hover:bg-red-700 text-white btn-small text-sm font-medium rounded-lg transition-colors">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            class="flex-1 min-w-0 sm:flex-none inline-flex items-center justify-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
-                                        Ignore
+                                        <span class="hidden sm:inline">Ignore</span>
+                                        <span class="sm:hidden">Del</span>
                                     </button>
                                 </div>
                             </div>
@@ -1267,7 +1300,7 @@ function closeAssignModal() {
     assignModalInstance = null;
 }
 
-// Discussion Modal
+// Discussion Modal with Chat Interface
 function openDiscussionModal(complaintId, clientName, referenceNumber) {
     console.log('💬 Opening discussion modal:', complaintId);
 
@@ -1280,15 +1313,22 @@ function openDiscussionModal(complaintId, clientName, referenceNumber) {
 
     const complaintInfo = document.getElementById('discussionComplaintInfo');
     if (complaintInfo) {
-        complaintInfo.textContent = `${referenceNumber} - ${clientName}`;
+        complaintInfo.textContent = `Complaint: ${referenceNumber} - ${clientName}`;
     }
+
+    // Store current complaint ID globally
+    window.currentDiscussionComplaintId = complaintId;
 
     modal.classList.remove('hidden');
     discussionModalInstance = modal;
-    console.log('✅ Discussion modal opened successfully');
 
-    // Load assignments
+    // Reset chat area to default state
+    resetChatArea();
+
+    // Load assignments for this complaint
     loadComplaintAssignments(complaintId);
+
+    console.log('✅ Discussion modal opened successfully');
 }
 
 function closeDiscussionModal() {
@@ -1297,9 +1337,254 @@ function closeDiscussionModal() {
         modal.classList.add('hidden');
     }
     discussionModalInstance = null;
+    window.currentDiscussionComplaintId = null;
+    resetChatArea();
 }
 
-// Reply Modal
+function resetChatArea() {
+    // Hide chat elements
+    const chatHeader = document.getElementById('chatHeader');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const messageInputArea = document.getElementById('messageInputArea');
+    const defaultChatState = document.getElementById('defaultChatState');
+
+    if (chatHeader) chatHeader.classList.add('hidden');
+    if (messagesContainer) messagesContainer.classList.add('hidden');
+    if (messageInputArea) messageInputArea.classList.add('hidden');
+    if (defaultChatState) defaultChatState.classList.remove('hidden');
+
+    // Clear messages and input
+    if (messagesContainer) messagesContainer.innerHTML = '';
+    const messageInput = document.getElementById('adminMessageInput');
+    if (messageInput) messageInput.value = '';
+    clearFileSelection();
+}
+
+function loadComplaintAssignments(complaintId) {
+    console.log('📄 Loading assignments for complaint:', complaintId);
+
+    const assignmentsList = document.getElementById('assignmentsList');
+    if (!assignmentsList) {
+        console.error('❌ Assignments list not found');
+        return;
+    }
+
+    // Show loading state
+    assignmentsList.innerHTML = `
+        <div class="p-6 text-center">
+            <svg class="w-8 h-8 mx-auto mb-3 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <p class="text-gray-600 dark:text-gray-300">Loading assignments...</p>
+        </div>
+    `;
+
+    // Fetch assignments from backend
+    fetch(`/complaints/${complaintId}/assignments`, {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayAssignments(data.assignments);
+        } else {
+            throw new Error(data.message || 'Failed to load assignments');
+        }
+    })
+    .catch(error => {
+        console.error('Error loading assignments:', error);
+        assignmentsList.innerHTML = `
+            <div class="p-6 text-center text-red-600 dark:text-red-400">
+                <svg class="w-8 h-8 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="font-medium">Error loading assignments</p>
+                <p class="text-sm">${error.message}</p>
+                <button onclick="loadComplaintAssignments(${complaintId})" class="mt-2 text-blue-600 hover:text-blue-700 text-sm underline">
+                    Try Again
+                </button>
+            </div>
+        `;
+    });
+}
+
+function displayAssignments(assignments) {
+    const assignmentsList = document.getElementById('assignmentsList');
+    if (!assignments || assignments.length === 0) {
+        assignmentsList.innerHTML = `
+            <div class="p-6 text-center text-gray-600 dark:text-gray-300">
+                <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-4.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 009.586 13H7"></path>
+                </svg>
+                <p class="font-medium">No Assignments</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">This complaint has not been assigned to any department yet.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const assignmentsHtml = assignments.map(assignment => {
+        const statusClass = getStatusClass(assignment.status);
+        const hasNewMessages = assignment.unread_messages_count > 0;
+
+        return `
+            <div class="assignment-item border-b border-gray-200 dark:border-gray-600 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                 onclick="selectAssignment(${assignment.id}, ${JSON.stringify(assignment.department?.name ?? '')}, ${JSON.stringify(assignment.status ?? '')}, this)">
+                <div class="flex items-center justify-between mb-2">
+                    <h6 class="font-semibold text-gray-900 dark:text-white text-sm">${assignment.department?.name ?? 'Unknown Department'}</h6>
+                    ${hasNewMessages ? '<div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>' : ''}
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusClass}">
+                        ${assignment.status}
+                    </span>
+                    ${hasNewMessages ? `<span class="text-xs text-blue-600 dark:text-blue-400 font-medium">${assignment.unread_messages_count} new</span>` : ''}
+                </div>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    Assigned ${formatDate(assignment.created_at)}
+                </p>
+                ${assignment.deadline ? `<p class="text-xs text-orange-600 dark:text-orange-400 mt-1">Due: ${formatDate(assignment.deadline)}</p>` : ''}
+            </div>
+        `;
+    }).join('');
+
+    assignmentsList.innerHTML = assignmentsHtml;
+}
+
+function selectAssignment(assignmentId, departmentName, status, element) {
+    console.log('🏢 Selected assignment:', assignmentId, departmentName);
+
+    // Store current assignment ID globally
+    window.currentAssignmentId = assignmentId;
+
+    // Update assignment selection UI
+    document.querySelectorAll('.assignment-item').forEach(item => {
+        item.classList.remove('bg-blue-50', 'dark:bg-blue-900/20', 'border-l-4', 'border-l-blue-500');
+    });
+
+    if (element) {
+        element.classList.add('bg-blue-50', 'dark:bg-blue-900/20', 'border-l-4', 'border-l-blue-500');
+    }
+
+    // Show chat area
+    document.getElementById('defaultChatState').classList.add('hidden');
+    document.getElementById('chatHeader').classList.remove('hidden');
+    document.getElementById('messagesContainer').classList.remove('hidden');
+    document.getElementById('messageInputArea').classList.remove('hidden');
+
+    // Update chat header
+    document.getElementById('chatDepartmentName').textContent = departmentName;
+    document.getElementById('chatAssignmentInfo').textContent = `Assignment #${assignmentId}`;
+
+    const statusSpan = document.getElementById('chatStatus');
+    statusSpan.textContent = status;
+    statusSpan.className = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusClass(status)}`;
+
+    // Load messages for this assignment
+    loadAssignmentMessages(assignmentId);
+}
+
+function loadAssignmentMessages(assignmentId) {
+    const messagesContainer = document.getElementById('messagesContainer');
+
+    // Show loading state
+    messagesContainer.innerHTML = `
+        <div class="text-center py-8">
+            <svg class="w-6 h-6 mx-auto text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Loading messages...</p>
+        </div>
+    `;
+
+    fetch(`/admin/complaint-assignments/${assignmentId}/discussions`, {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            displayMessages(data.discussions);
+        } else {
+            throw new Error(data.message || 'Failed to load messages');
+        }
+    })
+    .catch(error => {
+        console.error('Error loading messages:', error);
+        messagesContainer.innerHTML = `
+            <div class="text-center text-red-600 dark:text-red-400 py-8">
+                <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-sm font-medium">Error loading messages</p>
+                <p class="text-xs">${error.message}</p>
+                <button onclick="loadAssignmentMessages(${assignmentId})" class="mt-2 text-blue-600 hover:text-blue-700 text-sm underline">
+                    Retry
+                </button>
+            </div>
+        `;
+    });
+}
+
+function displayMessages(messages) {
+    const messagesContainer = document.getElementById('messagesContainer');
+
+    if (!messages || messages.length === 0) {
+        messagesContainer.innerHTML = `
+            <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+                <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-3.9-.9L3 21l1.9-5.1A8.955 8.955 0 013 12a8 8 0 1118 0z"></path>
+                </svg>
+                <p class="font-medium">No messages yet</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Start the conversation with the department</p>
+            </div>
+        `;
+        return;
+    }
+
+    const messagesHtml = messages.map(message => {
+        const isAdmin = message.sender_type === 'admin';
+        const avatarClass = isAdmin ? 'bg-blue-500' : 'bg-green-500';
+        const messageClass = isAdmin ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white';
+        const senderName = isAdmin ? 'Admin' : 'Department Head';
+
+        return `
+            <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'} items-end space-x-2 mb-4">
+                ${!isAdmin ? `<div class="flex-shrink-0 w-8 h-8 ${avatarClass} rounded-full flex items-center justify-center text-white text-sm font-medium">${senderName.charAt(0)}</div>` : ''}
+                <div class="max-w-xs lg:max-w-md">
+                    <div class="${messageClass} rounded-lg px-4 py-2 shadow-sm">
+                        <p class="text-sm whitespace-pre-wrap">${escapeHtml(message.message)}</p>
+                        ${message.file_path ? `
+                            <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
+                                ${renderFileAttachment(message.file_path, message.file_name)}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'} mt-1">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">
+                            ${senderName} • ${formatDateTime(message.created_at)}
+                        </span>
+                    </div>
+                </div>
+                ${isAdmin ? `<div class="flex-shrink-0 w-8 h-8 ${avatarClass} rounded-full flex items-center justify-center text-white text-sm font-medium">${senderName.charAt(0)}</div>` : ''}
+            </div>
+        `;
+    }).join('');
+
+    messagesContainer.innerHTML = messagesHtml;
+
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}// Reply Modal
 function openReplyModal(complaintId, clientName, referenceNumber) {
     console.log('📧 Opening reply modal:', complaintId);
 
@@ -1486,7 +1771,205 @@ function selectAssignment(assignmentId, departmentName, status) {
     alert(`Selected: ${departmentName} (${status})`);
 }
 
-// Event Listeners Setup
+// File handling functions for discussion modal
+function clearFileSelection() {
+    const fileInput = document.getElementById('adminMessageFile');
+    const filePreview = document.getElementById('filePreview');
+
+    if (fileInput) fileInput.value = '';
+    if (filePreview) filePreview.classList.add('hidden');
+}
+
+function handleFileSelection(event) {
+    const file = event.target.files[0];
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const fileIcon = document.getElementById('fileIcon');
+
+    if (!file) {
+        if (filePreview) filePreview.classList.add('hidden');
+        return;
+    }
+
+    // Show file preview
+    if (fileName) fileName.textContent = file.name;
+    if (fileSize) fileSize.textContent = formatFileSize(file.size);
+
+    // Set file icon based on type
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+    const isVideo = ['mp4', 'avi', 'mov', 'webm'].includes(fileExtension);
+
+    if (fileIcon) {
+        if (isImage) {
+            fileIcon.innerHTML = `
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+            `;
+        } else if (isVideo) {
+            fileIcon.innerHTML = `
+                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+            `;
+        } else {
+            fileIcon.innerHTML = `
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                </svg>
+            `;
+        }
+    }
+
+    if (filePreview) filePreview.classList.remove('hidden');
+}
+
+// Admin response form submission
+async function handleAdminResponseSubmit(e) {
+    e.preventDefault();
+
+    if (!window.currentAssignmentId) {
+        showToast('No assignment selected', 'error');
+        return;
+    }
+
+    const form = e.target;
+    const messageInput = document.getElementById('adminMessageInput');
+    const fileInput = document.getElementById('adminMessageFile');
+
+    const message = messageInput ? messageInput.value.trim() : '';
+    const file = fileInput ? fileInput.files[0] : null;
+
+    if (!message && !file) {
+        showToast('Please enter a message or attach a file', 'error');
+        return;
+    }
+
+    // Prepare form data
+    const submitData = new FormData();
+    submitData.append('message', message);
+    if (file) {
+        submitData.append('file', file);
+    }
+
+    // Show loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalHTML = submitBtn ? submitBtn.innerHTML : '';
+    if (submitBtn) {
+        submitBtn.innerHTML = `
+            <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+        `;
+        submitBtn.disabled = true;
+    }
+
+    try {
+        const response = await fetch(`/admin/complaint-assignments/${window.currentAssignmentId}/discussion`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json'
+            },
+            body: submitData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Clear form
+            if (messageInput) messageInput.value = '';
+            clearFileSelection();
+
+            // Reload messages
+            loadAssignmentMessages(window.currentAssignmentId);
+
+            showToast('Response sent successfully', 'success');
+        } else {
+            throw new Error(result.message || 'Failed to send response');
+        }
+    } catch (error) {
+        console.error('Error sending response:', error);
+        showToast(error.message || 'Failed to send response', 'error');
+    } finally {
+        // Reset button state
+        if (submitBtn) {
+            submitBtn.innerHTML = originalHTML;
+            submitBtn.disabled = false;
+        }
+    }
+}
+
+// Utility functions
+function renderFileAttachment(filePath, fileName) {
+    const fileExtension = fileName ? fileName.split('.').pop().toLowerCase() : '';
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
+    const isVideo = ['mp4', 'avi', 'mov', 'webm'].includes(fileExtension);
+
+    if (isImage) {
+        return `
+            <img src="/storage/${filePath}" alt="${fileName}" class="max-w-full h-auto rounded cursor-pointer"
+                 onclick="openMediaPreview('/storage/${filePath}', 'image', '${fileName}')">
+        `;
+    } else if (isVideo) {
+        return `
+            <video controls class="max-w-full h-auto rounded">
+                <source src="/storage/${filePath}" type="video/${fileExtension}">
+                Your browser does not support the video tag.
+            </video>
+        `;
+    } else {
+        return `
+            <a href="/storage/${filePath}" target="_blank" class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 dark:text-blue-400">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
+                </svg>
+                <span class="text-sm">${fileName}</span>
+            </a>
+        `;
+    }
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+}
+
+function formatDateTime(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString();
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+function getStatusClass(status) {
+    const statusClasses = {
+        'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+        'in_progress': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+        'resolved': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+        'escalated': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+    };
+    return statusClasses[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+}// Event Listeners Setup
 // removed duplicate DOMContentLoaded handler (canonical one retained later)
 
 // removed duplicate openAssignModal (canonical definition retained earlier)
