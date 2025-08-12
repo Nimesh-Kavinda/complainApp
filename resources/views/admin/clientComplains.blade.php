@@ -1941,13 +1941,26 @@ function updateComplaintDetails(complaintInfo) {
     }
 }
 
-function displayConversation(conversation) {
+function displayConversation(conversation, complaintInfo) {
     console.log('💬 Displaying conversation:', conversation);
 
     const conversationContainer = document.getElementById('conversationMessages');
     if (!conversationContainer) {
         console.error('❌ Conversation container not found');
         return;
+    }
+
+    // Update complaint details if provided
+    if (complaintInfo) {
+        updateComplaintDetails(complaintInfo);
+        // Also populate the detailed complaint info section
+        populateComplaintDetails(complaintInfo);
+    }
+
+    // Update message count
+    const messageCount = document.getElementById('messageCount');
+    if (messageCount) {
+        messageCount.textContent = conversation ? conversation.length : 0;
     }
 
     if (!conversation || conversation.length === 0) {
@@ -2001,6 +2014,52 @@ function displayConversation(conversation) {
     }
 
     console.log('✅ Conversation displayed successfully');
+}
+
+// Utility functions for the conversation
+function formatDateTime(dateString) {
+    if (!dateString) return 'Unknown time';
+
+    try {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - date) / 1000);
+
+        if (diffInSeconds < 60) return 'Just now';
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+        if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    } catch (e) {
+        return 'Invalid date';
+    }
+}
+
+function escapeHtml(text) {
+    if (!text) return '';
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.toString().replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+// Additional utility function to refresh page data
+function refreshData() {
+    console.log('🔄 Refreshing page data...');
+    location.reload();
+}
+
+// Function to close all modals
+function closeAllModals() {
+    closeReplyModal();
+    closeEvidenceModal();
+    closeAssignModal();
+    closeDiscussionModal();
 }
 
 function closeReplyModal() {
@@ -3048,155 +3107,63 @@ function closeEvidenceModal() {
     }
 }
 
-// Reply Modal Functions
-// removed duplicate: let replyModalInstance = null; (declared earlier)
+// Reply Modal Functions (centralized)
+function openReplyModal(complaintId, clientName, referenceNumber) {
+    console.log('📧 Opening reply modal for complaint:', complaintId);
+    console.log('📧 Client:', clientName, 'Reference:', referenceNumber);
 
-// removed duplicate openReplyModal (canonical definition retained earlier)
-
-function loadConversation(complaintId) {
-    console.log('loadConversation called with complaintId:', complaintId);
-
-    const conversationMessages = document.getElementById('conversationMessages');
-    if (!conversationMessages) {
-        console.error('conversationMessages element not found');
+    const modal = document.getElementById('replyModal');
+    if (!modal) {
+        console.error('❌ Reply modal not found');
+        alert('Reply modal not found!');
         return;
     }
 
-    console.log('conversationMessages element found');
+    const complaintInfo = document.getElementById('complaintInfo');
+    const complaintIdInput = document.getElementById('complaintId');
 
-    // Show loading
-    conversationMessages.innerHTML = `
-        <div class="text-center text-gray-500 dark:text-gray-400 py-8">
-            <svg class="w-6 h-6 animate-spin mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-            </svg>
-            Loading conversation...
-        </div>
-    `;
-
-    console.log('Making fetch request to:', `/admin/complaints/${complaintId}/conversation`);
-
-    fetch(`/admin/complaints/${complaintId}/conversation`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        }
-    })
-    .then(response => {
-        console.log('Fetch response status:', response.status);
-        return response.json();
-    })
-    .then(data => {
-        console.log('Fetch response data:', data);
-        if (data.success) {
-            displayConversation(data.conversation, data.complaint_info);
-        } else {
-            conversationMessages.innerHTML = `
-                <div class="text-center text-red-500 py-8">
-                    Failed to load conversation
-                </div>
-            `;
-        }
-    })
-    .catch(error => {
-        console.error('Error loading conversation:', error);
-        conversationMessages.innerHTML = `
-            <div class="text-center text-red-500 py-8">
-                Error loading conversation
-            </div>
-        `;
-    });
-}
-
-function displayConversation(conversation, complaintInfo) {
-    const conversationMessages = document.getElementById('conversationMessages');
-    const messageCount = document.getElementById('messageCount');
-    const currentStatus = document.getElementById('currentStatus');
-    const currentPriority = document.getElementById('currentPriority');
-
-    // Update header info
-    messageCount.textContent = conversation.length;
-    currentStatus.textContent = complaintInfo.status_label || complaintInfo.status;
-    if (currentPriority) {
-        currentPriority.textContent = complaintInfo.priority_label || complaintInfo.priority;
+    if (complaintInfo) {
+        complaintInfo.textContent = `${referenceNumber} - ${clientName}`;
+    }
+    if (complaintIdInput) {
+        complaintIdInput.value = complaintId;
     }
 
-    // Populate complaint details
-    populateComplaintDetails(complaintInfo);
+    // Clear previous form data
+    const statusSelect = document.getElementById('status');
+    const messageInput = document.getElementById('message');
+    const adminNotesInput = document.getElementById('admin_notes');
 
-    if (conversation.length === 0) {
-        conversationMessages.innerHTML = `
-            <div class="text-center text-gray-500 dark:text-gray-400 py-8">
-                <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+    if (statusSelect) statusSelect.value = '';
+    if (messageInput) messageInput.value = '';
+    if (adminNotesInput) adminNotesInput.value = '';
+
+    // Clear previous conversation
+    const conversationContainer = document.getElementById('conversationMessages');
+    if (conversationContainer) {
+        conversationContainer.innerHTML = `
+            <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+                <svg class="w-6 h-6 mx-auto mb-3 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                 </svg>
-                <p class="text-lg font-medium mb-2">No conversation yet</p>
-                <p class="text-sm">Start the conversation by sending a message to the client.</p>
+                <p class="font-medium">Loading conversation...</p>
             </div>
         `;
-        return;
     }
 
-    let conversationHtml = '';
+    modal.classList.remove('hidden');
+    replyModalInstance = modal;
 
-    conversation.forEach((message, index) => {
-        const isAdmin = message.sender_type === 'admin';
-        const messageDate = new Date(message.timestamp || message.created_at);
-        const timeAgo = getTimeAgo(messageDate);
+    // Load complaint details and conversation after a short delay
+    setTimeout(() => {
+        console.log('📥 About to load conversation for complaint:', complaintId);
+        loadComplaintConversation(complaintId);
+    }, 100);
 
-        conversationHtml += `
-            <div class="mb-4 ${isAdmin ? 'ml-8' : 'mr-8'}">
-                <div class="flex ${isAdmin ? 'justify-end' : 'justify-start'}">
-                    <div class="max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
-                        isAdmin
-                            ? 'bg-blue-600 text-white rounded-br-none'
-                            : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-600 rounded-bl-none'
-                    }">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs font-medium ${isAdmin ? 'text-blue-100' : 'text-gray-500 dark:text-gray-400'}">
-                                ${message.sender_name} ${isAdmin ? '(Admin)' : '(Client)'}
-                            </span>
-                            <span class="text-xs ${isAdmin ? 'text-blue-200' : 'text-gray-400 dark:text-gray-500'} ml-2">
-                                ${timeAgo}
-                            </span>
-                        </div>
-                        <p class="text-sm whitespace-pre-wrap">${escapeHtml(message.message)}</p>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-
-    conversationMessages.innerHTML = conversationHtml;
-
-    // Scroll to bottom
-    conversationMessages.scrollTop = conversationMessages.scrollHeight;
+    console.log('✅ Reply modal opened successfully');
 }
 
-// Utility functions
-function getTimeAgo(date) {
-    const now = new Date();
-    const diffInSeconds = Math.floor((now - date) / 1000);
 
-    if (diffInSeconds < 60) return 'Just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-
-    return date.toLocaleDateString();
-}
-
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
-}
 
 // Function to populate complaint details in the modal
 function populateComplaintDetails(complaintInfo) {
@@ -3237,104 +3204,9 @@ function populateComplaintDetails(complaintInfo) {
     }
 }
 
-// removed duplicate closeReplyModal (canonical definition retained earlier)
+// Reply Form is handled by setupReplyFormHandler() function called on DOMContentLoaded
 
-// Form submission
-document.getElementById('replyForm').addEventListener('submit', function(e) {
-    e.preventDefault();
 
-    const complaintId = document.getElementById('complaintId').value;
-    const formData = new FormData(this);
-
-    // Validate required fields
-    const status = document.getElementById('status').value;
-    if (!status) {
-        showToast('Please select a status', 'error');
-        return;
-    }
-
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const submitText = submitBtn.querySelector('.submit-text');
-    const loadingText = submitBtn.querySelector('.loading-text');
-
-    // Disable form during submission
-    submitBtn.disabled = true;
-    submitText.classList.add('hidden');
-    loadingText.classList.remove('hidden');
-
-    // Disable form inputs
-    const formInputs = this.querySelectorAll('input, select, textarea');
-    formInputs.forEach(input => input.disabled = true);
-
-    console.log('Submitting complaint update:', {
-        complaintId,
-        status: formData.get('status'),
-        message: formData.get('message'),
-        admin_notes: formData.get('admin_notes')
-    });
-
-    fetch(`/admin/complaints/${complaintId}/status`, {
-        method: 'PUT',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            status: formData.get('status'),
-            message: formData.get('message'),
-            admin_notes: formData.get('admin_notes')
-        })
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Response data:', data);
-
-        if (data.success) {
-            showToast('Reply sent successfully! Conversation updated.', 'success');
-
-            // Reload the conversation to show the new message
-            loadConversation(complaintId);
-
-            // Clear the message field but keep status and admin notes
-            document.getElementById('message').value = '';
-
-            // Update the UI dynamically
-            updateComplaintCardStatus(complaintId, data.data);
-        } else {
-            showToast(data.message || 'Failed to send reply', 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error updating complaint:', error);
-
-        let errorMessage = 'An error occurred while sending the reply';
-        if (error.message.includes('HTTP 422')) {
-            errorMessage = 'Validation error: Please check your input';
-        } else if (error.message.includes('HTTP 404')) {
-            errorMessage = 'Complaint not found';
-        } else if (error.message.includes('HTTP 500')) {
-            errorMessage = 'Server error: Please try again later';
-        }
-
-        showToast(errorMessage, 'error');
-    })
-    .finally(() => {
-        // Re-enable form
-        submitBtn.disabled = false;
-        submitText.classList.remove('hidden');
-        loadingText.classList.add('hidden');
-
-        // Re-enable form inputs
-        formInputs.forEach(input => input.disabled = false);
-    });
-});
 
 // Function to update complaint card status dynamically
 function updateComplaintCardStatus(complaintId, statusData) {

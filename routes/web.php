@@ -41,6 +41,19 @@ Route::put('/admin/complaints/{id}/status', [AdminController::class, 'updateComp
 Route::get('/admin/complaints/{id}/conversation', [AdminController::class, 'getComplaintConversation'])->name('admin.complaints.conversation');
 Route::post('/admin/complaints/{id}/reply', [AdminController::class, 'replyToComplaint'])->name('admin.complaints.reply');
 Route::delete('/admin/complaints/{id}', [AdminController::class, 'deleteComplaint'])->name('admin.complaints.delete');
+
+// Debug route for testing conversation
+Route::get('/debug/conversation/{id}', function($id) {
+    $complaint = App\Models\ClientComplaint::findOrFail($id);
+    return response()->json([
+        'complaint_id' => $complaint->id,
+        'reference_number' => $complaint->reference_number,
+        'client_name' => $complaint->client_name,
+        'status' => $complaint->status,
+        'conversation_count' => count($complaint->getConversation()),
+        'conversation' => $complaint->getConversation()
+    ]);
+});
 Route::get('/admin/add-department', [DepartmentController::class, 'index'])->name('admin.departments');
 
 // Department Management Routes (Admin)
