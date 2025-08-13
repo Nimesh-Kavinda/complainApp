@@ -1042,206 +1042,204 @@
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
                   '{{ csrf_token() }}';
 
-console.log('🔑 CSRF Token:', csrfToken ? 'Found' : 'Missing');
-
 // Simple test function
-window.simpleTest = function() {
-    console.log('✅ Simple test function works!');
-    alert('JavaScript is working! Check console for details.');
+// window.simpleTest = function() {
+//     console.log('✅ Simple test function works!');
+//     alert('JavaScript is working! Check console for details.');
 
-    // Check for modal elements
-    const assignModal = document.getElementById('assignModal');
-    const discussionModal = document.getElementById('discussionModal');
-    const replyModal = document.getElementById('replyModal');
+//     // Check for modal elements
+//     const assignModal = document.getElementById('assignModal');
+//     const discussionModal = document.getElementById('discussionModal');
+//     const replyModal = document.getElementById('replyModal');
 
-    console.log('Modal elements check:', {
-        assignModal: !!assignModal,
-        discussionModal: !!discussionModal,
-        replyModal: !!replyModal
-    });
+//     console.log('Modal elements check:', {
+//         assignModal: !!assignModal,
+//         discussionModal: !!discussionModal,
+//         replyModal: !!replyModal
+//     });
 
-    // Check for complaint cards
-    const complaintCards = document.querySelectorAll('[id^="complaint-card-"]');
-    console.log('Found complaint cards:', complaintCards.length);
+//     // Check for complaint cards
+//     const complaintCards = document.querySelectorAll('[id^="complaint-card-"]');
+//     console.log('Found complaint cards:', complaintCards.length);
 
-    // Check for buttons
-    const assignButtons = document.querySelectorAll('[onclick*="openAssignModal"]');
-    const discussionButtons = document.querySelectorAll('[onclick*="openDiscussionModal"]');
-    const replyButtons = document.querySelectorAll('[onclick*="openReplyModal"]');
+//     // Check for buttons
+//     const assignButtons = document.querySelectorAll('[onclick*="openAssignModal"]');
+//     const discussionButtons = document.querySelectorAll('[onclick*="openDiscussionModal"]');
+//     const replyButtons = document.querySelectorAll('[onclick*="openReplyModal"]');
 
-    console.log('Button counts:', {
-        assign: assignButtons.length,
-        discussion: discussionButtons.length,
-        reply: replyButtons.length
-    });
+//     console.log('Button counts:', {
+//         assign: assignButtons.length,
+//         discussion: discussionButtons.length,
+//         reply: replyButtons.length
+//     });
 
-    return true;
-};
+//     return true;
+// };
 
 // Test function to check if JavaScript is working
-window.testJS = function() {
-    console.log('JavaScript is working!');
-    alert('JavaScript is working!');
-    return true;
-};
+// window.testJS = function() {
+//     console.log('JavaScript is working!');
+//     alert('JavaScript is working!');
+//     return true;
+// };
 
 // Comprehensive test function for all modal functionality
-window.testAllFunctionality = function() {
-    console.log('Testing all complaint management functionality...');
+// window.testAllFunctionality = function() {
+//     console.log('Testing all complaint management functionality...');
 
-    // Get first complaint card
-    const firstCard = document.querySelector('[id^="complaint-card-"]');
-    if (!firstCard) {
-        alert('No complaint cards found! Make sure there are complaints to test with.');
-        return false;
-    }
+//     // Get first complaint card
+//     const firstCard = document.querySelector('[id^="complaint-card-"]');
+//     if (!firstCard) {
+//         alert('No complaint cards found! Make sure there are complaints to test with.');
+//         return false;
+//     }
 
-    const complaintId = firstCard.id.replace('complaint-card-', '');
-    console.log('Found complaint ID:', complaintId);
+//     const complaintId = firstCard.id.replace('complaint-card-', '');
+//     console.log('Found complaint ID:', complaintId);
 
-    // Test 1: View Toggle
-    console.log('1. Testing view toggle...');
-    try {
-        toggleView('table');
-        setTimeout(() => {
-            toggleView('cards');
-            console.log('✅ View toggle working');
-        }, 500);
-    } catch (error) {
-        console.error('❌ View toggle failed:', error);
-    }
+//     // Test 1: View Toggle
+//     console.log('1. Testing view toggle...');
+//     try {
+//         toggleView('table');
+//         setTimeout(() => {
+//             toggleView('cards');
+//             console.log('✅ View toggle working');
+//         }, 500);
+//     } catch (error) {
+//         console.error('❌ View toggle failed:', error);
+//     }
 
-    // Test 2: Modal Functions
-    setTimeout(() => {
-        console.log('2. Testing modal functions...');
+//     // Test 2: Modal Functions
+//     setTimeout(() => {
+//         console.log('2. Testing modal functions...');
 
-        // Test assign modal
-        try {
-            openAssignModal(complaintId, 'Test Client', 'TEST-001');
-            setTimeout(() => {
-                closeAssignModal();
-                console.log('✅ Assign modal working');
+//         // Test assign modal
+//         try {
+//             openAssignModal(complaintId, 'Test Client', 'TEST-001');
+//             setTimeout(() => {
+//                 closeAssignModal();
+//                 console.log('✅ Assign modal working');
 
-                // Test discussion modal
-                try {
-                    openDiscussionModal(complaintId, 'Test Client', 'TEST-001');
-                    setTimeout(() => {
-                        closeDiscussionModal();
-                        console.log('✅ Discussion modal working');
+//                 // Test discussion modal
+//                 try {
+//                     openDiscussionModal(complaintId, 'Test Client', 'TEST-001');
+//                     setTimeout(() => {
+//                         closeDiscussionModal();
+//                         console.log('✅ Discussion modal working');
 
-                        // Test reply modal
-                        try {
-                            openReplyModal(complaintId, 'Test Client', 'TEST-001');
-                            setTimeout(() => {
-                                document.getElementById('cancelReplyBtn')?.click();
-                                console.log('✅ Reply modal working');
+//                         // Test reply modal
+//                         try {
+//                             openReplyModal(complaintId, 'Test Client', 'TEST-001');
+//                             setTimeout(() => {
+//                                 document.getElementById('cancelReplyBtn')?.click();
+//                                 console.log('✅ Reply modal working');
 
-                                alert('All functionality tests completed! Check console for detailed results.');
-                            }, 1000);
-                        } catch (error) {
-                            console.error('❌ Reply modal failed:', error);
-                        }
-                    }, 1000);
-                } catch (error) {
-                    console.error('❌ Discussion modal failed:', error);
-                }
-            }, 1000);
-        } catch (error) {
-            console.error('❌ Assign modal failed:', error);
-        }
-    }, 1000);
+//                                 alert('All functionality tests completed! Check console for detailed results.');
+//                             }, 1000);
+//                         } catch (error) {
+//                             console.error('❌ Reply modal failed:', error);
+//                         }
+//                     }, 1000);
+//                 } catch (error) {
+//                     console.error('❌ Discussion modal failed:', error);
+//                 }
+//             }, 1000);
+//         } catch (error) {
+//             console.error('❌ Assign modal failed:', error);
+//         }
+//     }, 1000);
 
-    return true;
-};
+//     return true;
+// };
 
 // Test all modal opening functions directly
-window.testAllModals = function() {
-    console.log('Testing modal functions...');
+// window.testAllModals = function() {
+//     console.log('Testing modal functions...');
 
-    // Get first complaint ID from the page
-    const firstCard = document.querySelector('[id^="complaint-card-"]');
-    if (!firstCard) {
-        alert('No complaint cards found!');
-        return false;
-    }
+//     // Get first complaint ID from the page
+//     const firstCard = document.querySelector('[id^="complaint-card-"]');
+//     if (!firstCard) {
+//         alert('No complaint cards found!');
+//         return false;
+//     }
 
-    const complaintId = firstCard.id.replace('complaint-card-', '');
-    console.log('Found complaint ID:', complaintId);
+//     const complaintId = firstCard.id.replace('complaint-card-', '');
+//     console.log('Found complaint ID:', complaintId);
 
-    // Test assign modal
-    console.log('Testing assign modal...');
-    try {
-        openAssignModal(complaintId, 'Test Client', 'TEST-001');
-        alert('Assign modal test completed - check if modal opened');
-    } catch (error) {
-        console.error('Assign modal error:', error);
-        alert('Assign modal failed: ' + error.message);
-    }
+//     // Test assign modal
+//     console.log('Testing assign modal...');
+//     try {
+//         openAssignModal(complaintId, 'Test Client', 'TEST-001');
+//         alert('Assign modal test completed - check if modal opened');
+//     } catch (error) {
+//         console.error('Assign modal error:', error);
+//         alert('Assign modal failed: ' + error.message);
+//     }
 
-    return true;
-};
+//     return true;
+// };
 
 // Essential Modal Functions - Simplified and Working
 
 // Quick button click test
-window.testButtonClicks = function() {
-    console.log('🧪 Testing button clicks...');
+// window.testButtonClicks = function() {
+//     console.log('🧪 Testing button clicks...');
 
-    // Find first complaint card
-    const firstCard = document.querySelector('[id^="complaint-card-"]');
-    if (!firstCard) {
-        alert('No complaint cards found to test!');
-        return false;
-    }
+//     // Find first complaint card
+//     const firstCard = document.querySelector('[id^="complaint-card-"]');
+//     if (!firstCard) {
+//         alert('No complaint cards found to test!');
+//         return false;
+//     }
 
-    console.log('Found complaint card:', firstCard.id);
+//     console.log('Found complaint card:', firstCard.id);
 
-    // Test assign button
-    const assignBtn = firstCard.querySelector('[onclick*="openAssignModal"]');
-    if (assignBtn) {
-        console.log('Testing assign button...');
-        assignBtn.click();
-        setTimeout(() => {
-            closeAssignModal();
-            console.log('✅ Assign button works!');
-        }, 500);
-    } else {
-        console.log('❌ Assign button not found');
-    }
+//     // Test assign button
+//     const assignBtn = firstCard.querySelector('[onclick*="openAssignModal"]');
+//     if (assignBtn) {
+//         console.log('Testing assign button...');
+//         assignBtn.click();
+//         setTimeout(() => {
+//             closeAssignModal();
+//             console.log('✅ Assign button works!');
+//         }, 500);
+//     } else {
+//         console.log('❌ Assign button not found');
+//     }
 
-    // Test discussion button
-    setTimeout(() => {
-        const discussionBtn = firstCard.querySelector('[onclick*="openDiscussionModal"]');
-        if (discussionBtn) {
-            console.log('Testing discussion button...');
-            discussionBtn.click();
-            setTimeout(() => {
-                closeDiscussionModal();
-                console.log('✅ Discussion button works!');
-            }, 500);
-        } else {
-            console.log('❌ Discussion button not found');
-        }
-    }, 1000);
+//     // Test discussion button
+//     setTimeout(() => {
+//         const discussionBtn = firstCard.querySelector('[onclick*="openDiscussionModal"]');
+//         if (discussionBtn) {
+//             console.log('Testing discussion button...');
+//             discussionBtn.click();
+//             setTimeout(() => {
+//                 closeDiscussionModal();
+//                 console.log('✅ Discussion button works!');
+//             }, 500);
+//         } else {
+//             console.log('❌ Discussion button not found');
+//         }
+//     }, 1000);
 
-    // Test reply button
-    setTimeout(() => {
-        const replyBtn = firstCard.querySelector('[onclick*="openReplyModal"]');
-        if (replyBtn) {
-            console.log('Testing reply button...');
-            replyBtn.click();
-            setTimeout(() => {
-                closeReplyModal();
-                console.log('✅ Reply button works!');
-                alert('Button click tests completed! Check console for results.');
-            }, 500);
-        } else {
-            console.log('❌ Reply button not found');
-        }
-    }, 2000);
+//     // Test reply button
+//     setTimeout(() => {
+//         const replyBtn = firstCard.querySelector('[onclick*="openReplyModal"]');
+//         if (replyBtn) {
+//             console.log('Testing reply button...');
+//             replyBtn.click();
+//             setTimeout(() => {
+//                 closeReplyModal();
+//                 console.log('✅ Reply button works!');
+//                 alert('Button click tests completed! Check console for results.');
+//             }, 500);
+//         } else {
+//             console.log('❌ Reply button not found');
+//         }
+//     }, 2000);
 
-    return true;
-};
+//     return true;
+// };
 
 // Essential Modal Functions - Simplified and Working
 let assignModalInstance = null;
@@ -1251,11 +1249,10 @@ let evidenceModalInstance = null;
 
 // Assignment Modal
 function openAssignModal(complaintId, clientName, referenceNumber) {
-    console.log('📋 Opening assign modal:', complaintId);
+
 
     const modal = document.getElementById('assignModal');
     if (!modal) {
-        console.error('❌ Assign modal not found');
         alert('Assign modal not found!');
         return;
     }
@@ -1272,7 +1269,6 @@ function openAssignModal(complaintId, clientName, referenceNumber) {
 
     modal.classList.remove('hidden');
     assignModalInstance = modal;
-    console.log('✅ Assign modal opened successfully');
 }
 
 function closeAssignModal() {
@@ -1286,11 +1282,10 @@ function closeAssignModal() {
 
 // Discussion Modal with Chat Interface
 function openDiscussionModal(complaintId, clientName, referenceNumber) {
-    console.log('💬 Opening discussion modal:', complaintId);
+
 
     const modal = document.getElementById('discussionModal');
     if (!modal) {
-        console.error('❌ Discussion modal not found');
         alert('Discussion modal not found!');
         return;
     }
@@ -1311,16 +1306,13 @@ function openDiscussionModal(complaintId, clientName, referenceNumber) {
 
     // Load assignments for this complaint and auto-display conversations
     loadComplaintAssignmentsAndDiscussions(complaintId);
-
-    console.log('✅ Discussion modal opened successfully');
 }
 
 function loadComplaintAssignmentsAndDiscussions(complaintId) {
-    console.log('📄 Loading assignments and discussions for complaint:', complaintId);
+
 
     const assignmentsList = document.getElementById('assignmentsList');
     if (!assignmentsList) {
-        console.error('❌ Assignments list not found');
         return;
     }
 
@@ -1339,11 +1331,9 @@ function loadComplaintAssignmentsAndDiscussions(complaintId) {
         }
     })
     .then(response => {
-        console.log('📄 Assignments response:', response.status);
         return response.json();
     })
     .then(data => {
-        console.log('📄 Assignments data:', data);
         if (data.success) {
             displayAssignmentsWithDiscussions(data.assignments);
         } else {
@@ -1351,7 +1341,6 @@ function loadComplaintAssignmentsAndDiscussions(complaintId) {
         }
     })
     .catch(error => {
-        console.error('❌ Error loading assignments:', error);
         assignmentsList.innerHTML = `
             <div class="p-4 text-center text-red-600 dark:text-red-400">
                 <svg class="w-6 h-6 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1368,7 +1357,6 @@ function loadComplaintAssignmentsAndDiscussions(complaintId) {
 }
 
 function displayAssignmentsWithDiscussions(assignments) {
-    console.log('📋 Displaying assignments:', assignments);
 
     const assignmentsList = document.getElementById('assignmentsList');
     if (!assignments || assignments.length === 0) {
@@ -1434,7 +1422,7 @@ function displayAssignmentsWithDiscussions(assignments) {
 }
 
 function selectAssignmentAndLoadDiscussion(assignmentId, departmentName, status, element) {
-    console.log('🏢 Selected assignment:', assignmentId, departmentName);
+
 
     // Store current assignment ID globally
     window.currentAssignmentId = assignmentId;
@@ -1500,11 +1488,8 @@ function resetChatArea() {
 }
 
 function loadComplaintAssignments(complaintId) {
-    console.log('📄 Loading assignments for complaint:', complaintId);
-
     const assignmentsList = document.getElementById('assignmentsList');
     if (!assignmentsList) {
-        console.error('❌ Assignments list not found');
         return;
     }
 
@@ -1596,7 +1581,7 @@ function displayAssignments(assignments) {
 }
 
 function selectAssignment(assignmentId, departmentName, status, element) {
-    console.log('🏢 Selected assignment:', assignmentId, departmentName);
+
 
     // Store current assignment ID globally
     window.currentAssignmentId = assignmentId;
@@ -1691,7 +1676,6 @@ function displayMessages(messages) {
     }
 
     const messagesHtml = messages.map(message => {
-        console.log('💬 Processing message:', message);
         const isAdmin = message.sender_type === 'admin';
         const avatarClass = isAdmin ? 'bg-blue-500' : 'bg-green-500';
         const messageClass = isAdmin ? 'ml-auto bg-blue-600 text-white' : 'mr-auto bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white';
@@ -1757,11 +1741,9 @@ function displayMessages(messages) {
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }// Reply Modal
 function openReplyModal(complaintId, clientName, referenceNumber) {
-    console.log('📧 Opening reply modal:', complaintId);
 
     const modal = document.getElementById('replyModal');
     if (!modal) {
-        console.error('❌ Reply modal not found');
         alert('Reply modal not found!');
         return;
     }
@@ -1784,12 +1766,10 @@ function openReplyModal(complaintId, clientName, referenceNumber) {
     setTimeout(() => {
         loadComplaintConversation(complaintId);
     }, 100);
-
-    console.log('✅ Reply modal opened successfully');
 }
 
 function loadComplaintConversation(complaintId) {
-    console.log('📥 Loading conversation for complaint:', complaintId);
+
 
     const conversationContainer = document.getElementById('conversationMessages');
     const complaintDetails = document.getElementById('complaintDetails');
@@ -1812,11 +1792,9 @@ function loadComplaintConversation(complaintId) {
         }
     })
     .then(response => {
-        console.log('📥 Conversation response:', response.status);
         return response.json();
     })
     .then(data => {
-        console.log('📥 Conversation data:', data);
         if (data.success) {
             // Update complaint details (with error handling)
             if (data.complaint_info) {
@@ -1860,7 +1838,7 @@ function loadComplaintConversation(complaintId) {
 }
 
 function updateComplaintDetails(complaintInfo) {
-    console.log('📝 Updating complaint details:', complaintInfo);
+
 
     // Check if complaintInfo exists
     if (!complaintInfo) {
@@ -1875,17 +1853,17 @@ function updateComplaintDetails(complaintInfo) {
     if (currentStatus) {
         const statusText = complaintInfo.status_label || complaintInfo.status || 'Unknown';
         currentStatus.textContent = statusText;
-        console.log('✅ Updated status to:', statusText);
+
     } else {
-        console.warn('⚠️ currentStatus element not found');
+       console.warn('⚠️ currentStatus element not found');
     }
 
     if (currentPriority) {
         const priorityText = complaintInfo.priority_label || complaintInfo.priority || 'Normal';
         currentPriority.textContent = priorityText;
-        console.log('✅ Updated priority to:', priorityText);
+
     } else {
-        console.warn('⚠️ currentPriority element not found');
+        console.warn('⚠️ currentStatus element not found');
     }
 
     // Update detailed info
@@ -1929,7 +1907,7 @@ function updateComplaintDetails(complaintInfo) {
 }
 
 function displayConversation(conversation, complaintInfo) {
-    console.log('💬 Displaying conversation:', conversation);
+
 
     const conversationContainer = document.getElementById('conversationMessages');
     if (!conversationContainer) {
@@ -1963,7 +1941,7 @@ function displayConversation(conversation, complaintInfo) {
         return;
     }
 
-    console.log(`💬 Rendering ${conversation.length} messages`);
+
     const conversationHtml = conversation.map(message => {
         const isAdmin = message.sender_type === 'admin';
         const timeFormatted = formatDateTime(message.created_at || message.timestamp);
@@ -2000,7 +1978,7 @@ function displayConversation(conversation, complaintInfo) {
         conversationThread.scrollTop = conversationThread.scrollHeight;
     }
 
-    console.log('✅ Conversation displayed successfully');
+
 }
 
 // Utility functions for the conversation
@@ -2037,7 +2015,7 @@ function escapeHtml(text) {
 
 // Additional utility function to refresh page data
 function refreshData() {
-    console.log('🔄 Refreshing page data...');
+
     location.reload();
 }
 
@@ -2060,7 +2038,7 @@ function closeReplyModal() {
 
 // Evidence Modal
 function showEvidenceModal(complaintId, evidenceFiles) {
-    console.log('📎 Opening evidence modal:', complaintId);
+
 
     const modal = document.getElementById('evidenceModal');
     if (!modal) {
@@ -2071,7 +2049,7 @@ function showEvidenceModal(complaintId, evidenceFiles) {
 
     modal.classList.remove('hidden');
     evidenceModalInstance = modal;
-    console.log('✅ Evidence modal opened successfully');
+
 }
 
 function closeEvidenceModal() {
@@ -2085,7 +2063,7 @@ function closeEvidenceModal() {
 
 // View Toggle Function
 function toggleView(viewType) {
-    console.log('🔄 Toggling view to:', viewType);
+
 
     const cardsView = document.getElementById('cardsView');
     const tableView = document.getElementById('tableView');
@@ -2123,7 +2101,7 @@ function toggleView(viewType) {
         }
     }
 
-    console.log('✅ View toggled successfully');
+
     localStorage.setItem('complaintsViewType', viewType);
 }
 
@@ -2131,47 +2109,47 @@ function toggleView(viewType) {
 
 // Show Toast Function
 function showToast(message, type = 'success') {
-    console.log('🔔 Toast:', type, message);
+
     alert(`${type.toUpperCase()}: ${message}`);
 }
 
 // Load Assignments for Discussion Modal
-function loadComplaintAssignments(complaintId) {
-    console.log('📄 Loading assignments for complaint:', complaintId);
+// function loadComplaintAssignments(complaintId) {
+//     console.log('📄 Loading assignments for complaint:', complaintId);
 
-    const assignmentsList = document.getElementById('assignmentsList');
-    if (!assignmentsList) {
-        console.error('❌ Assignments list not found');
-        return;
-    }
+//     const assignmentsList = document.getElementById('assignmentsList');
+//     if (!assignmentsList) {
+//         console.error('❌ Assignments list not found');
+//         return;
+//     }
 
-    assignmentsList.innerHTML = `
-        <div class="p-4 text-center">
-            <p class="text-gray-600">Loading assignments...</p>
-        </div>
-    `;
+//     assignmentsList.innerHTML = `
+//         <div class="p-4 text-center">
+//             <p class="text-gray-600">Loading assignments...</p>
+//         </div>
+//     `;
 
-    // Fetch assignments (simplified version)
-    fetch(`/complaints/${complaintId}/assignments`, {
-        method: 'GET',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            displayAssignments(data.assignments);
-        } else {
-            assignmentsList.innerHTML = `<div class="p-4 text-center text-red-600">Error loading assignments</div>`;
-        }
-    })
-    .catch(error => {
-        console.error('Error loading assignments:', error);
-        assignmentsList.innerHTML = `<div class="p-4 text-center text-red-600">Error: ${error.message}</div>`;
-    });
-}
+//     // Fetch assignments (simplified version)
+//     fetch(`/complaints/${complaintId}/assignments`, {
+//         method: 'GET',
+//         headers: {
+//             'X-CSRF-TOKEN': csrfToken,
+//             'Accept': 'application/json'
+//         }
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         if (data.success) {
+//             displayAssignments(data.assignments);
+//         } else {
+//             assignmentsList.innerHTML = `<div class="p-4 text-center text-red-600">Error loading assignments</div>`;
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Error loading assignments:', error);
+//         assignmentsList.innerHTML = `<div class="p-4 text-center text-red-600">Error: ${error.message}</div>`;
+//     });
+// }
 
 function displayAssignments(assignments) {
     const assignmentsList = document.getElementById('assignmentsList');
@@ -2199,7 +2177,7 @@ function displayAssignments(assignments) {
 }
 
 function selectAssignment(assignmentId, departmentName, status) {
-    console.log('🏢 Selected assignment:', assignmentId, departmentName);
+
     alert(`Selected: ${departmentName} (${status})`);
 }
 
@@ -2444,48 +2422,48 @@ function resetChatArea() {
     clearFileSelection();
 }
 
-function loadComplaintAssignments(complaintId) {
-    const assignmentsList = document.getElementById('assignmentsList');
+// function loadComplaintAssignments(complaintId) {
+//     const assignmentsList = document.getElementById('assignmentsList');
 
-    // Show loading state
-    assignmentsList.innerHTML = `
-        <div class="text-center text-gray-600 dark:text-gray-300 py-8">
-            <svg class="w-8 h-8 mx-auto mb-3 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-            </svg>
-            <p class="font-medium">Loading assignments...</p>
-        </div>
-    `;
+//     // Show loading state
+//     assignmentsList.innerHTML = `
+//         <div class="text-center text-gray-600 dark:text-gray-300 py-8">
+//             <svg class="w-8 h-8 mx-auto mb-3 text-gray-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+//             </svg>
+//             <p class="font-medium">Loading assignments...</p>
+//         </div>
+//     `;
 
-    fetch(`/complaints/${complaintId}/assignments`, {
-        method: 'GET',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            displayAssignments(data.assignments);
-        } else {
-            throw new Error(data.message || 'Failed to load assignments');
-        }
-    })
-    .catch(error => {
-        console.error('Error loading assignments:', error);
-        assignmentsList.innerHTML = `
-            <div class="text-center text-red-600 dark:text-red-400 py-8">
-                <svg class="w-8 h-8 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <p class="font-medium">Error loading assignments</p>
-                <p class="text-sm">${error.message}</p>
-            </div>
-        `;
-    });
-}
+//     fetch(`/complaints/${complaintId}/assignments`, {
+//         method: 'GET',
+//         headers: {
+//             'X-CSRF-TOKEN': csrfToken,
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json'
+//         }
+//     })
+//     .then(response => response.json())
+//     .then(data => {
+//         if (data.success) {
+//             displayAssignments(data.assignments);
+//         } else {
+//             throw new Error(data.message || 'Failed to load assignments');
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Error loading assignments:', error);
+//         assignmentsList.innerHTML = `
+//             <div class="text-center text-red-600 dark:text-red-400 py-8">
+//                 <svg class="w-8 h-8 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+//                 </svg>
+//                 <p class="font-medium">Error loading assignments</p>
+//                 <p class="text-sm">${error.message}</p>
+//             </div>
+//         `;
+//     });
+// }
 
 function displayAssignments(assignments) {
     const assignmentsList = document.getElementById('assignmentsList');
@@ -2891,7 +2869,7 @@ async function handleAssignSubmit(e) {
         assignment_notes: formData.get('assignment_notes')
     };
 
-    console.log('Submitting assignment:', assignmentData);
+
 
     // Show loading state
     const submitBtn = form.querySelector('button[type="submit"]');
@@ -2922,7 +2900,7 @@ async function handleAssignSubmit(e) {
             throw new Error(`HTTP ${response.status} ${response.statusText}`);
         }
 
-        console.log('Assignment response:', result);
+
 
         if (!response.ok) {
             const msg = result.message || `HTTP ${response.status}`;
@@ -2937,7 +2915,7 @@ async function handleAssignSubmit(e) {
             const msg = result.message || 'Assignment failed';
             showToast(msg, 'error');
             if (result.errors) {
-                console.log('Validation errors:', result.errors);
+
             }
         }
     } catch (error) {
@@ -3067,7 +3045,7 @@ function closeEvidenceModal() {
                 video.pause();
                 video.currentTime = 0;
             } catch (e) {
-                console.log('Error pausing video:', e);
+                console.log('Error resetting video:', e);
             }
         });
 
@@ -3089,8 +3067,7 @@ function closeEvidenceModal() {
 
 // Reply Modal Functions (centralized)
 function openReplyModal(complaintId, clientName, referenceNumber) {
-    console.log('📧 Opening reply modal for complaint:', complaintId);
-    console.log('📧 Client:', clientName, 'Reference:', referenceNumber);
+  ;
 
     const modal = document.getElementById('replyModal');
     if (!modal) {
@@ -3136,11 +3113,11 @@ function openReplyModal(complaintId, clientName, referenceNumber) {
 
     // Load complaint details and conversation after a short delay
     setTimeout(() => {
-        console.log('📥 About to load conversation for complaint:', complaintId);
+
         loadComplaintConversation(complaintId);
     }, 100);
 
-    console.log('✅ Reply modal opened successfully');
+
 }
 
 
@@ -3206,7 +3183,7 @@ function updateComplaintCardStatus(complaintId, statusData) {
         tableStatusBadge.textContent = statusData.status_label || statusData.status;
     }
 
-    console.log('Updated complaint card status for complaint:', complaintId);
+
 }
 
 // Delete complaint function
@@ -3470,23 +3447,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Test function for modal functionality
 function testModalsFunction() {
-    console.log('🧪 Testing modal functionality...');
+
 
     // Test Reply modal
-    console.log('🧪 Testing Reply modal...');
+
     const firstComplaint = document.querySelector('[data-complaint-id]');
     if (firstComplaint) {
         const complaintId = firstComplaint.getAttribute('data-complaint-id');
-        console.log('🧪 Found complaint ID:', complaintId);
+
 
         // Test opening Reply modal
         try {
             openReplyModal(complaintId, 'Test Client', 'REF-123');
-            console.log('✅ Reply modal opened successfully');
+
 
             // Wait for modal to load then test conversation loading
             setTimeout(() => {
-                console.log('🧪 Testing conversation loading...');
+
                 loadComplaintConversation(complaintId);
             }, 1000);
 
