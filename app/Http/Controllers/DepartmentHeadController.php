@@ -86,6 +86,53 @@ class DepartmentHeadController extends Controller
     }
 
     /**
+     * Download staff ID image securely.
+     */
+    public function downloadStaffIdImage(StaffMember $staffMember)
+    {
+        $user = Auth::user();
+        $department = $user->departmentAsHead;
+
+        // Check if this staff member belongs to the department head's department
+        if (!$department || $staffMember->department_id !== $department->id) {
+            abort(403, 'You can only view staff members from your department.');
+        }
+
+        // Check if staff member has an ID image
+        if (!$staffMember->staff_id_image_path) {
+            abort(404, 'Staff ID image not found.');
+        }
+
+        // Get the full path to the file
+        $filePath = storage_path('app/public/' . ltrim($staffMember->staff_id_image_path, '/'));
+
+        // Check if file exists
+        if (!file_exists($filePath)) {
+            abort(404, 'Staff ID image file not found.');
+        }
+
+        // Get the file extension for proper MIME type
+        $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+        $mimeType = match (strtolower($extension)) {
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+            'bmp' => 'image/bmp',
+            'svg' => 'image/svg+xml',
+            default => 'application/octet-stream'
+        };
+
+        // Return the file response
+        return response()->file($filePath, [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0'
+        ]);
+    }
+
+    /**
      * Update staff member status (approve/reject).
      */
     public function updateStaffStatus(Request $request, StaffMember $staffMember)

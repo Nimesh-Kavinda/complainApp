@@ -127,6 +127,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/department-head', [DepartmentHeadController::class, 'index'])->name('department.head.index');
     Route::get('/department-head/staff', [DepartmentHeadController::class, 'staffMembers'])->name('department.head.staff');
     Route::get('/department-head/staff/{staffMember}', [DepartmentHeadController::class, 'viewStaffMember'])->name('department.head.staff.view');
+    Route::get('/department-head/staff/{staffMember}/id-image', [DepartmentHeadController::class, 'downloadStaffIdImage'])->name('department.head.staff.id-image');
     Route::post('/department-head/staff/{staffMember}/status', [DepartmentHeadController::class, 'updateStaffStatus'])->name('department.head.staff.updateStatus');
     Route::get('/department-head/stats', [DepartmentHeadController::class, 'getStats'])->name('department.head.stats');
 
