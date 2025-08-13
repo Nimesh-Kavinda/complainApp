@@ -642,6 +642,25 @@
     </div>
 </div>
 
+<!-- Media Preview Modal -->
+<div id="mediaPreviewModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-90 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden border border-gray-200 dark:border-gray-600">
+            <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="modal-title text-lg font-semibold text-gray-900 dark:text-white">File Preview</h3>
+                <button id="mediaPreviewCloseBtn" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body p-4 flex items-center justify-center max-h-[80vh] overflow-auto">
+                <!-- Media content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Reply Modal -->
 <div id="replyModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
     <div class="flex items-center justify-center min-h-screen px-4">
@@ -2694,22 +2713,104 @@ function openMediaPreview(src, type, fileName) {
     const modalTitle = modal.querySelector('.modal-title');
     const modalBody = modal.querySelector('.modal-body');
 
-    modalTitle.textContent = fileName;
+    modalTitle.textContent = fileName || 'File Preview';
 
-    if (type.startsWith('image/')) {
-        modalBody.innerHTML = `<img src="${src}" alt="${fileName}" class="max-w-full h-auto" />`;
-    } else if (type.startsWith('video/')) {
+    // Clear previous content
+    modalBody.innerHTML = '<div class="text-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div><p class="mt-2 text-gray-600 dark:text-gray-400">Loading...</p></div>';
+
+    // Show modal first
+    modal.classList.remove('hidden');
+
+    // For images, check if it's a proper image type
+    if (type === 'image' || (type && type.startsWith('image/')) || isImageFile(fileName)) {
         modalBody.innerHTML = `
-            <video controls class="max-w-full h-auto">
-                <source src="${src}" type="${type}">
-                Your browser does not support the video tag.
-            </video>
+            <div class="max-w-full max-h-full flex items-center justify-center">
+                <img src="${src}" alt="${fileName}" class="max-w-full max-h-full object-contain rounded"
+                     onerror="handlePreviewError(this, '${fileName}')"
+                     onload="this.style.opacity='1'" style="opacity:0; transition: opacity 0.3s;"/>
+            </div>
+        `;
+    } else if (type === 'video' || (type && type.startsWith('video/')) || isVideoFile(fileName)) {
+        modalBody.innerHTML = `
+            <div class="max-w-full max-h-full">
+                <video controls class="max-w-full max-h-full rounded"
+                       onerror="handlePreviewError(this, '${fileName}')">
+                    <source src="${src}" type="${type || getVideoMimeType(fileName)}">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
         `;
     } else {
-        modalBody.innerHTML = `<a href="${src}" target="_blank" class="text-blue-600">${fileName}</a>`;
+        // For non-previewable files, show file info and download option
+        modalBody.innerHTML = `
+            <div class="text-center py-8">
+                <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">${fileName}</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">This file type cannot be previewed</p>
+                <a href="${src}" target="_blank" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Download File
+                </a>
+            </div>
+        `;
     }
+}
 
-    modal.classList.remove('hidden');
+// Helper functions for file type detection
+function isImageFile(fileName) {
+    if (!fileName) return false;
+    const ext = fileName.split('.').pop().toLowerCase();
+    return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(ext);
+}
+
+function isVideoFile(fileName) {
+    if (!fileName) return false;
+    const ext = fileName.split('.').pop().toLowerCase();
+    return ['mp4', 'avi', 'mov', 'webm', 'mkv', 'flv', 'wmv'].includes(ext);
+}
+
+function getVideoMimeType(fileName) {
+    if (!fileName) return 'video/mp4';
+    const ext = fileName.split('.').pop().toLowerCase();
+    const mimeTypes = {
+        'mp4': 'video/mp4',
+        'webm': 'video/webm',
+        'avi': 'video/avi',
+        'mov': 'video/quicktime',
+        'mkv': 'video/x-matroska'
+    };
+    return mimeTypes[ext] || 'video/mp4';
+}
+
+// Error handler for preview failures
+function handlePreviewError(element, fileName) {
+    element.parentElement.innerHTML = `
+        <div class="text-center py-8">
+            <svg class="w-16 h-16 mx-auto mb-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Preview Error</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">Could not load preview for ${fileName}</p>
+        </div>
+    `;
+}
+
+// Close media preview modal
+function closeMediaPreview() {
+    const modal = document.getElementById('mediaPreviewModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        // Clean up media elements
+        const videos = modal.querySelectorAll('video');
+        videos.forEach(video => {
+            video.pause();
+            video.currentTime = 0;
+        });
+    }
 }
 
 // removed duplicate showEvidenceModal (canonical definition retained earlier)
@@ -2908,16 +3009,30 @@ function showEvidenceModal(complaintId, evidenceFiles) {
 
         if (isImage) {
             evidenceHtml += `
-                <img src="/admin/complaints/${complaintId}/evidence/${index}" alt="${file.original_name}"
-                     class="w-full h-48 object-cover rounded mb-2 cursor-pointer"
-                     onclick="window.open('/admin/complaints/${complaintId}/evidence/${index}', '_blank')">
+                <div class="relative group">
+                    <img src="/admin/complaints/${complaintId}/evidence/${index}" alt="${file.original_name}"
+                         class="w-full h-48 object-cover rounded mb-2 cursor-pointer hover:opacity-90 transition-opacity"
+                         onclick="openMediaPreview('/admin/complaints/${complaintId}/evidence/${index}', 'image', '${file.original_name}')">
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded mb-2 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </div>
+                </div>
             `;
         } else if (isVideo) {
             evidenceHtml += `
-                <video controls class="w-full h-48 rounded mb-2">
-                    <source src="/admin/complaints/${complaintId}/evidence/${index}" type="${file.mime_type}">
-                    Your browser does not support the video tag.
-                </video>
+                <div class="relative group cursor-pointer" onclick="openMediaPreview('/admin/complaints/${complaintId}/evidence/${index}', 'video', '${file.original_name}')">
+                    <div class="w-full h-48 bg-gray-100 dark:bg-gray-700 rounded mb-2 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <div class="text-center">
+                            <svg class="w-12 h-12 mx-auto mb-2 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10v4a2 2 0 002 2h2a2 2 0 002-2v-4M9 10V8a2 2 0 012-2h2a2 2 0 012 2v2"></path>
+                            </svg>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Click to preview video</p>
+                        </div>
+                    </div>
+                </div>
             `;
         } else if (isAudio) {
             evidenceHtml += `
@@ -2944,16 +3059,28 @@ function showEvidenceModal(complaintId, evidenceFiles) {
         evidenceHtml += `
             <div class="text-sm">
                 <div class="font-medium text-gray-900 dark:text-white">${file.original_name}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">
+                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">
                     Size: ${formatFileSize(file.size)} | Type: ${file.mime_type || 'Unknown'}
                 </div>
-                <a href="/admin/complaints/${complaintId}/evidence/${index}" download="${file.original_name}"
-                   class="inline-flex items-center mt-2 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    Download
-                </a>
+                <div class="flex gap-2">
+                    ${(isImage || isVideo) ? `
+                        <button onclick="openMediaPreview('/admin/complaints/${complaintId}/evidence/${index}', '${file.mime_type}', '${file.original_name}')"
+                                class="inline-flex items-center px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            Preview
+                        </button>
+                    ` : ''}
+                    <a href="/admin/complaints/${complaintId}/evidence/${index}" download="${file.original_name}"
+                       class="inline-flex items-center px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded transition-colors">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Download
+                    </a>
+                </div>
             </div>
         </div>`;
     });
@@ -3246,6 +3373,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Evidence Modal Event Listeners
     const evidenceModal = document.getElementById('evidenceModal');
     const evidenceCloseBtn = document.getElementById('evidenceModalCloseBtn');
+    const mediaPreviewModal = document.getElementById('mediaPreviewModal');
+    const mediaPreviewCloseBtn = document.getElementById('mediaPreviewCloseBtn');
     const replyModal = document.getElementById('replyModal');
     const replyCloseBtn = document.getElementById('replyModalCloseBtn');
     const cancelReplyBtn = document.getElementById('cancelReplyBtn');
@@ -3256,6 +3385,15 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             e.stopPropagation();
             closeEvidenceModal();
+        });
+    }
+
+    // Close media preview modal via close button
+    if (mediaPreviewCloseBtn) {
+        mediaPreviewCloseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeMediaPreview();
         });
     }
 
@@ -3282,6 +3420,14 @@ document.addEventListener('DOMContentLoaded', function() {
         evidenceModal.addEventListener('click', function(e) {
             if (e.target === evidenceModal) {
                 closeEvidenceModal();
+            }
+        });
+    }
+
+    if (mediaPreviewModal) {
+        mediaPreviewModal.addEventListener('click', function(e) {
+            if (e.target === mediaPreviewModal) {
+                closeMediaPreview();
             }
         });
     }
@@ -3359,6 +3505,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ESC key handling
+    // ESC key handling
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             if (evidenceModalInstance) {
@@ -3373,6 +3520,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (discussionModalInstance) {
                 closeDiscussionModal();
             }
+            // Close media preview modal
+            const mediaModal = document.getElementById('mediaPreviewModal');
+            if (mediaModal && !mediaModal.classList.contains('hidden')) {
+                closeMediaPreview();
+            }
         }
     });
 
@@ -3385,6 +3537,8 @@ document.addEventListener('DOMContentLoaded', function() {
     window.closeReplyModal = closeReplyModal;
     window.showEvidenceModal = showEvidenceModal;
     window.closeEvidenceModal = closeEvidenceModal;
+    window.openMediaPreview = openMediaPreview;
+    window.closeMediaPreview = closeMediaPreview;
     window.toggleView = toggleView;
     window.loadComplaintAssignments = loadComplaintAssignments;
     window.displayAssignments = displayAssignments;
