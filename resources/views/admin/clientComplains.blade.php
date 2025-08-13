@@ -233,14 +233,6 @@
 
             <!-- Cards View (Default) -->
             <div id="cardsView" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mx-3">
-                <!-- Debug Info -->
-                <div class="col-span-full mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded">
-                    <strong>Debug Info:</strong>
-                    Total complaints loaded: {{ $complaints->count() }}
-                    @if($complaints->count() > 0)
-                        | First complaint ID: {{ $complaints->first()->id }}
-                    @endif
-                </div>
 
                 @forelse($complaints as $complaint)
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 {{ $complaint->has_multiple_complaints ? 'ring-2 ring-orange-200 dark:ring-orange-800' : '' }}"
@@ -828,40 +820,40 @@
 </div>
 
 <!-- Assignment Modal -->
-<div id="assignModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
-    <div class="flex items-center justify-center min-h-screen px-4">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] border border-gray-200 dark:border-gray-600">
+<div id="assignModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-70 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen px-4 py-6">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] border border-gray-200 dark:border-gray-600 flex flex-col overflow-hidden">
+
+            <!-- Modal Header -->
             <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white">Assign Complaint</h3>
-                <button id="assignModalCloseBtn" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button id="assignModalCloseBtn" type="button" class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
 
-            <!-- Complaint Info Header -->
-            <div class="p-6 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                <div id="assignComplaintInfo" class="font-medium text-gray-900 dark:text-white mb-2"></div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                    Select departments and set assignment details
-                </div>
+            <!-- Complaint Info -->
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                <div id="assignComplaintInfo" class="font-medium text-gray-900 dark:text-white mb-1"></div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Select departments and set assignment details</p>
             </div>
 
-            <!-- Assignment Form -->
-            <div class="p-6">
+            <!-- Modal Body -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
                 <form id="assignForm">
                     <input type="hidden" id="assignComplaintId" name="complaint_id">
 
                     <!-- Department Selection -->
-                    <div class="mb-6">
+                    <div>
                         <label class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Select Departments</label>
                         @if(isset($departments) && count($departments) > 0)
                             <div id="departmentsList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 @foreach($departments as $department)
-                                    <label class="flex items-center p-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors">
+                                    <label class="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:shadow-md hover:border-blue-400 dark:hover:border-blue-400 cursor-pointer transition">
                                         <input type="checkbox" name="departments[]" value="{{ $department->id }}"
-                                               class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600">
+                                               class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600">
                                         <div class="ml-3">
                                             <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $department->name }}</div>
                                             <div class="text-xs text-gray-600 dark:text-gray-400">
@@ -873,20 +865,20 @@
                             </div>
                         @else
                             <div class="text-center p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
-                                <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                 </svg>
                                 <p class="text-gray-600 dark:text-gray-400 font-medium">No departments available</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">All departments must have assigned heads to be available for complaint assignment.</p>
+                                <p class="text-sm text-gray-500 mt-1">All departments must have assigned heads to be available for complaint assignment.</p>
                             </div>
                         @endif
                     </div>
 
-                    <!-- Priority and Deadline -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- Priority & Deadline -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="assignPriority" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Priority</label>
-                            <select id="assignPriority" name="priority" class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+                            <label for="assignPriority" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Priority</label>
+                            <select id="assignPriority" name="priority" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500" required>
                                 <option value="low">Low</option>
                                 <option value="medium" selected>Medium</option>
                                 <option value="high">High</option>
@@ -894,28 +886,28 @@
                             </select>
                         </div>
                         <div>
-                            <label for="assignDeadline" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Deadline</label>
+                            <label for="assignDeadline" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Deadline</label>
                             <input type="datetime-local" id="assignDeadline" name="deadline"
-                                   class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                   class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
 
                     <!-- Assignment Notes -->
-                    <div class="mb-6">
-                        <label for="assignmentNotes" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Assignment Notes</label>
+                    <div>
+                        <label for="assignmentNotes" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Assignment Notes</label>
                         <textarea id="assignmentNotes" name="assignment_notes" rows="3"
-                                  class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+                                  class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 resize-none"
                                   placeholder="Special instructions or notes for the assigned departments..."></textarea>
                     </div>
 
-                    <!-- Form Actions -->
-                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
+                    <!-- Footer -->
+                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-600 mt-6">
                         <button type="button" id="cancelAssignBtn"
-                                class="w-full sm:w-auto px-6 py-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 focus:ring-2 focus:ring-gray-300 transition-colors font-medium">
+                                class="w-full sm:w-auto px-6 py-3 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 transition">
                             Cancel
                         </button>
                         <button type="submit"
-                                class="w-full sm:w-auto px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors font-medium shadow-sm">
+                                class="w-full sm:w-auto px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition shadow-sm">
                             <span class="assign-submit-text flex items-center justify-center">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -934,9 +926,11 @@
                     </div>
                 </form>
             </div>
+
         </div>
     </div>
 </div>
+
 
 <!-- Discussion Modal -->
 <div id="discussionModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
