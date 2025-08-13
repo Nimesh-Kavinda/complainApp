@@ -2334,34 +2334,108 @@ async function handleAdminResponseSubmit(e) {
 // Utility functions
 function renderFileAttachment(filePath, fileName, discussionId = null) {
     const fileExtension = fileName ? fileName.split('.').pop().toLowerCase() : '';
-    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
-    const isVideo = ['mp4', 'avi', 'mov', 'webm'].includes(fileExtension);
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(fileExtension);
+    const isVideo = ['mp4', 'avi', 'mov', 'webm', 'mkv', 'flv', 'wmv'].includes(fileExtension);
+    const isAudio = ['mp3', 'wav', 'ogg', 'aac', 'm4a'].includes(fileExtension);
 
     // Determine the correct URL based on whether this is a discussion attachment or evidence file
     const fileUrl = discussionId ? `/admin/discussions/${discussionId}/attachment` : `/storage/${filePath}`;
 
+    // Create a container with file info and action buttons
+    let attachmentHtml = `
+        <div class="bg-gray-50 dark:bg-gray-600 rounded-lg p-3 max-w-sm">
+            <div class="flex items-start space-x-3">
+    `;
+
+    // File icon/preview
     if (isImage) {
-        return `
-            <img src="${fileUrl}" alt="${fileName}" class="max-w-full h-auto rounded cursor-pointer"
-                 onclick="openMediaPreview('${fileUrl}', 'image', '${fileName}')">
+        attachmentHtml += `
+            <div class="flex-shrink-0">
+                <img src="${fileUrl}" alt="${fileName}"
+                     class="w-16 h-16 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity"
+                     onclick="openMediaPreview('${fileUrl}', 'image', '${fileName}')">
+            </div>
         `;
     } else if (isVideo) {
-        return `
-            <video controls class="max-w-full h-auto rounded">
-                <source src="${fileUrl}" type="video/${fileExtension}">
-                Your browser does not support the video tag.
-            </video>
+        attachmentHtml += `
+            <div class="flex-shrink-0">
+                <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                     onclick="openMediaPreview('${fileUrl}', 'video', '${fileName}')">
+                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10v4a2 2 0 002 2h2a2 2 0 002-2v-4M9 10V8a2 2 0 012-2h2a2 2 0 012 2v2"></path>
+                    </svg>
+                </div>
+            </div>
+        `;
+    } else if (isAudio) {
+        attachmentHtml += `
+            <div class="flex-shrink-0">
+                <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center">
+                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                    </svg>
+                </div>
+            </div>
         `;
     } else {
-        return `
-            <a href="${fileUrl}" target="_blank" class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 dark:text-blue-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                </svg>
-                <span class="text-sm">${fileName}</span>
-            </a>
+        attachmentHtml += `
+            <div class="flex-shrink-0">
+                <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center">
+                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+            </div>
         `;
     }
+
+    // File info and buttons
+    attachmentHtml += `
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white truncate">${fileName}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">${getFileExtension(fileName).toUpperCase()} file</div>
+                    <div class="flex space-x-2">
+    `;
+
+    // Add preview button for supported file types
+    if (isImage || isVideo) {
+        attachmentHtml += `
+            <button onclick="openMediaPreview('${fileUrl}', '${isImage ? 'image' : 'video'}', '${fileName}')"
+                    class="inline-flex items-center px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                Preview
+            </button>
+        `;
+    }
+
+    // Add download button
+    attachmentHtml += `
+        <a href="${fileUrl}" download="${fileName}"
+           class="inline-flex items-center px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded transition-colors">
+            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Download
+        </a>
+    `;
+
+    attachmentHtml += `
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    return attachmentHtml;
+}
+
+// Helper function to get file extension
+function getFileExtension(fileName) {
+    if (!fileName || !fileName.includes('.')) return '';
+    return fileName.split('.').pop().toLowerCase();
 }
 
 function formatFileSize(bytes) {
