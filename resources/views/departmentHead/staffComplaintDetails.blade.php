@@ -163,7 +163,7 @@
                                     <p class="text-xs text-gray-500 dark:text-gray-400">Evidence {{ $index + 1 }}</p>
                                 </div>
                             </div>
-                            <button onclick="previewFile('{{ $filePath }}', '{{ $fileName }}')"
+                            <button onclick="previewFile('{{ route('department.head.staff.complaint.evidence', [$complaint, $index]) }}', '{{ $fileName }}')"
                                     class="px-3 py-1 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-400 rounded-lg text-sm font-medium transition-colors">
                                 View
                             </button>
@@ -360,7 +360,9 @@ function previewFile(filePath, fileName) {
     title.textContent = fileName;
 
     const fileExt = fileName.split('.').pop().toLowerCase();
-    const fullPath = `/storage/${filePath}`;
+
+    // Use the filePath directly (it's now a route URL)
+    const fullPath = filePath;
 
     if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExt)) {
         content.innerHTML = `<img src="${fullPath}" alt="${fileName}" class="max-w-full h-auto rounded-lg shadow-lg">`;
@@ -393,6 +395,7 @@ function previewFile(filePath, fileName) {
 
 function closeFilePreview() {
     document.getElementById('filePreviewModal').classList.add('hidden');
+    location.reload();
 }
 
 

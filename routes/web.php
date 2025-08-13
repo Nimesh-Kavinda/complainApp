@@ -40,6 +40,8 @@ Route::get('/admin/complaints', [AdminController::class, 'complains'])->name('ad
 Route::put('/admin/complaints/{id}/status', [AdminController::class, 'updateComplaintStatus'])->name('admin.complaints.updateStatus');
 Route::get('/admin/complaints/{id}/conversation', [AdminController::class, 'getComplaintConversation'])->name('admin.complaints.conversation');
 Route::post('/admin/complaints/{id}/reply', [AdminController::class, 'replyToComplaint'])->name('admin.complaints.reply');
+Route::get('/admin/complaints/{id}/evidence/{fileIndex}', [AdminController::class, 'downloadEvidence'])->name('admin.complaints.evidence');
+Route::get('/admin/discussions/{discussionId}/attachment', [AdminController::class, 'downloadDiscussionAttachment'])->name('admin.discussions.attachment');
 Route::delete('/admin/complaints/{id}', [AdminController::class, 'deleteComplaint'])->name('admin.complaints.delete');
 
 // Debug route for testing conversation
@@ -125,12 +127,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/department-head', [DepartmentHeadController::class, 'index'])->name('department.head.index');
     Route::get('/department-head/staff', [DepartmentHeadController::class, 'staffMembers'])->name('department.head.staff');
     Route::get('/department-head/staff/{staffMember}', [DepartmentHeadController::class, 'viewStaffMember'])->name('department.head.staff.view');
+    Route::get('/department-head/staff/{staffMember}/id-image', [DepartmentHeadController::class, 'downloadStaffIdImage'])->name('department.head.staff.id-image');
     Route::post('/department-head/staff/{staffMember}/status', [DepartmentHeadController::class, 'updateStaffStatus'])->name('department.head.staff.updateStatus');
     Route::get('/department-head/stats', [DepartmentHeadController::class, 'getStats'])->name('department.head.stats');
 
     // Staff Complaints for Department Heads
     Route::get('/department-head/staff-complaints', [DepartmentHeadController::class, 'staffcomplaints'])->name('department.head.staff.complaints');
     Route::get('/department-head/staff-complaints/{complaint}', [DepartmentHeadController::class, 'showStaffComplaint'])->name('department.head.staff.complaint.show');
+    Route::get('/department-head/staff-complaints/{complaint}/evidence/{fileIndex}', [DepartmentHeadController::class, 'downloadStaffComplaintEvidence'])->name('department.head.staff.complaint.evidence');
     Route::post('/department-head/staff-complaints/{complaint}/response', [DepartmentHeadController::class, 'addStaffComplaintResponse'])->name('department.head.staff.complaint.response');
 
     // Admin Assigned Complaints for Department Heads

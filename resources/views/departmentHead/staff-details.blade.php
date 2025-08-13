@@ -188,10 +188,10 @@
                     <div class="p-6">
                         @if($staffMember->staff_id_image_path)
                         <div class="text-center">
-                            <img src="{{ asset('storage/' . $staffMember->staff_id_image_path) }}"
+                            <img src="{{ route('department.head.staff.id-image', $staffMember) }}"
                                  alt="Staff ID Document"
                                  class="w-full max-w-sm mx-auto rounded-xl shadow-lg border border-gray-200 dark:border-gray-600 cursor-pointer hover:shadow-xl transition-shadow duration-300"
-                                 onclick="openImageModal('{{ asset('storage/' . $staffMember->staff_id_image_path) }}')">
+                                 onclick="openImageModal('{{ route('department.head.staff.id-image', $staffMember) }}')">
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-3">Click to view full size</p>
                         </div>
                         @else
@@ -310,6 +310,7 @@ function openImageModal(imageSrc) {
 function closeImageModal() {
     document.getElementById('imageModal').classList.add('hidden');
     document.body.style.overflow = 'auto';
+    location.reload();
 }
 
 // Reject modal functions

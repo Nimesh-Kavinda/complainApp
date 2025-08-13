@@ -233,14 +233,6 @@
 
             <!-- Cards View (Default) -->
             <div id="cardsView" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mx-3">
-                <!-- Debug Info -->
-                <div class="col-span-full mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded">
-                    <strong>Debug Info:</strong>
-                    Total complaints loaded: {{ $complaints->count() }}
-                    @if($complaints->count() > 0)
-                        | First complaint ID: {{ $complaints->first()->id }}
-                    @endif
-                </div>
 
                 @forelse($complaints as $complaint)
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200 {{ $complaint->has_multiple_complaints ? 'ring-2 ring-orange-200 dark:ring-orange-800' : '' }}"
@@ -642,6 +634,25 @@
     </div>
 </div>
 
+<!-- Media Preview Modal -->
+<div id="mediaPreviewModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-90 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden border border-gray-200 dark:border-gray-600">
+            <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="modal-title text-lg font-semibold text-gray-900 dark:text-white">File Preview</h3>
+                <button id="mediaPreviewCloseBtn" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body p-4 flex items-center justify-center max-h-[80vh] overflow-auto">
+                <!-- Media content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Reply Modal -->
 <div id="replyModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
     <div class="flex items-center justify-center min-h-screen px-4">
@@ -809,40 +820,40 @@
 </div>
 
 <!-- Assignment Modal -->
-<div id="assignModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
-    <div class="flex items-center justify-center min-h-screen px-4">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] border border-gray-200 dark:border-gray-600">
+<div id="assignModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-70 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen px-4 py-6">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] border border-gray-200 dark:border-gray-600 flex flex-col overflow-hidden">
+
+            <!-- Modal Header -->
             <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white">Assign Complaint</h3>
-                <button id="assignModalCloseBtn" type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button id="assignModalCloseBtn" type="button" class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
 
-            <!-- Complaint Info Header -->
-            <div class="p-6 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                <div id="assignComplaintInfo" class="font-medium text-gray-900 dark:text-white mb-2"></div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">
-                    Select departments and set assignment details
-                </div>
+            <!-- Complaint Info -->
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                <div id="assignComplaintInfo" class="font-medium text-gray-900 dark:text-white mb-1"></div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Select departments and set assignment details</p>
             </div>
 
-            <!-- Assignment Form -->
-            <div class="p-6">
+            <!-- Modal Body -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
                 <form id="assignForm">
                     <input type="hidden" id="assignComplaintId" name="complaint_id">
 
                     <!-- Department Selection -->
-                    <div class="mb-6">
+                    <div>
                         <label class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Select Departments</label>
                         @if(isset($departments) && count($departments) > 0)
                             <div id="departmentsList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 @foreach($departments as $department)
-                                    <label class="flex items-center p-3 border-2 border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors">
+                                    <label class="flex items-center p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:shadow-md hover:border-blue-400 dark:hover:border-blue-400 cursor-pointer transition">
                                         <input type="checkbox" name="departments[]" value="{{ $department->id }}"
-                                               class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600">
+                                               class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600">
                                         <div class="ml-3">
                                             <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $department->name }}</div>
                                             <div class="text-xs text-gray-600 dark:text-gray-400">
@@ -854,20 +865,20 @@
                             </div>
                         @else
                             <div class="text-center p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
-                                <svg class="w-8 h-8 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                 </svg>
                                 <p class="text-gray-600 dark:text-gray-400 font-medium">No departments available</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-500 mt-1">All departments must have assigned heads to be available for complaint assignment.</p>
+                                <p class="text-sm text-gray-500 mt-1">All departments must have assigned heads to be available for complaint assignment.</p>
                             </div>
                         @endif
                     </div>
 
-                    <!-- Priority and Deadline -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- Priority & Deadline -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="assignPriority" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Priority</label>
-                            <select id="assignPriority" name="priority" class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
+                            <label for="assignPriority" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Priority</label>
+                            <select id="assignPriority" name="priority" class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500" required>
                                 <option value="low">Low</option>
                                 <option value="medium" selected>Medium</option>
                                 <option value="high">High</option>
@@ -875,28 +886,28 @@
                             </select>
                         </div>
                         <div>
-                            <label for="assignDeadline" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Deadline</label>
+                            <label for="assignDeadline" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Deadline</label>
                             <input type="datetime-local" id="assignDeadline" name="deadline"
-                                   class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                   class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
 
                     <!-- Assignment Notes -->
-                    <div class="mb-6">
-                        <label for="assignmentNotes" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-3">Assignment Notes</label>
+                    <div>
+                        <label for="assignmentNotes" class="block text-sm font-semibold text-gray-800 dark:text-gray-200 mb-2">Assignment Notes</label>
                         <textarea id="assignmentNotes" name="assignment_notes" rows="3"
-                                  class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+                                  class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-500 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 resize-none"
                                   placeholder="Special instructions or notes for the assigned departments..."></textarea>
                     </div>
 
-                    <!-- Form Actions -->
-                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-600">
+                    <!-- Footer -->
+                    <div class="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-600 mt-6">
                         <button type="button" id="cancelAssignBtn"
-                                class="w-full sm:w-auto px-6 py-3 text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 focus:ring-2 focus:ring-gray-300 transition-colors font-medium">
+                                class="w-full sm:w-auto px-6 py-3 bg-gray-100 dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-200 transition">
                             Cancel
                         </button>
                         <button type="submit"
-                                class="w-full sm:w-auto px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors font-medium shadow-sm">
+                                class="w-full sm:w-auto px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition shadow-sm">
                             <span class="assign-submit-text flex items-center justify-center">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -915,9 +926,11 @@
                     </div>
                 </form>
             </div>
+
         </div>
     </div>
 </div>
+
 
 <!-- Discussion Modal -->
 <div id="discussionModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
@@ -1688,7 +1701,7 @@ function displayMessages(messages) {
             // Single file attachment (legacy format)
             attachmentHtml = `
                 <div class="mt-2 pt-2 border-t ${isAdmin ? 'border-blue-400' : 'border-gray-300 dark:border-gray-600'}">
-                    ${renderFileAttachment(message.file_path, message.file_name)}
+                    ${renderFileAttachment(message.file_path, message.file_name, message.id)}
                 </div>
             `;
         } else if (message.attachments && Array.isArray(message.attachments) && message.attachments.length > 0) {
@@ -1696,7 +1709,7 @@ function displayMessages(messages) {
             const attachmentsHtml = message.attachments.map(attachment => {
                 const fileName = attachment.original_name || attachment.name || 'Unknown file';
                 const filePath = attachment.path;
-                return renderFileAttachment(filePath, fileName);
+                return renderFileAttachment(filePath, fileName, message.id);
             }).join('');
 
             attachmentHtml = `
@@ -2313,33 +2326,110 @@ async function handleAdminResponseSubmit(e) {
 }
 
 // Utility functions
-function renderFileAttachment(filePath, fileName) {
+function renderFileAttachment(filePath, fileName, discussionId = null) {
     const fileExtension = fileName ? fileName.split('.').pop().toLowerCase() : '';
-    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
-    const isVideo = ['mp4', 'avi', 'mov', 'webm'].includes(fileExtension);
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(fileExtension);
+    const isVideo = ['mp4', 'avi', 'mov', 'webm', 'mkv', 'flv', 'wmv'].includes(fileExtension);
+    const isAudio = ['mp3', 'wav', 'ogg', 'aac', 'm4a'].includes(fileExtension);
 
+    // Determine the correct URL based on whether this is a discussion attachment or evidence file
+    const fileUrl = discussionId ? `/admin/discussions/${discussionId}/attachment` : `/storage/${filePath}`;
+
+    // Create a container with file info and action buttons
+    let attachmentHtml = `
+        <div class="bg-gray-50 dark:bg-gray-600 rounded-lg p-3 max-w-sm">
+            <div class="flex items-start space-x-3">
+    `;
+
+    // File icon/preview
     if (isImage) {
-        return `
-            <img src="/storage/${filePath}" alt="${fileName}" class="max-w-full h-auto rounded cursor-pointer"
-                 onclick="openMediaPreview('/storage/${filePath}', 'image', '${fileName}')">
+        attachmentHtml += `
+            <div class="flex-shrink-0">
+                <img src="${fileUrl}" alt="${fileName}"
+                     class="w-16 h-16 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity"
+                     onclick="openMediaPreview('${fileUrl}', 'image', '${fileName}')">
+            </div>
         `;
     } else if (isVideo) {
-        return `
-            <video controls class="max-w-full h-auto rounded">
-                <source src="/storage/${filePath}" type="video/${fileExtension}">
-                Your browser does not support the video tag.
-            </video>
+        attachmentHtml += `
+            <div class="flex-shrink-0">
+                <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                     onclick="openMediaPreview('${fileUrl}', 'video', '${fileName}')">
+                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10v4a2 2 0 002 2h2a2 2 0 002-2v-4M9 10V8a2 2 0 012-2h2a2 2 0 012 2v2"></path>
+                    </svg>
+                </div>
+            </div>
+        `;
+    } else if (isAudio) {
+        attachmentHtml += `
+            <div class="flex-shrink-0">
+                <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center">
+                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                    </svg>
+                </div>
+            </div>
         `;
     } else {
-        return `
-            <a href="/storage/${filePath}" target="_blank" class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 dark:text-blue-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                </svg>
-                <span class="text-sm">${fileName}</span>
-            </a>
+        attachmentHtml += `
+            <div class="flex-shrink-0">
+                <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center">
+                    <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+            </div>
         `;
     }
+
+    // File info and buttons
+    attachmentHtml += `
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-medium text-gray-900 dark:text-white truncate">${fileName}</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">${getFileExtension(fileName).toUpperCase()} file</div>
+                    <div class="flex space-x-2">
+    `;
+
+    // Add preview button for supported file types
+    if (isImage || isVideo) {
+        attachmentHtml += `
+            <button onclick="openMediaPreview('${fileUrl}', '${isImage ? 'image' : 'video'}', '${fileName}')"
+                    class="inline-flex items-center px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">
+                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                </svg>
+                Preview
+            </button>
+        `;
+    }
+
+    // Add download button
+    attachmentHtml += `
+        <a href="${fileUrl}" download="${fileName}"
+           class="inline-flex items-center px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded transition-colors">
+            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Download
+        </a>
+    `;
+
+    attachmentHtml += `
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    return attachmentHtml;
+}
+
+// Helper function to get file extension
+function getFileExtension(fileName) {
+    if (!fileName || !fileName.includes('.')) return '';
+    return fileName.split('.').pop().toLowerCase();
 }
 
 function formatFileSize(bytes) {
@@ -2611,7 +2701,7 @@ function displayMessages(messages) {
                         <p class="text-sm">${message.message}</p>
                         ${message.file_path ? `
                             <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
-                                ${renderFileAttachment(message.file_path, message.file_name)}
+                                ${renderFileAttachment(message.file_path, message.file_name, message.id)}
                             </div>
                         ` : ''}
                     </div>
@@ -2630,35 +2720,6 @@ function displayMessages(messages) {
 
     // Scroll to bottom
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-function renderFileAttachment(filePath, fileName) {
-    const fileExtension = fileName ? fileName.split('.').pop().toLowerCase() : '';
-    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
-    const isVideo = ['mp4', 'avi', 'mov', 'webm'].includes(fileExtension);
-
-    if (isImage) {
-        return `
-            <img src="/storage/${filePath}" alt="${fileName}" class="max-w-full h-auto rounded cursor-pointer"
-                 onclick="openMediaPreview('/storage/${filePath}', 'image', '${fileName}')">
-        `;
-    } else if (isVideo) {
-        return `
-            <video controls class="max-w-full h-auto rounded">
-                <source src="/storage/${filePath}" type="video/${fileExtension}">
-                Your browser does not support the video tag.
-            </video>
-        `;
-    } else {
-        return `
-            <a href="/storage/${filePath}" target="_blank" class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 dark:text-blue-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                </svg>
-                <span class="text-sm">${fileName}</span>
-            </a>
-        `;
-    }
 }
 
 // File handling functions
@@ -2720,22 +2781,104 @@ function openMediaPreview(src, type, fileName) {
     const modalTitle = modal.querySelector('.modal-title');
     const modalBody = modal.querySelector('.modal-body');
 
-    modalTitle.textContent = fileName;
+    modalTitle.textContent = fileName || 'File Preview';
 
-    if (type.startsWith('image/')) {
-        modalBody.innerHTML = `<img src="${src}" alt="${fileName}" class="max-w-full h-auto" />`;
-    } else if (type.startsWith('video/')) {
+    // Clear previous content
+    modalBody.innerHTML = '<div class="text-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div><p class="mt-2 text-gray-600 dark:text-gray-400">Loading...</p></div>';
+
+    // Show modal first
+    modal.classList.remove('hidden');
+
+    // For images, check if it's a proper image type
+    if (type === 'image' || (type && type.startsWith('image/')) || isImageFile(fileName)) {
         modalBody.innerHTML = `
-            <video controls class="max-w-full h-auto">
-                <source src="${src}" type="${type}">
-                Your browser does not support the video tag.
-            </video>
+            <div class="max-w-full max-h-full flex items-center justify-center">
+                <img src="${src}" alt="${fileName}" class="max-w-full max-h-full object-contain rounded"
+                     onerror="handlePreviewError(this, '${fileName}')"
+                     onload="this.style.opacity='1'" style="opacity:0; transition: opacity 0.3s;"/>
+            </div>
+        `;
+    } else if (type === 'video' || (type && type.startsWith('video/')) || isVideoFile(fileName)) {
+        modalBody.innerHTML = `
+            <div class="max-w-full max-h-full">
+                <video controls class="max-w-full max-h-full rounded"
+                       onerror="handlePreviewError(this, '${fileName}')">
+                    <source src="${src}" type="${type || getVideoMimeType(fileName)}">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
         `;
     } else {
-        modalBody.innerHTML = `<a href="${src}" target="_blank" class="text-blue-600">${fileName}</a>`;
+        // For non-previewable files, show file info and download option
+        modalBody.innerHTML = `
+            <div class="text-center py-8">
+                <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">${fileName}</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">This file type cannot be previewed</p>
+                <a href="${src}" target="_blank" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Download File
+                </a>
+            </div>
+        `;
     }
+}
 
-    modal.classList.remove('hidden');
+// Helper functions for file type detection
+function isImageFile(fileName) {
+    if (!fileName) return false;
+    const ext = fileName.split('.').pop().toLowerCase();
+    return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(ext);
+}
+
+function isVideoFile(fileName) {
+    if (!fileName) return false;
+    const ext = fileName.split('.').pop().toLowerCase();
+    return ['mp4', 'avi', 'mov', 'webm', 'mkv', 'flv', 'wmv'].includes(ext);
+}
+
+function getVideoMimeType(fileName) {
+    if (!fileName) return 'video/mp4';
+    const ext = fileName.split('.').pop().toLowerCase();
+    const mimeTypes = {
+        'mp4': 'video/mp4',
+        'webm': 'video/webm',
+        'avi': 'video/avi',
+        'mov': 'video/quicktime',
+        'mkv': 'video/x-matroska'
+    };
+    return mimeTypes[ext] || 'video/mp4';
+}
+
+// Error handler for preview failures
+function handlePreviewError(element, fileName) {
+    element.parentElement.innerHTML = `
+        <div class="text-center py-8">
+            <svg class="w-16 h-16 mx-auto mb-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Preview Error</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">Could not load preview for ${fileName}</p>
+        </div>
+    `;
+}
+
+// Close media preview modal
+function closeMediaPreview() {
+    const modal = document.getElementById('mediaPreviewModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        // Clean up media elements
+        const videos = modal.querySelectorAll('video');
+        videos.forEach(video => {
+            video.pause();
+            video.currentTime = 0;
+        });
+    }
 }
 
 // removed duplicate showEvidenceModal (canonical definition retained earlier)
@@ -2811,34 +2954,6 @@ async function handleAdminResponseSubmit(e) {
         submitBtn.innerHTML = originalHTML;
         submitBtn.disabled = false;
     }
-}
-
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-}
-
-function formatDateTime(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-}
-
-function getStatusClass(status) {
-    const statusClasses = {
-        'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        'in_progress': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-        'resolved': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        'escalated': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-    };
-    return statusClasses[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
 }
 
 async function handleAssignSubmit(e) {
@@ -2962,16 +3077,30 @@ function showEvidenceModal(complaintId, evidenceFiles) {
 
         if (isImage) {
             evidenceHtml += `
-                <img src="/storage/${file.path}" alt="${file.original_name}"
-                     class="w-full h-48 object-cover rounded mb-2 cursor-pointer"
-                     onclick="window.open('/storage/${file.path}', '_blank')">
+                <div class="relative group">
+                    <img src="/admin/complaints/${complaintId}/evidence/${index}" alt="${file.original_name}"
+                         class="w-full h-48 object-cover rounded mb-2 cursor-pointer hover:opacity-90 transition-opacity"
+                         onclick="openMediaPreview('/admin/complaints/${complaintId}/evidence/${index}', 'image', '${file.original_name}')">
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all rounded mb-2 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </div>
+                </div>
             `;
         } else if (isVideo) {
             evidenceHtml += `
-                <video controls class="w-full h-48 rounded mb-2">
-                    <source src="/storage/${file.path}" type="${file.mime_type}">
-                    Your browser does not support the video tag.
-                </video>
+                <div class="relative group cursor-pointer" onclick="openMediaPreview('/admin/complaints/${complaintId}/evidence/${index}', 'video', '${file.original_name}')">
+                    <div class="w-full h-48 bg-gray-100 dark:bg-gray-700 rounded mb-2 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <div class="text-center">
+                            <svg class="w-12 h-12 mx-auto mb-2 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10v4a2 2 0 002 2h2a2 2 0 002-2v-4M9 10V8a2 2 0 012-2h2a2 2 0 012 2v2"></path>
+                            </svg>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Click to preview video</p>
+                        </div>
+                    </div>
+                </div>
             `;
         } else if (isAudio) {
             evidenceHtml += `
@@ -2981,7 +3110,7 @@ function showEvidenceModal(complaintId, evidenceFiles) {
                     </svg>
                 </div>
                 <audio controls class="w-full mb-2">
-                    <source src="/storage/${file.path}" type="${file.mime_type}">
+                    <source src="/admin/complaints/${complaintId}/evidence/${index}" type="${file.mime_type}">
                     Your browser does not support the audio element.
                 </audio>
             `;
@@ -2998,16 +3127,28 @@ function showEvidenceModal(complaintId, evidenceFiles) {
         evidenceHtml += `
             <div class="text-sm">
                 <div class="font-medium text-gray-900 dark:text-white">${file.original_name}</div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">
+                <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">
                     Size: ${formatFileSize(file.size)} | Type: ${file.mime_type || 'Unknown'}
                 </div>
-                <a href="/storage/${file.path}" download="${file.original_name}"
-                   class="inline-flex items-center mt-2 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">
-                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    Download
-                </a>
+                <div class="flex gap-2">
+                    ${(isImage || isVideo) ? `
+                        <button onclick="openMediaPreview('/admin/complaints/${complaintId}/evidence/${index}', '${file.mime_type}', '${file.original_name}')"
+                                class="inline-flex items-center px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            Preview
+                        </button>
+                    ` : ''}
+                    <a href="/admin/complaints/${complaintId}/evidence/${index}" download="${file.original_name}"
+                       class="inline-flex items-center px-2 py-1 text-xs bg-green-600 hover:bg-green-700 text-white rounded transition-colors">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Download
+                    </a>
+                </div>
             </div>
         </div>`;
     });
@@ -3300,6 +3441,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Evidence Modal Event Listeners
     const evidenceModal = document.getElementById('evidenceModal');
     const evidenceCloseBtn = document.getElementById('evidenceModalCloseBtn');
+    const mediaPreviewModal = document.getElementById('mediaPreviewModal');
+    const mediaPreviewCloseBtn = document.getElementById('mediaPreviewCloseBtn');
     const replyModal = document.getElementById('replyModal');
     const replyCloseBtn = document.getElementById('replyModalCloseBtn');
     const cancelReplyBtn = document.getElementById('cancelReplyBtn');
@@ -3310,6 +3453,15 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             e.stopPropagation();
             closeEvidenceModal();
+        });
+    }
+
+    // Close media preview modal via close button
+    if (mediaPreviewCloseBtn) {
+        mediaPreviewCloseBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            closeMediaPreview();
         });
     }
 
@@ -3336,6 +3488,14 @@ document.addEventListener('DOMContentLoaded', function() {
         evidenceModal.addEventListener('click', function(e) {
             if (e.target === evidenceModal) {
                 closeEvidenceModal();
+            }
+        });
+    }
+
+    if (mediaPreviewModal) {
+        mediaPreviewModal.addEventListener('click', function(e) {
+            if (e.target === mediaPreviewModal) {
+                closeMediaPreview();
             }
         });
     }
@@ -3413,6 +3573,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ESC key handling
+    // ESC key handling
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             if (evidenceModalInstance) {
@@ -3427,6 +3588,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (discussionModalInstance) {
                 closeDiscussionModal();
             }
+            // Close media preview modal
+            const mediaModal = document.getElementById('mediaPreviewModal');
+            if (mediaModal && !mediaModal.classList.contains('hidden')) {
+                closeMediaPreview();
+            }
         }
     });
 
@@ -3439,6 +3605,8 @@ document.addEventListener('DOMContentLoaded', function() {
     window.closeReplyModal = closeReplyModal;
     window.showEvidenceModal = showEvidenceModal;
     window.closeEvidenceModal = closeEvidenceModal;
+    window.openMediaPreview = openMediaPreview;
+    window.closeMediaPreview = closeMediaPreview;
     window.toggleView = toggleView;
     window.loadComplaintAssignments = loadComplaintAssignments;
     window.displayAssignments = displayAssignments;
