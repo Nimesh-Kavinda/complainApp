@@ -130,7 +130,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                     </svg>
-                               Staff Registration
+                               Verify you are a Staff Member
                             </span>
                         </button>
                    </a>
@@ -452,9 +452,9 @@
     <!-- Staff Registration Modal -->
 <div id="staffRegistrationModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black bg-opacity-75 backdrop-blur-sm">
     <div class="flex items-center justify-center min-h-screen px-4 py-8">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto border border-gray-200 dark:border-gray-600 relative">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto dark:border dark:border-gray-600 relative">
             <!-- Modal Header -->
-            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-red-500 to-gray-800 rounded-t-3xl">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-500 to-purple-800 dark:bg-gradient-to-r dark:from-red-500 dark:to-gray-800">
                 <div class="flex items-center">
                     <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
