@@ -92,7 +92,7 @@
                                         📋 Client - Submit and track complaints
                                     </option>
                                     <option value="staff_member" {{ old('role') == 'staff_member' ? 'selected' : '' }}>
-                                        👤 Staff Member - Manage department tasks
+                                        👤 Staff Member - Mark department complaints
                                     </option>
                                 </select>
                                 <x-input-error :messages="$errors->get('role')" class="mt-2" />
