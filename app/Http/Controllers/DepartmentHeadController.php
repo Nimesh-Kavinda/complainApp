@@ -82,7 +82,7 @@ class DepartmentHeadController extends Controller
 
         $staffMember->load('user', 'reviewer');
 
-        return view('departmentHead.staff-details', compact('staffMember', 'department'));
+        return view('departmentHead.staff-details', compact('staffMember', 'department',));
     }
 
     /**
@@ -317,6 +317,75 @@ class DepartmentHeadController extends Controller
                 'message' => 'Failed to add response: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Download staff complaint evidence file securely.
+     */
+    public function downloadStaffComplaintEvidence(StaffComplaint $complaint, $fileIndex)
+    {
+        $user = Auth::user();
+        $department = $user->departmentAsHead;
+
+        // Check if this complaint belongs to the department head's department
+        if (!$department || $complaint->department_id !== $department->id) {
+            abort(403, 'You do not have access to this complaint.');
+        }
+
+        // Check if complaint has evidence files
+        if (!$complaint->evidence_files || !is_array($complaint->evidence_files)) {
+            abort(404, 'No evidence files found.');
+        }
+
+        // Check if file index exists
+        if (!isset($complaint->evidence_files[$fileIndex])) {
+            abort(404, 'Evidence file not found.');
+        }
+
+        $file = $complaint->evidence_files[$fileIndex];
+
+        // Handle both string paths and array file objects
+        if (is_array($file)) {
+            $filePath = $file['path'] ?? $file['file_path'] ?? '';
+            $fileName = $file['name'] ?? $file['original_name'] ?? basename($filePath);
+        } else {
+            $filePath = $file;
+            $fileName = basename($file);
+        }
+
+        // Get the full path to the file
+        $fullPath = storage_path('app/public/' . ltrim($filePath, '/'));
+
+        // Check if file exists
+        if (!file_exists($fullPath)) {
+            abort(404, 'Evidence file not found on disk.');
+        }
+
+        // Get the file extension for proper MIME type
+        $extension = pathinfo($fullPath, PATHINFO_EXTENSION);
+        $mimeType = match (strtolower($extension)) {
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'gif' => 'image/gif',
+            'webp' => 'image/webp',
+            'bmp' => 'image/bmp',
+            'svg' => 'image/svg+xml',
+            'pdf' => 'application/pdf',
+            'mp4' => 'video/mp4',
+            'webm' => 'video/webm',
+            'ogg' => 'video/ogg',
+            'mp3' => 'audio/mpeg',
+            'wav' => 'audio/wav',
+            default => 'application/octet-stream'
+        };
+
+        // Return the file response
+        return response()->file($fullPath, [
+            'Content-Type' => $mimeType,
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0'
+        ]);
     }
 
 

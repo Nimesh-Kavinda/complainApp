@@ -134,6 +134,7 @@ Route::middleware(['auth'])->group(function () {
     // Staff Complaints for Department Heads
     Route::get('/department-head/staff-complaints', [DepartmentHeadController::class, 'staffcomplaints'])->name('department.head.staff.complaints');
     Route::get('/department-head/staff-complaints/{complaint}', [DepartmentHeadController::class, 'showStaffComplaint'])->name('department.head.staff.complaint.show');
+    Route::get('/department-head/staff-complaints/{complaint}/evidence/{fileIndex}', [DepartmentHeadController::class, 'downloadStaffComplaintEvidence'])->name('department.head.staff.complaint.evidence');
     Route::post('/department-head/staff-complaints/{complaint}/response', [DepartmentHeadController::class, 'addStaffComplaintResponse'])->name('department.head.staff.complaint.response');
 
     // Admin Assigned Complaints for Department Heads
