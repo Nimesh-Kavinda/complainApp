@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\StaffMember;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -48,6 +49,7 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         if ($user->role === 'staff_member') {
+
             return redirect(route('staff.index', absolute: false));
         }
 

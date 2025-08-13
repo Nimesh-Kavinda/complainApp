@@ -18,9 +18,11 @@ class StaffController extends Controller
         $staffMember = StaffMember::where('user_id', Auth::id())->first();
         $staffId = $staffMember->staff_id ?? null;
 
-        $isPending = $staffMember->status === 'pending';
-        $isApproved = $staffMember->status === 'approved';
-        $isRejected = $staffMember->status === 'rejected';
+        $status = $staffMember->status ?? null; // get status if it exists, otherwise null
+
+        $isPending = $status === 'pending';
+        $isApproved = $status === 'approved';
+        $isRejected = $status === 'rejected';
 
         // This method will display the staff management page
         return view('staff.index', compact('staffId', 'isPending', 'isApproved', 'isRejected'));
