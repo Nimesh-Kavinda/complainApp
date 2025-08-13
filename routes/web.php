@@ -40,6 +40,8 @@ Route::get('/admin/complaints', [AdminController::class, 'complains'])->name('ad
 Route::put('/admin/complaints/{id}/status', [AdminController::class, 'updateComplaintStatus'])->name('admin.complaints.updateStatus');
 Route::get('/admin/complaints/{id}/conversation', [AdminController::class, 'getComplaintConversation'])->name('admin.complaints.conversation');
 Route::post('/admin/complaints/{id}/reply', [AdminController::class, 'replyToComplaint'])->name('admin.complaints.reply');
+Route::get('/admin/complaints/{id}/evidence/{fileIndex}', [AdminController::class, 'downloadEvidence'])->name('admin.complaints.evidence');
+Route::get('/admin/discussions/{discussionId}/attachment', [AdminController::class, 'downloadDiscussionAttachment'])->name('admin.discussions.attachment');
 Route::delete('/admin/complaints/{id}', [AdminController::class, 'deleteComplaint'])->name('admin.complaints.delete');
 
 // Debug route for testing conversation

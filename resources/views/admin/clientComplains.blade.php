@@ -1688,7 +1688,7 @@ function displayMessages(messages) {
             // Single file attachment (legacy format)
             attachmentHtml = `
                 <div class="mt-2 pt-2 border-t ${isAdmin ? 'border-blue-400' : 'border-gray-300 dark:border-gray-600'}">
-                    ${renderFileAttachment(message.file_path, message.file_name)}
+                    ${renderFileAttachment(message.file_path, message.file_name, message.id)}
                 </div>
             `;
         } else if (message.attachments && Array.isArray(message.attachments) && message.attachments.length > 0) {
@@ -1696,7 +1696,7 @@ function displayMessages(messages) {
             const attachmentsHtml = message.attachments.map(attachment => {
                 const fileName = attachment.original_name || attachment.name || 'Unknown file';
                 const filePath = attachment.path;
-                return renderFileAttachment(filePath, fileName);
+                return renderFileAttachment(filePath, fileName, message.id);
             }).join('');
 
             attachmentHtml = `
@@ -2313,26 +2313,29 @@ async function handleAdminResponseSubmit(e) {
 }
 
 // Utility functions
-function renderFileAttachment(filePath, fileName) {
+function renderFileAttachment(filePath, fileName, discussionId = null) {
     const fileExtension = fileName ? fileName.split('.').pop().toLowerCase() : '';
     const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
     const isVideo = ['mp4', 'avi', 'mov', 'webm'].includes(fileExtension);
 
+    // Determine the correct URL based on whether this is a discussion attachment or evidence file
+    const fileUrl = discussionId ? `/admin/discussions/${discussionId}/attachment` : `/storage/${filePath}`;
+
     if (isImage) {
         return `
-            <img src="/storage/${filePath}" alt="${fileName}" class="max-w-full h-auto rounded cursor-pointer"
-                 onclick="openMediaPreview('/storage/${filePath}', 'image', '${fileName}')">
+            <img src="${fileUrl}" alt="${fileName}" class="max-w-full h-auto rounded cursor-pointer"
+                 onclick="openMediaPreview('${fileUrl}', 'image', '${fileName}')">
         `;
     } else if (isVideo) {
         return `
             <video controls class="max-w-full h-auto rounded">
-                <source src="/storage/${filePath}" type="video/${fileExtension}">
+                <source src="${fileUrl}" type="video/${fileExtension}">
                 Your browser does not support the video tag.
             </video>
         `;
     } else {
         return `
-            <a href="/storage/${filePath}" target="_blank" class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 dark:text-blue-400">
+            <a href="${fileUrl}" target="_blank" class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 dark:text-blue-400">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                 </svg>
@@ -2611,7 +2614,7 @@ function displayMessages(messages) {
                         <p class="text-sm">${message.message}</p>
                         ${message.file_path ? `
                             <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-600">
-                                ${renderFileAttachment(message.file_path, message.file_name)}
+                                ${renderFileAttachment(message.file_path, message.file_name, message.id)}
                             </div>
                         ` : ''}
                     </div>
@@ -2630,35 +2633,6 @@ function displayMessages(messages) {
 
     // Scroll to bottom
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-}
-
-function renderFileAttachment(filePath, fileName) {
-    const fileExtension = fileName ? fileName.split('.').pop().toLowerCase() : '';
-    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension);
-    const isVideo = ['mp4', 'avi', 'mov', 'webm'].includes(fileExtension);
-
-    if (isImage) {
-        return `
-            <img src="/storage/${filePath}" alt="${fileName}" class="max-w-full h-auto rounded cursor-pointer"
-                 onclick="openMediaPreview('/storage/${filePath}', 'image', '${fileName}')">
-        `;
-    } else if (isVideo) {
-        return `
-            <video controls class="max-w-full h-auto rounded">
-                <source src="/storage/${filePath}" type="video/${fileExtension}">
-                Your browser does not support the video tag.
-            </video>
-        `;
-    } else {
-        return `
-            <a href="/storage/${filePath}" target="_blank" class="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 dark:text-blue-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                </svg>
-                <span class="text-sm">${fileName}</span>
-            </a>
-        `;
-    }
 }
 
 // File handling functions
@@ -2813,34 +2787,6 @@ async function handleAdminResponseSubmit(e) {
     }
 }
 
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-}
-
-function formatDateTime(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-}
-
-function getStatusClass(status) {
-    const statusClasses = {
-        'pending': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-        'in_progress': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-        'resolved': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-        'escalated': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-    };
-    return statusClasses[status] || 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-}
-
 async function handleAssignSubmit(e) {
     e.preventDefault();
 
@@ -2962,14 +2908,14 @@ function showEvidenceModal(complaintId, evidenceFiles) {
 
         if (isImage) {
             evidenceHtml += `
-                <img src="/storage/${file.path}" alt="${file.original_name}"
+                <img src="/admin/complaints/${complaintId}/evidence/${index}" alt="${file.original_name}"
                      class="w-full h-48 object-cover rounded mb-2 cursor-pointer"
-                     onclick="window.open('/storage/${file.path}', '_blank')">
+                     onclick="window.open('/admin/complaints/${complaintId}/evidence/${index}', '_blank')">
             `;
         } else if (isVideo) {
             evidenceHtml += `
                 <video controls class="w-full h-48 rounded mb-2">
-                    <source src="/storage/${file.path}" type="${file.mime_type}">
+                    <source src="/admin/complaints/${complaintId}/evidence/${index}" type="${file.mime_type}">
                     Your browser does not support the video tag.
                 </video>
             `;
@@ -2981,7 +2927,7 @@ function showEvidenceModal(complaintId, evidenceFiles) {
                     </svg>
                 </div>
                 <audio controls class="w-full mb-2">
-                    <source src="/storage/${file.path}" type="${file.mime_type}">
+                    <source src="/admin/complaints/${complaintId}/evidence/${index}" type="${file.mime_type}">
                     Your browser does not support the audio element.
                 </audio>
             `;
@@ -3001,7 +2947,7 @@ function showEvidenceModal(complaintId, evidenceFiles) {
                 <div class="text-xs text-gray-500 dark:text-gray-400">
                     Size: ${formatFileSize(file.size)} | Type: ${file.mime_type || 'Unknown'}
                 </div>
-                <a href="/storage/${file.path}" download="${file.original_name}"
+                <a href="/admin/complaints/${complaintId}/evidence/${index}" download="${file.original_name}"
                    class="inline-flex items-center mt-2 text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400">
                     <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>

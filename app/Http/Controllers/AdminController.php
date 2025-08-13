@@ -430,6 +430,49 @@ class AdminController extends Controller
         }
     }
 
+    /**
+     * Download evidence file for admin
+     */
+    public function downloadEvidence($id, $fileIndex)
+    {
+        $complaint = ClientComplaint::findOrFail($id);
+
+        if (!$complaint->evidence_files || !isset($complaint->evidence_files[$fileIndex])) {
+            abort(404, 'Evidence file not found.');
+        }
+
+        $file = $complaint->evidence_files[$fileIndex];
+        $filePath = storage_path('app/public/' . $file['path']);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'Evidence file not found on server.');
+        }
+
+        return response()->download($filePath, $file['original_name']);
+    }
+
+    /**
+     * Download discussion attachment file for admin
+     */
+    public function downloadDiscussionAttachment($discussionId)
+    {
+        $discussion = \App\Models\ComplaintDiscussion::findOrFail($discussionId);
+
+        if (!$discussion->attachments || !is_array($discussion->attachments) || empty($discussion->attachments)) {
+            abort(404, 'Attachment not found.');
+        }
+
+        $attachment = $discussion->attachments[0]; // Get first attachment
+        $filePath = storage_path('app/public/' . $attachment['path']);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'Attachment file not found on server.');
+        }
+
+        $fileName = $attachment['name'] ?? $attachment['original_name'] ?? 'download';
+        return response()->download($filePath, $fileName);
+    }
+
     public function departments()
     {
         // Fetch all departments to display in the view
