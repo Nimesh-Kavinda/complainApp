@@ -162,7 +162,7 @@
             <button onclick="window.history.back()"
                     class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-gray-600 dark:to-black dark:hover:from-gray-700 dark:hover:to-gray-900 text-white rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-gray-500/25 dark:hover:shadow-gray-500/25 relative overflow-hidden">
                 <span class="absolute inset-0 bg-gradient-to-r from-gray-400/0 via-white/10 to-gray-400/0 dark:from-gray-500/0 dark:via-white/10 dark:to-gray-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
-                <svg class="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform duration-300 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
                 <span class="relative z-10">Back</span>
