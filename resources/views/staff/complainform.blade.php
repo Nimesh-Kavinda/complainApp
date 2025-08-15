@@ -114,23 +114,34 @@
             <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-red-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
 
-    <div class="max-w-3xl mx-auto bg-white/90 dark:bg-black/90 backdrop-blur-lg shadow-2xl rounded-3xl p-8 space-y-8 border border-red-200/30 dark:border-red-800/30 relative z-10 hover:shadow-red-500/10 transition-all duration-500">
+    <div class="max-w-3xl mx-auto bg-white/90 dark:bg-black/90 backdrop-blur-lg shadow-2xl rounded-3xl p-8 space-y-8 border border-blue-200/30 dark:border-red-800/30 relative z-10 hover:shadow-blue-500/10 dark:hover:shadow-red-500/10 transition-all duration-500">
         <div class="text-center animate-fade-in-up">
-            <div class="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-red-600/20 to-red-700/20 border border-red-500/30 text-red-600 dark:text-red-400 text-sm font-medium mb-6 backdrop-blur-sm">
+            <div class="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-200/50 via-purple-200/50 to-green-200/50 dark:from-red-600/20 dark:to-red-700/20 border border-blue-300/50 dark:border-red-500/30 text-blue-700 dark:text-red-400 text-sm font-medium mb-6 backdrop-blur-sm">
                 <svg class="w-5 h-5 mr-2 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                 </svg>
                 File New Complaint
             </div>
-            <h2 class="text-4xl font-black mb-4 bg-gradient-to-r from-black to-red-600 dark:from-white dark:to-red-400 bg-clip-text text-transparent">Submit Your Complaint</h2>
+            <h2 class="text-4xl font-black mb-4 bg-gradient-to-r from-blue-700 via-purple-600 to-green-600 dark:from-white dark:to-red-400 bg-clip-text text-transparent">Submit Your Complaint</h2>
             <p class="text-gray-600 dark:text-gray-300 text-lg">We take your concerns seriously. Please provide detailed information below.</p>
+        </div>
+
+         <div class="flex justify-end animate-slide-in-left">
+            <button onclick="window.history.back()"
+                    class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-gray-600 dark:to-black dark:hover:from-gray-700 dark:hover:to-gray-900 text-white rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-gray-500/25 dark:hover:shadow-gray-500/25 relative overflow-hidden">
+                <span class="absolute inset-0 bg-gradient-to-r from-gray-400/0 via-white/10 to-gray-400/0 dark:from-gray-500/0 dark:via-white/10 dark:to-gray-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                <svg class="w-3 h-3 mr-2 group-hover:-translate-x-1 transition-transform duration-300 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                <span class="relative z-10">Back</span>
+            </button>
         </div>
 
         <!-- Display Validation Errors -->
         @if ($errors->any())
             <div class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 px-6 py-4 rounded-r-lg animate-slide-in-left shadow-lg">
                 <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 mr-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                     </svg>
                     <strong>Please fix the following errors:</strong>
@@ -158,7 +169,7 @@
         @if (session('error'))
             <div class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 px-6 py-4 rounded-r-lg animate-slide-in-left shadow-lg">
                 <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-3 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-5 h-5 mr-3 text-blue-500 dark:text-red-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                     </svg>
                     {{ session('error') }}
@@ -172,7 +183,7 @@
             <!-- Name -->
             <div class="form-field group">
                 <label for="name" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300 group-focus-within:text-red-600 dark:group-focus-within:text-red-400">
-                    <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 inline mr-2 text-blue-500 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
                     Full Name
@@ -185,7 +196,7 @@
             <!-- Type of User -->
             <div class="form-field group">
                 <label for="userType" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300 group-focus-within:text-red-600 dark:group-focus-within:text-red-400">
-                    <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 inline mr-2 text-blue-500 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                     </svg>
                     User Type
@@ -198,7 +209,7 @@
             <!-- Staff ID (Always shown for Staff) -->
             <div class="form-field group">
                 <label for="staffId" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300 group-focus-within:text-red-600 dark:group-focus-within:text-red-400">
-                    <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 inline mr-2 text-blue-500 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                     </svg>
                     Staff ID
@@ -217,7 +228,7 @@
             <!-- Contact Phone -->
             <div class="form-field group">
                 <label for="contact_phone" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300 group-focus-within:text-red-600 dark:group-focus-within:text-red-400">
-                    <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 inline mr-2 text-blue-500 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                     </svg>
                     Contact Phone <span class="text-gray-400">(Optional)</span>
@@ -230,7 +241,7 @@
             <!-- Complaint Title -->
             <div class="form-field group">
                 <label for="complaint_title" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300 group-focus-within:text-red-600 dark:group-focus-within:text-red-400">
-                    <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 inline mr-2 text-blue-500 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                     </svg>
                     Complaint Title <span class="text-gray-400">(Optional)</span>
@@ -243,7 +254,7 @@
             <!-- Priority Level -->
             <div class="form-field group">
                 <label for="priority" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300 group-focus-within:text-red-600 dark:group-focus-within:text-red-400">
-                    <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 inline mr-2 text-blue-500 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
                     Priority Level
@@ -265,7 +276,7 @@
             <!-- Complaint Details -->
             <div class="form-field group">
                 <label for="details" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300 group-focus-within:text-red-600 dark:group-focus-within:text-red-400">
-                    <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 inline mr-2 text-blue-500 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     Complaint Details *
@@ -281,7 +292,7 @@
             <!-- Evidence Upload -->
             <div class="form-field group">
                 <label for="evidence" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300 group-focus-within:text-red-600 dark:group-focus-within:text-red-400">
-                    <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 inline mr-2 text-blue-500 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
                     </svg>
                     Attach Evidence <span class="text-gray-400">(Optional)</span>
@@ -292,7 +303,7 @@
                            class="hidden"
                            onchange="updateFileDisplay(this)">
                     <label for="evidence" class="cursor-pointer block">
-                        <svg class="w-12 h-12 mx-auto text-gray-400 mb-4 group-hover:text-red-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-12 h-12 mx-auto text-gray-400 mb-4 group-hover:text-blue-500 dark:text-red-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
                         <span class="text-lg font-medium text-gray-600 dark:text-gray-400">Click to upload multiple files</span>
@@ -318,7 +329,7 @@
             <!-- Evidence Description -->
             <div class="form-field group">
                 <label for="evidence_description" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-300 group-focus-within:text-red-600 dark:group-focus-within:text-red-400">
-                    <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 inline mr-2 text-blue-500 dark:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
                     </svg>
                     Evidence Description <span class="text-gray-400">(Optional)</span>
@@ -330,7 +341,7 @@
 
             <!-- Submit Button -->
             <div class="text-center form-field">
-                <button type="submit" id="com_submit" class="group w-full sm:w-auto px-12 py-4 bg-gradient-to-r from-red-600 to-black hover:from-red-700 hover:to-gray-900 text-white font-bold rounded-2xl shadow-2xl hover:shadow-red-500/25 transition-all duration-500 hover:scale-105 hover:-translate-y-1 relative overflow-hidden animate-pulse-glow">
+                <button type="submit" id="com_submit" class="group w-full sm:w-auto px-12 py-4 bg-gradient-to-r from-purple-600 to-green-600 hover:from-purple-700 hover:to-blue-900 dark:bg-gradient-to-r dark:from-red-600 dark:to-black dark:hover:from-red-700 text-white font-bold rounded-2xl shadow-2xl hover:shadow-blue-500/25 dark:hover:shadow-red-500/25 transition-all duration-500 hover:scale-105 hover:-translate-y-1 relative overflow-hidden animate-pulse-glow">
                     <span class="absolute inset-0 bg-gradient-to-r from-red-500/0 via-white/10 to-red-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                     <span class="flex items-center justify-center relative z-10">
                         <svg class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -537,7 +548,7 @@
         html += `
             <div class="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <div class="flex items-center text-sm">
-                    <svg class="w-4 h-4 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg class="w-4 h-4 mr-2 text-blue-500 dark:text-red-500" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                     </svg>
                     <span class="text-blue-700 dark:text-blue-300">
@@ -563,7 +574,7 @@
                 <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path>
             </svg>`;
         } else if (mimeType.startsWith('audio/')) {
-            return `<svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+            return `<svg class="w-6 h-6 text-blue-500 dark:text-red-500" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"></path>
             </svg>`;
         } else if (mimeType === 'application/pdf' || extension === 'pdf') {
