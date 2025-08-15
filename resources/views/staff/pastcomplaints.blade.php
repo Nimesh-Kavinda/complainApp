@@ -298,15 +298,18 @@ function showEvidenceModal(complaintId, evidenceFiles) {
             const fileCard = document.createElement('div');
             fileCard.className = 'bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600';
 
+            // Use secure route instead of direct storage path
+            const secureFileUrl = `/staff/complaint/${complaintId}/evidence/${index}`;
+
             let previewContent = '';
 
             // Image preview
             if (file.mime_type && file.mime_type.startsWith('image/')) {
                 previewContent = `
                     <div class="mb-3">
-                        <img src="/storage/${file.file_path}" alt="${file.original_name}"
-                             class="w-full h-48 object-cover rounded-lg cursor-pointer"
-                             onclick="openImageFullscreen('/storage/${file.file_path}', '${file.original_name}')">
+                        <img src="${secureFileUrl}" alt="${file.original_name}"
+                             class="w-full h-48 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                             onclick="openImageFullscreen('${secureFileUrl}', '${file.original_name}')">
                     </div>
                 `;
             }
@@ -315,7 +318,7 @@ function showEvidenceModal(complaintId, evidenceFiles) {
                 previewContent = `
                     <div class="mb-3">
                         <video controls class="w-full h-48 rounded-lg">
-                            <source src="/storage/${file.file_path}" type="${file.mime_type}">
+                            <source src="${secureFileUrl}" type="${file.mime_type}">
                             Your browser does not support the video tag.
                         </video>
                     </div>
@@ -330,7 +333,7 @@ function showEvidenceModal(complaintId, evidenceFiles) {
                                 <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"></path>
                             </svg>
                             <p class="text-sm text-gray-600 dark:text-gray-300">PDF File</p>
-                            <button onclick="window.open('/storage/${file.file_path}', '_blank')"
+                            <button onclick="window.open('${secureFileUrl}', '_blank')"
                                     class="mt-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 text-sm">
                                 Open in new tab
                             </button>
@@ -363,7 +366,7 @@ function showEvidenceModal(complaintId, evidenceFiles) {
                             ${(file.file_size / 1024).toFixed(2)} KB
                         </p>
                     </div>
-                    <a href="/staff/complaint/${complaintId}/evidence/${index}"
+                    <a href="${secureFileUrl}" download
                        class="ml-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
                         Download
                     </a>
