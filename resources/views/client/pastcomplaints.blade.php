@@ -167,6 +167,13 @@
                         <span class="relative z-10">New Complaint</span>
                     </a>
                 </div>
+                <div class="flex justify-end animate-slide-in-left">
+            <button onclick="window.history.back()"
+                    class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-gray-600 dark:to-black dark:hover:from-gray-700 dark:hover:to-gray-900 text-white rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-gray-500/25 dark:hover:shadow-gray-500/25 relative overflow-hidden">
+                <span class="absolute inset-0 bg-gradient-to-r from-gray-400/0 via-white/10 to-gray-400/0 dark:from-gray-500/0 dark:via-white/10 dark:to-gray-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                <span class="relative z-10">Back to Home</span>
+            </button>
+        </div>
             </div>
 
             <!-- Statistics Cards -->
