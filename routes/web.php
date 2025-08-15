@@ -95,7 +95,6 @@ Route::get('/client/past-complaints', [ClientController::class, 'pastComplaints'
 Route::get('/client/complaint/{id}/conversation', [ClientController::class, 'getComplaintConversation'])->name('client.complaint.conversation');
 Route::post('/client/complaint/{id}/message', [ClientController::class, 'addMessageToComplaint'])->name('client.complaint.message');
 Route::post('/client/complaint/{id}/close', [ClientController::class, 'closeComplaint'])->name('client.complaint.close');
-Route::get('/client/complaint/{id}/evidence/{fileIndex}', [ClientController::class, 'downloadEvidence'])->name('client.complaint.evidence');
 
 // Client Complaint Routes
 Route::post('/client/complaint/store', [ClientComplaintController::class, 'store'])->name('client.complaint.store');

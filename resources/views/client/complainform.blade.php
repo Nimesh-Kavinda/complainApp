@@ -390,7 +390,7 @@
 
             <!-- Submit Button -->
             <div class="text-center form-field">
-                <button type="submit" id="com_submit" class="group w-full sm:w-auto px-12 py-4 bg-gradient-to-r from-red-600 to-black hover:from-red-700 hover:to-gray-900 text-white font-bold rounded-2xl shadow-2xl hover:shadow-red-500/25 transition-all duration-500 hover:scale-105 hover:-translate-y-1 relative overflow-hidden animate-pulse-glow">
+                <button type="submit" id="com_submit" class="group w-full sm:w-auto px-12 py-4 bg-gradient-to-r from-purple-600 to-green-600 hover:from-purple-700 hover:to-blue-900 dark:bg-gradient-to-r dark:from-red-600 dark:to-black dark:hover:from-red-700 dark:hover:to-gray-900 text-white font-bold rounded-2xl shadow-2xl hover:shadow-red-500/25 transition-all duration-500 hover:scale-105 hover:-translate-y-1 relative overflow-hidden animate-pulse-glow">
                     <span class="absolute inset-0 bg-gradient-to-r from-red-500/0 via-white/10 to-red-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
                     <span class="flex items-center justify-center relative z-10">
                         <svg class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
