@@ -25,7 +25,7 @@ class StaffController extends Controller
         $isRejected = $status === 'rejected';
 
         // This method will display the staff management page
-        return view('staff.index', compact('staffId', 'isPending', 'isApproved', 'isRejected'));
+        return view('staff.index', compact('staffMember', 'staffId', 'isPending', 'isApproved', 'isRejected'));
     }
 
     public function complainForm()
