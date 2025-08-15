@@ -167,6 +167,13 @@
                         <span class="relative z-10">New Complaint</span>
                     </a>
                 </div>
+                <div class="flex justify-end animate-slide-in-left">
+            <button onclick="window.history.back()"
+                    class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-gray-600 dark:to-black dark:hover:from-gray-700 dark:hover:to-gray-900 text-white rounded-xl text-sm font-bold transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-gray-500/25 dark:hover:shadow-gray-500/25 relative overflow-hidden">
+                <span class="absolute inset-0 bg-gradient-to-r from-gray-400/0 via-white/10 to-gray-400/0 dark:from-gray-500/0 dark:via-white/10 dark:to-gray-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                <span class="relative z-10">Back to Home</span>
+            </button>
+        </div>
             </div>
 
             <!-- Statistics Cards -->
@@ -317,6 +324,7 @@
                         <!-- Card Body -->
                         <div class="p-6 relative z-10">
                             <!-- Current Solution/Last Admin Message -->
+                            <div id="latest-update-{{ $complaint->id }}" class="latest-update-section">
                             @if($complaint->solution || $complaint->getLastMessage())
                                 <div class="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-xl border-l-4 border-blue-500 shadow-lg">
                                     <h5 class="text-sm font-black text-blue-900 dark:text-blue-300 mb-2 flex items-center">
@@ -328,18 +336,22 @@
                                     @php
                                         $lastMessage = $complaint->getLastMessage();
                                     @endphp
-                                    @if($lastMessage && $lastMessage['sender_type'] === 'admin')
-                                        <p class="text-sm text-blue-800 dark:text-blue-200 font-medium">
+                                    @if($lastMessage)
+                                        <p class="text-sm text-blue-800 dark:text-blue-200 font-medium latest-message-text">
                                             {{ $lastMessage['message'] }}
                                         </p>
-                                        <p class="text-xs text-blue-600 dark:text-blue-400 mt-1 font-bold">
-                                            - {{ $lastMessage['sender_name'] }} ({{ \Carbon\Carbon::parse($lastMessage['timestamp'])->format('M d, Y h:i A') }})
+                                        <p class="text-xs text-blue-600 dark:text-blue-400 mt-1 font-bold latest-message-sender">
+                                            - {{ $lastMessage['sender_name'] ?? $lastMessage['admin_name'] ?? ($lastMessage['sender_type'] === 'client' ? 'You' : 'Admin') }}
+                                            @if(isset($lastMessage['timestamp']) || isset($lastMessage['created_at']))
+                                                ({{ \Carbon\Carbon::parse($lastMessage['timestamp'] ?? $lastMessage['created_at'])->format('M d, Y h:i A') }})
+                                            @endif
                                         </p>
                                     @elseif($complaint->solution)
-                                        <p class="text-sm text-blue-800 dark:text-blue-200 font-medium">{{ $complaint->solution }}</p>
+                                        <p class="text-sm text-blue-800 dark:text-blue-200 font-medium latest-message-text">{{ $complaint->solution }}</p>
                                     @endif
                                 </div>
                             @endif
+                            </div>
 
                             <!-- Evidence Files -->
                             @if($complaint->hasEvidence())
@@ -380,7 +392,7 @@
                                     </button>
 
                                     <!-- Close Complaint Button (only for resolved complaints) -->
-                                    @if($complaint->status === 'resolved' && $complaint->status !== 'closed')
+                                    @if($complaint->status === 'resolved')
                                         <button onclick="openCloseModal({{ $complaint->id }}, '{{ $complaint->reference_number }}')"
                                                 class="group inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-green-500/25 relative overflow-hidden">
                                             <span class="absolute inset-0 bg-gradient-to-r from-green-500/0 via-white/10 to-green-500/0 -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
@@ -539,12 +551,50 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="closingReason" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Reason for closing (Optional)
+                    <label for="satisfactionRating" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Satisfaction Rating <span class="text-red-500">*</span>
                     </label>
-                    <textarea id="closingReason"
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Poor</span>
+                        <div class="flex gap-1">
+                            <button type="button" onclick="setRating(1)" class="rating-star w-8 h-8 text-gray-300 hover:text-yellow-400 transition-colors" data-rating="1">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                            </button>
+                            <button type="button" onclick="setRating(2)" class="rating-star w-8 h-8 text-gray-300 hover:text-yellow-400 transition-colors" data-rating="2">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                            </button>
+                            <button type="button" onclick="setRating(3)" class="rating-star w-8 h-8 text-gray-300 hover:text-yellow-400 transition-colors" data-rating="3">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                            </button>
+                            <button type="button" onclick="setRating(4)" class="rating-star w-8 h-8 text-gray-300 hover:text-yellow-400 transition-colors" data-rating="4">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                            </button>
+                            <button type="button" onclick="setRating(5)" class="rating-star w-8 h-8 text-gray-300 hover:text-yellow-400 transition-colors" data-rating="5">
+                                <svg fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="text-sm text-gray-600 dark:text-gray-400">Excellent</span>
+                    </div>
+                    <input type="hidden" id="satisfactionRating" value="">
+                </div>
+
+                <div class="mb-4">
+                    <label for="closingFeedback" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Additional Feedback (Optional)
+                    </label>
+                    <textarea id="closingFeedback"
                               rows="3"
-                              placeholder="Please provide a reason for closing this complaint..."
+                              placeholder="Please provide your feedback about the resolution..."
                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"></textarea>
                 </div>
             </div>
@@ -649,6 +699,66 @@ function closeConversationModal() {
     currentConversationId = null;
 }
 
+// Function to update complaint card with latest message
+function updateComplaintCard(complaintId, newMessage) {
+    const complaintCard = document.querySelector(`#complaint-card-${complaintId}`);
+    if (!complaintCard) return;
+
+    const currentTime = new Date().toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+    });
+
+    // Find the latest update section
+    let latestUpdateSection = document.querySelector(`#latest-update-${complaintId}`);
+
+    if (!latestUpdateSection) return;
+
+    // Check if there's already a latest update div inside
+    let latestUpdateDiv = latestUpdateSection.querySelector('.mb-4.p-4.bg-gradient-to-r');
+
+    if (latestUpdateDiv) {
+        // Update existing section
+        const messageText = latestUpdateDiv.querySelector('.latest-message-text');
+        const senderInfo = latestUpdateDiv.querySelector('.latest-message-sender');
+
+        if (messageText && senderInfo) {
+            messageText.textContent = newMessage;
+            senderInfo.innerHTML = `- You (${currentTime})`;
+        }
+    } else {
+        // Create new latest update section
+        latestUpdateSection.innerHTML = `
+            <div class="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-xl border-l-4 border-blue-500 shadow-lg">
+                <h5 class="text-sm font-black text-blue-900 dark:text-blue-300 mb-2 flex items-center">
+                    <svg class="w-4 h-4 mr-2 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                    Latest Update
+                </h5>
+                <p class="text-sm text-blue-800 dark:text-blue-200 font-medium latest-message-text">
+                    ${newMessage}
+                </p>
+                <p class="text-xs text-blue-600 dark:text-blue-400 mt-1 font-bold latest-message-sender">
+                    - You (${currentTime})
+                </p>
+            </div>
+        `;
+    }
+
+    // Also update the message count if it exists
+    const messageCountElement = complaintCard.querySelector('.bg-blue-50.dark\\:bg-blue-950\\/50 span');
+    if (messageCountElement) {
+        const currentText = messageCountElement.textContent;
+        const currentCount = parseInt(currentText.match(/\\d+/)?.[0] || 0);
+        messageCountElement.textContent = `${currentCount + 1} message(s)`;
+    }
+}
+
 async function loadConversation(complaintId) {
     try {
         const response = await fetch(`/client/complaint/${complaintId}/conversation`);
@@ -659,7 +769,9 @@ async function loadConversation(complaintId) {
         if (data.success && data.conversation && data.conversation.length > 0) {
             messagesContainer.innerHTML = data.conversation.map(message => {
                 const isClient = message.sender_type === 'client';
-                const messageTime = new Date(message.timestamp).toLocaleString();
+                const timestamp = message.timestamp || message.created_at || new Date().toISOString();
+                const messageTime = new Date(timestamp).toLocaleString();
+                const senderName = message.sender_name || message.admin_name || (isClient ? 'You' : 'Admin');
 
                 return `
                     <div class="mb-4 ${isClient ? 'text-right' : 'text-left'}">
@@ -671,7 +783,7 @@ async function loadConversation(complaintId) {
                             <p class="text-sm">${message.message}</p>
                         </div>
                         <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            ${message.sender_name} - ${messageTime}
+                            ${senderName} - ${messageTime}
                         </div>
                     </div>
                 `;
@@ -730,6 +842,9 @@ document.getElementById('messageForm').addEventListener('submit', async function
             messageInput.value = '';
             // Reload conversation
             await loadConversation(complaintId);
+
+            // Update the complaint card's latest message section
+            updateComplaintCard(complaintId, message);
         } else {
             alert(data.message || 'Error sending message');
         }
@@ -748,15 +863,42 @@ function openCloseModal(complaintId, referenceNumber) {
 
 function closeCloseModal() {
     document.getElementById('closeModal').classList.add('hidden');
-    document.getElementById('closingReason').value = '';
+    document.getElementById('closingFeedback').value = '';
+    document.getElementById('satisfactionRating').value = '';
+    // Reset star ratings
+    document.querySelectorAll('.rating-star').forEach(star => {
+        star.classList.remove('text-yellow-400');
+        star.classList.add('text-gray-300');
+    });
     currentCloseId = null;
+}
+
+function setRating(rating) {
+    document.getElementById('satisfactionRating').value = rating;
+
+    // Update star colors
+    document.querySelectorAll('.rating-star').forEach((star, index) => {
+        if (index < rating) {
+            star.classList.remove('text-gray-300');
+            star.classList.add('text-yellow-400');
+        } else {
+            star.classList.remove('text-yellow-400');
+            star.classList.add('text-gray-300');
+        }
+    });
 }
 
 async function confirmCloseComplaint() {
     if (!currentCloseId) return;
 
-    const reason = document.getElementById('closingReason').value.trim();
+    const feedback = document.getElementById('closingFeedback').value.trim();
+    const satisfactionRating = document.getElementById('satisfactionRating').value;
     const button = document.getElementById('confirmCloseButton');
+
+    if (!satisfactionRating) {
+        alert('Please provide a satisfaction rating before closing the complaint.');
+        return;
+    }
 
     button.disabled = true;
     button.textContent = 'Closing...';
@@ -768,7 +910,10 @@ async function confirmCloseComplaint() {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
-            body: JSON.stringify({ reason: reason })
+            body: JSON.stringify({
+                feedback: feedback,
+                satisfaction_rating: parseInt(satisfactionRating)
+            })
         });
 
         const data = await response.json();
