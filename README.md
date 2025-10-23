@@ -5,20 +5,20 @@ ComplainApp is a lightweight complaint tracking and management system built with
 
 ## Key Features
 
-- Multi-role system: Clients, Staff Members, Department Heads, Admin
-- Complaint submission with multiple evidence files
-- Secure file serving for previews and downloads
-- Conversation/chat per complaint (client ↔ admin/staff)
-- Status workflow (pending, in progress, resolved, closed)
-- Staff feedback and complaint assignment
-- Modern responsive UI with light/dark mode support
+-   Multi-role system: Clients, Staff Members, Department Heads, Admin
+-   Complaint submission with multiple evidence files
+-   Secure file serving for previews and downloads
+-   Conversation/chat per complaint (client ↔ admin/staff)
+-   Status workflow (pending, in progress, resolved, closed)
+-   Staff feedback and complaint assignment
+-   Modern responsive UI with light/dark mode support
 
 ## Tech Stack
 
-- Backend: PHP 8.x, Laravel 9.x
-- Frontend: Blade templates, Tailwind CSS, vanilla JavaScript
-- Database: MySQL (schema included under `database/schema`)
-- Dev tools: Vite, NPM/Yarn, Composer
+-   Backend: PHP 8.x, Laravel 9.x
+-   Frontend: Blade templates, Tailwind CSS, vanilla JavaScript
+-   Database: MySQL (schema included under `database/schema`)
+-   Dev tools: Vite, NPM/Yarn, Composer
 
 ## Getting Started
 
@@ -26,46 +26,46 @@ These steps assume you already have PHP, Composer, Node.js and a MySQL server in
 
 1. Clone the repository
 
-	git clone <repo-url>
+    git clone <repo-url>
 
 2. Install PHP dependencies
 
-	composer install
+    composer install
 
 3. Install frontend dependencies and build assets
 
-	npm install
-	npm run build
+    npm install
+    npm run build
 
 4. Copy the example environment file and configure
 
-	cp .env.example .env
-	php artisan key:generate
+    cp .env.example .env
+    php artisan key:generate
 
-	Update `.env` with your DB credentials and other config.
+    Update `.env` with your DB credentials and other config.
 
 5. Run database migrations and seeders
 
-	php artisan migrate --seed
+    php artisan migrate --seed
 
 6. Serve the app locally
 
-	php artisan serve
+    php artisan serve
 
 Open http://127.0.0.1:8000 in your browser.
 
 ## Routes of Interest
 
-- Client complaint listing: `/client/past-complaints` (view)
-- Client complaint form: `/client/complain` (create)
-- Secure evidence preview/download routes are registered under `/client/complaint/{id}/evidence/{fileIndex}` and similar patterns for staff/admin
+-   Client complaint listing: `/client/past-complaints` (view)
+-   Client complaint form: `/client/complain` (create)
+-   Secure evidence preview/download routes are registered under `/client/complaint/{id}/evidence/{fileIndex}` and similar patterns for staff/admin
 
 ## Screenshots
 
 Place two screenshots in the repository under `screenshots/` using these exact filenames:
 
-- `screenshots/light-mode.png` — screenshot of the UI in light mode
-- `screenshots/dark-mode.png` — screenshot of the UI in dark mode
+-   `screenshots/light-mode.png` — screenshot of the UI in light mode
+-   `screenshots/dark-mode.png` — screenshot of the UI in dark mode
 
 You can add them to this README by placing the PNGs in `screenshots/` and the images will automatically render below.
 
@@ -81,13 +81,13 @@ If you prefer a different folder layout, update the image paths accordingly.
 
 ## Notes & Troubleshooting
 
-- If you see 404s when loading evidence files, ensure your storage link is created:
+-   If you see 404s when loading evidence files, ensure your storage link is created:
 
-  php artisan storage:link
+    php artisan storage:link
 
-- When editing Blade templates or assets, clear caches if necessary:
+-   When editing Blade templates or assets, clear caches if necessary:
 
-  php artisan view:clear; php artisan cache:clear; php artisan route:clear
+    php artisan view:clear; php artisan cache:clear; php artisan route:clear
 
 ## Contributing
 
@@ -108,13 +108,13 @@ Specify your license here (if any).
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+-   [Simple, fast routing engine](https://laravel.com/docs/routing).
+-   [Powerful dependency injection container](https://laravel.com/docs/container).
+-   Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+-   Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+-   Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+-   [Robust background job processing](https://laravel.com/docs/queues).
+-   [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
@@ -132,14 +132,14 @@ We would like to extend our thanks to the following sponsors for funding Laravel
 
 ### Premium Partners
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+-   **[Vehikl](https://vehikl.com)**
+-   **[Tighten Co.](https://tighten.co)**
+-   **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+-   **[64 Robots](https://64robots.com)**
+-   **[Curotec](https://www.curotec.com/services/technologies/laravel)**
+-   **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+-   **[Redberry](https://redberry.international/laravel-development)**
+-   **[Active Logic](https://activelogic.com)**
 
 ## Contributing
 
